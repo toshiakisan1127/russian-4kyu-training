@@ -60,8 +60,16 @@ export const getQuestionStatus = (progress: QuestionProgress): QuestionStatus =>
   return 'learning'
 }
 
-export const getQuestionStatusCounts = (questionIds: string[]): QuestionStatusCounts => {
+export const getQuestionStatuses = (questionIds: string[]): Record<string, QuestionStatus> => {
   const allProgress = readAllProgress()
+  return Object.fromEntries(questionIds.map((questionId) => [
+    questionId,
+    getQuestionStatus(allProgress[questionId] ?? emptyProgress()),
+  ]))
+}
+
+export const getQuestionStatusCounts = (questionIds: string[]): QuestionStatusCounts => {
+  const statuses = getQuestionStatuses(questionIds)
   const counts: QuestionStatusCounts = {
     new: 0,
     review: 0,
@@ -70,8 +78,7 @@ export const getQuestionStatusCounts = (questionIds: string[]): QuestionStatusCo
   }
 
   questionIds.forEach((questionId) => {
-    const status = getQuestionStatus(allProgress[questionId] ?? emptyProgress())
-    counts[status] += 1
+    counts[statuses[questionId] ?? 'new'] += 1
   })
 
   return counts
