@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { questions } from '~/data/questions'
 
 const currentIndex = ref(0)
@@ -7,9 +7,14 @@ const selectedAnswer = ref<string | null>(null)
 const answered = ref(false)
 const correctCount = ref(0)
 const completed = ref(false)
+const speechSupported = ref(false)
 
 const currentQuestion = computed(() => questions[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.answer)
+
+onMounted(() => {
+  speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+})
 
 const selectAnswer = (value: string) => {
   if (answered.value) return
@@ -22,6 +27,19 @@ const selectAnswer = (value: string) => {
   }
 }
 
+const speakCurrentSentence = () => {
+  if (!speechSupported.value) return
+
+  window.speechSynthesis.cancel()
+
+  const speechText = currentQuestion.value.fullSentence.replace(/\u0301/g, '')
+  const utterance = new SpeechSynthesisUtterance(speechText)
+  utterance.lang = 'ru-RU'
+  utterance.rate = 0.9
+
+  window.speechSynthesis.speak(utterance)
+}
+
 const goNext = () => {
   if (!answered.value) return
 
@@ -30,12 +48,14 @@ const goNext = () => {
     return
   }
 
+  window.speechSynthesis?.cancel()
   currentIndex.value += 1
   selectedAnswer.value = null
   answered.value = false
 }
 
 const restart = () => {
+  window.speechSynthesis?.cancel()
   currentIndex.value = 0
   selectedAnswer.value = null
   answered.value = false
@@ -142,9 +162,31 @@ const choiceClasses = (value: string) => {
               </div>
             </div>
 
-            <div class="mb-7 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3.5">
+            <div class="mb-7 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-4 sm:px-5">
               <p class="mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">日本語訳</p>
               <p class="m-0 text-base font-bold leading-7 text-slate-800">{{ currentQuestion.translation }}</p>
+
+              <div class="my-4 border-t border-indigo-100" />
+
+              <p class="mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">完全な文</p>
+              <p
+                class="m-0 text-xl leading-8 text-slate-950"
+                style="font-family: 'PT Serif', Georgia, serif"
+              >
+                {{ currentQuestion.fullSentence }}
+              </p>
+
+              <p class="mt-3 mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">IPA</p>
+              <p class="m-0 text-sm leading-6 text-slate-600">{{ currentQuestion.ipa }}</p>
+
+              <button
+                type="button"
+                class="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl border border-indigo-200 bg-white px-4 py-2 text-sm font-black text-indigo-700 transition hover:border-indigo-400 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="!speechSupported"
+                @click="speakCurrentSentence"
+              >
+                🔊 {{ speechSupported ? '読み上げ' : '読み上げ非対応' }}
+              </button>
             </div>
 
             <div class="mb-7">
