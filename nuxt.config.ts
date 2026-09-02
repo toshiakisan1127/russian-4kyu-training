@@ -1,6 +1,12 @@
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
+  css: ['~/assets/css/main.css'],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   app: {
     baseURL: '/toshiaki_Russia_language/',
     head: {
