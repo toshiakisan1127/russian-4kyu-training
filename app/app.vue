@@ -134,6 +134,11 @@ const choiceClasses = (value: string) => {
             </div>
           </div>
 
+          <div class="mb-7 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3.5">
+            <p class="mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">日本語訳</p>
+            <p class="m-0 text-base font-bold leading-7 text-slate-800">{{ currentQuestion.translation }}</p>
+          </div>
+
           <div class="mb-7">
             <h2 class="mb-2 text-base font-black">なぜ？</h2>
             <p class="m-0 leading-7 text-slate-700">{{ currentQuestion.correctExplanation }}</p>
