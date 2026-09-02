@@ -2,6 +2,12 @@
 import { computed, onMounted, ref } from 'vue'
 import { questions } from '~/data/questions'
 import { shuffle } from '~/utils/shuffle'
+import {
+  getQuestionProgress,
+  getQuestionStatus,
+  questionStatusLabel,
+  recordQuestionResult,
+} from '~/utils/questionProgress'
 
 const createQuestionSet = () => shuffle(questions).map((question) => ({
   ...question,
@@ -15,12 +21,25 @@ const answered = ref(false)
 const correctCount = ref(0)
 const completed = ref(false)
 const speechSupported = ref(false)
+const progressVersion = ref(0)
 
 const currentQuestion = computed(() => questionSet.value[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.answer)
+const currentStatus = computed(() => {
+  progressVersion.value
+  return getQuestionStatus(getQuestionProgress(currentQuestion.value.id))
+})
+const currentStatusText = computed(() => questionStatusLabel[currentStatus.value])
+const currentStatusClasses = computed(() => ({
+  new: 'border-indigo-200 bg-indigo-50 text-indigo-700',
+  review: 'border-amber-300 bg-amber-50 text-amber-900',
+  learning: 'border-violet-200 bg-violet-50 text-violet-700',
+  mastered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+}[currentStatus.value]))
 
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+  progressVersion.value += 1
 })
 
 const selectAnswer = (value: string) => {
@@ -29,7 +48,11 @@ const selectAnswer = (value: string) => {
   selectedAnswer.value = value
   answered.value = true
 
-  if (value === currentQuestion.value.answer) {
+  const correct = value === currentQuestion.value.answer
+  recordQuestionResult(currentQuestion.value.id, correct)
+  progressVersion.value += 1
+
+  if (correct) {
     correctCount.value += 1
   }
 }
@@ -69,6 +92,7 @@ const restart = () => {
   answered.value = false
   correctCount.value = 0
   completed.value = false
+  progressVersion.value += 1
 }
 
 const choiceClasses = (value: string) => {
@@ -113,7 +137,15 @@ const choiceClasses = (value: string) => {
 
         <div v-if="!completed">
           <div class="mb-6">
-            <p class="mb-2 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">前置詞</p>
+            <div class="mb-2 flex flex-wrap items-center gap-2">
+              <p class="m-0 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">前置詞</p>
+              <span
+                class="rounded-full border px-2.5 py-1 text-xs font-black"
+                :class="currentStatusClasses"
+              >
+                {{ currentStatusText }}
+              </span>
+            </div>
             <p
               class="m-0 text-[clamp(1.9rem,7vw,2.8rem)] leading-[1.45]"
               style="font-family: 'PT Serif', Georgia, serif"
