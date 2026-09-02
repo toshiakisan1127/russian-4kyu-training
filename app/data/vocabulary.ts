@@ -1,55 +1,19 @@
-export type RussianCase = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental' | 'prepositional'
+import { bulkVocabularyItems } from './vocabularyBulk'
+import type { VocabularyItem } from '~/types/vocabulary'
 
-export type VocabularyExample = {
-  sentence: string
-  translation: string
-  ipa: string
-}
+export type {
+  AdjectiveForms,
+  AdjectiveVocabularyItem,
+  NounVocabularyItem,
+  RussianCase,
+  SimpleVocabularyItem,
+  VerbConjugation,
+  VerbVocabularyItem,
+  VocabularyItem,
+  VocabularyPartOfSpeech,
+} from '~/types/vocabulary'
 
-type VocabularyBase = {
-  id: string
-  word: string
-  stressedWord: string
-  meaning: string
-  ipa: string
-  example: VocabularyExample
-}
-
-export type NounVocabularyItem = VocabularyBase & {
-  partOfSpeech: 'noun'
-  gender: 'masculine' | 'feminine' | 'neuter'
-  declension: Record<RussianCase, string>
-}
-
-export type VerbVocabularyItem = VocabularyBase & {
-  partOfSpeech: 'verb'
-  aspect: 'imperfective' | 'perfective'
-  presentConjugation: {
-    firstSingular: string
-    secondSingular: string
-    thirdSingular: string
-    firstPlural: string
-    secondPlural: string
-    thirdPlural: string
-  }
-}
-
-export type AdjectiveForms = {
-  masculine: string
-  feminine: string
-  neuter: string
-  plural: string
-}
-
-export type AdjectiveVocabularyItem = VocabularyBase & {
-  partOfSpeech: 'adjective'
-  forms: AdjectiveForms
-  declension: Record<RussianCase, AdjectiveForms>
-}
-
-export type VocabularyItem = NounVocabularyItem | VerbVocabularyItem | AdjectiveVocabularyItem
-
-export const vocabularyItems: VocabularyItem[] = [
+const coreVocabularyItems: VocabularyItem[] = [
   {
     id: 'vocab-001',
     word: 'книга',
@@ -58,6 +22,7 @@ export const vocabularyItems: VocabularyItem[] = [
     ipa: '/ˈknʲiɡə/',
     partOfSpeech: 'noun',
     gender: 'feminine',
+    plural: 'книги',
     example: {
       sentence: 'Э́то моя́ кни́га.',
       translation: 'これは私の本です。',
@@ -80,6 +45,7 @@ export const vocabularyItems: VocabularyItem[] = [
     ipa: '/sʲɪˈmʲja/',
     partOfSpeech: 'noun',
     gender: 'feminine',
+    plural: 'семьи',
     example: {
       sentence: 'Моя́ семья́ живёт в Москве́.',
       translation: '私の家族はモスクワに住んでいます。',
@@ -151,6 +117,7 @@ export const vocabularyItems: VocabularyItem[] = [
     ipa: '/vɐˈda/',
     partOfSpeech: 'noun',
     gender: 'feminine',
+    plural: 'воды',
     example: {
       sentence: 'Я пью во́ду.',
       translation: '私は水を飲みます。',
@@ -166,3 +133,12 @@ export const vocabularyItems: VocabularyItem[] = [
     },
   },
 ]
+
+export const vocabularyItems: VocabularyItem[] = [
+  ...coreVocabularyItems,
+  ...bulkVocabularyItems,
+]
+
+if (vocabularyItems.length !== 550) {
+  throw new Error(`Vocabulary pool must contain 550 items, got ${vocabularyItems.length}`)
+}
