@@ -8,7 +8,7 @@ const answered = ref(false)
 const correctCount = ref(0)
 const completed = ref(false)
 
-const currentQuestion = computed(() => questions[currentIndex.value])
+const currentQuestion = computed(() => questions[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.answer)
 
 const selectAnswer = (value: string) => {
