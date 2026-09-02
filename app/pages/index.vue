@@ -40,7 +40,7 @@ const trainingItems: TrainingItem[] = [
   },
   {
     title: '語彙',
-    description: '4級で押さえたい基本単語をテンポよく確認。まずは5語で試作中。',
+    description: '4級向けの基本語彙550語から、習熟度を考慮して毎回10語を出題。',
     to: '/vocabulary',
     status: 'available',
     progressKey: 'vocabulary',
