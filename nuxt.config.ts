@@ -2,6 +2,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
   app: {
+    baseURL: '/toshiaki_Russia_language/',
     head: {
       htmlAttrs: { lang: 'ja' },
       title: 'ロシア語4級トレーニング',
