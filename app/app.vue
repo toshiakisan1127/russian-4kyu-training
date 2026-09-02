@@ -118,6 +118,8 @@ const restart = () => {
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap');
+
 :root {
   color-scheme: light;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -197,7 +199,7 @@ h1 {
 
 .question {
   margin-bottom: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-family: "PT Serif", Georgia, serif;
   font-size: clamp(1.8rem, 6vw, 2.7rem);
   line-height: 1.45;
 }
