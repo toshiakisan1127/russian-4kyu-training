@@ -35,7 +35,7 @@ const speakCurrentSentence = () => {
   const speechText = currentQuestion.value.fullSentence.replace(/\u0301/g, '')
   const utterance = new SpeechSynthesisUtterance(speechText)
   utterance.lang = 'ru-RU'
-  utterance.rate = 0.9
+  utterance.rate = 0.7
 
   window.speechSynthesis.speak(utterance)
 }
