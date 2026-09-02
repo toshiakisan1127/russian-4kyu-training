@@ -87,18 +87,21 @@ const trainingItems = [
           <h2 class="m-0 text-2xl font-black">大問別問題集</h2>
         </div>
 
-        <article class="rounded-3xl border border-sky-200 bg-sky-50 p-6 sm:p-7">
+        <NuxtLink
+          to="/sections/1"
+          class="group block rounded-3xl border border-sky-200 bg-sky-50 p-6 transition hover:-translate-y-1 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-100 sm:p-7"
+        >
           <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div class="mb-3 inline-flex rounded-full border border-sky-300 bg-white px-2.5 py-1 text-xs font-black text-sky-700">準備中</div>
-              <h3 class="mb-2 text-xl font-black text-slate-900">本番の大問ごとに練習</h3>
+              <div class="mb-3 inline-flex rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</div>
+              <h3 class="mb-2 text-xl font-black text-slate-900">第I問・発音</h3>
               <p class="m-0 max-w-2xl leading-7 text-slate-600">
-                大問1・大問2のように試験のまとまり単位で問題を解ける問題集。分野別で身につけた知識を、本番に近い形で確認する。
+                下線部の発音が他の3語と異なる単語を選ぶ4択問題。無声化・有声化・母音の弱化・例外的な発音を10問で練習する。
               </p>
             </div>
-            <div class="shrink-0 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-sm font-black text-sky-800">COMING SOON</div>
+            <div class="shrink-0 rounded-2xl border border-sky-300 bg-white px-4 py-3 text-sm font-black text-sky-800 transition group-hover:bg-sky-700 group-hover:text-white">10問 はじめる →</div>
           </div>
-        </article>
+        </NuxtLink>
       </section>
 
       <section>
