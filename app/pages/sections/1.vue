@@ -2,6 +2,12 @@
 import { computed, onMounted, ref } from 'vue'
 import { section1Questions } from '~/data/section1'
 import { shuffle } from '~/utils/shuffle'
+import {
+  getQuestionProgress,
+  getQuestionStatus,
+  questionStatusLabel,
+  recordQuestionResult,
+} from '~/utils/questionProgress'
 
 const createQuestionSet = () => shuffle(section1Questions).map((question) => {
   const correctWord = question.choices[question.answer]!.word
@@ -21,12 +27,25 @@ const answered = ref(false)
 const correctCount = ref(0)
 const completed = ref(false)
 const speechSupported = ref(false)
+const progressVersion = ref(0)
 
 const currentQuestion = computed(() => questionSet.value[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.answer)
+const currentStatus = computed(() => {
+  progressVersion.value
+  return getQuestionStatus(getQuestionProgress(currentQuestion.value.id))
+})
+const currentStatusText = computed(() => questionStatusLabel[currentStatus.value])
+const currentStatusClasses = computed(() => ({
+  new: 'border-sky-200 bg-sky-50 text-sky-700',
+  review: 'border-amber-300 bg-amber-50 text-amber-900',
+  learning: 'border-violet-200 bg-violet-50 text-violet-700',
+  mastered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+}[currentStatus.value]))
 
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+  progressVersion.value += 1
 })
 
 const selectAnswer = (index: number) => {
@@ -35,7 +54,11 @@ const selectAnswer = (index: number) => {
   selectedAnswer.value = index
   answered.value = true
 
-  if (index === currentQuestion.value.answer) {
+  const correct = index === currentQuestion.value.answer
+  recordQuestionResult(currentQuestion.value.id, correct)
+  progressVersion.value += 1
+
+  if (correct) {
     correctCount.value += 1
   }
 }
@@ -63,6 +86,7 @@ const restart = () => {
   answered.value = false
   correctCount.value = 0
   completed.value = false
+  progressVersion.value += 1
 }
 
 const speak = (stressedWord: string) => {
@@ -131,6 +155,15 @@ const choiceClasses = (index: number) => {
         </header>
 
         <div v-if="!completed">
+          <div class="mb-4 flex flex-wrap items-center gap-2">
+            <span
+              class="rounded-full border px-2.5 py-1 text-xs font-black"
+              :class="currentStatusClasses"
+            >
+              {{ currentStatusText }}
+            </span>
+          </div>
+
           <div class="mb-6 rounded-2xl bg-slate-100 px-4 py-3.5">
             <p class="m-0 text-sm font-bold leading-6 text-slate-700">
               下線部の発音が、他の3つと異なる単語を1つ選びなさい。
