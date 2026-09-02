@@ -5,6 +5,7 @@ export const questions: MultipleChoiceQuestion[] = [
     id: 'prep-001',
     category: 'preposition',
     prompt: 'Я живу́ ___ Москве́.',
+    translation: '私はモスクワに住んでいます。',
     answer: 'в',
     correctExplanation: '`в + 前置格` で、都市など「〜に／〜で」を表します。Москва́ は前置格で Москве́ になります。',
     choices: [
@@ -18,6 +19,7 @@ export const questions: MultipleChoiceQuestion[] = [
     id: 'prep-002',
     category: 'preposition',
     prompt: 'Я иду́ ___ врачу́.',
+    translation: '私は医者のところへ行きます。',
     answer: 'к',
     correctExplanation: '`к + 与格` で、人や物の「ところへ／方向へ」を表します。врач は与格で врачу́ になります。',
     choices: [
@@ -31,6 +33,7 @@ export const questions: MultipleChoiceQuestion[] = [
     id: 'prep-003',
     category: 'preposition',
     prompt: 'Мы прие́хали ___ Япо́нии.',
+    translation: '私たちは日本から来ました。',
     answer: 'из',
     correctExplanation: '`из + 生格` で、国・都市・建物などの「中から／〜から」を表します。Япо́ния は生格で Япо́нии になります。',
     choices: [
@@ -44,6 +47,7 @@ export const questions: MultipleChoiceQuestion[] = [
     id: 'prep-004',
     category: 'preposition',
     prompt: 'Кни́га лежи́т ___ столе́.',
+    translation: '本は机の上にあります。',
     answer: 'на',
     correctExplanation: '`на + 前置格` で「〜の上にある」を表します。стол は前置格で столе́ になります。',
     choices: [
@@ -57,6 +61,7 @@ export const questions: MultipleChoiceQuestion[] = [
     id: 'prep-005',
     category: 'preposition',
     prompt: 'Я верну́лся ___ рабо́ты.',
+    translation: '私は仕事から帰ってきました。',
     answer: 'с',
     correctExplanation: '`с + 生格` で、`на` と組み合わせて使う場所から「〜から戻る」を表します。`на рабо́ту ↔ с рабо́ты` の組み合わせです。',
     choices: [
