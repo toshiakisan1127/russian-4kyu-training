@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { questions } from '~/data/questions'
+import { shuffle } from '~/utils/shuffle'
 
+const createQuestionSet = () => shuffle(questions).map((question) => ({
+  ...question,
+  choices: shuffle(question.choices),
+}))
+
+const questionSet = ref(createQuestionSet())
 const currentIndex = ref(0)
 const selectedAnswer = ref<string | null>(null)
 const answered = ref(false)
@@ -9,7 +16,7 @@ const correctCount = ref(0)
 const completed = ref(false)
 const speechSupported = ref(false)
 
-const currentQuestion = computed(() => questions[currentIndex.value]!)
+const currentQuestion = computed(() => questionSet.value[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.answer)
 
 onMounted(() => {
@@ -43,7 +50,7 @@ const speakCurrentSentence = () => {
 const goNext = () => {
   if (!answered.value) return
 
-  if (currentIndex.value === questions.length - 1) {
+  if (currentIndex.value === questionSet.value.length - 1) {
     completed.value = true
     return
   }
@@ -56,6 +63,7 @@ const goNext = () => {
 
 const restart = () => {
   window.speechSynthesis?.cancel()
+  questionSet.value = createQuestionSet()
   currentIndex.value = 0
   selectedAnswer.value = null
   answered.value = false
@@ -99,7 +107,7 @@ const choiceClasses = (value: string) => {
             <h1 class="text-2xl font-black tracking-tight sm:text-3xl">前置詞ミニトレーニング</h1>
           </div>
           <span class="shrink-0 rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-black text-white">
-            {{ Math.min(currentIndex + 1, questions.length) }} / {{ questions.length }}
+            {{ Math.min(currentIndex + 1, questionSet.length) }} / {{ questionSet.length }}
           </span>
         </header>
 
@@ -219,14 +227,14 @@ const choiceClasses = (value: string) => {
               class="min-h-13 w-full rounded-2xl bg-indigo-600 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-indigo-700"
               @click="goNext"
             >
-              {{ currentIndex === questions.length - 1 ? '結果を見る' : '次の問題へ' }}
+              {{ currentIndex === questionSet.length - 1 ? '結果を見る' : '次の問題へ' }}
             </button>
           </section>
         </div>
 
         <section v-else class="py-10 text-center">
           <p class="mb-2 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Result</p>
-          <h2 class="mb-3 text-4xl font-black text-indigo-700 sm:text-5xl">{{ correctCount }} / {{ questions.length }}</h2>
+          <h2 class="mb-3 text-4xl font-black text-indigo-700 sm:text-5xl">{{ correctCount }} / {{ questionSet.length }}</h2>
           <p class="mx-auto mb-0 max-w-md leading-7 text-slate-600">
             まずはこの5問をテンポよく回せればOK。解説を確認しながら、前置詞の使い分けを固めていこう。
           </p>
