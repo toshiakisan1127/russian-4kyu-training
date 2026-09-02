@@ -8,6 +8,8 @@ export type MultipleChoiceQuestion = {
   category: 'preposition'
   prompt: string
   translation: string
+  fullSentence: string
+  ipa: string
   answer: string
   correctExplanation: string
   choices: QuestionChoice[]
