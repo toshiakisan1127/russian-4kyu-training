@@ -20,8 +20,6 @@ export type NounSeed = readonly [
 
 export type WordSeed = readonly [word: string, stressedWord: string, meaning: string]
 
-const stripStress = (text: string) => text.normalize('NFD').replace(/\u0301/g, '').normalize('NFC')
-
 const nounSpecialDeclensions: Record<string, Record<RussianCase, string>> = {
   время: { nominative: 'время', genitive: 'времени', dative: 'времени', accusative: 'время', instrumental: 'временем', prepositional: 'времени' },
   имя: { nominative: 'имя', genitive: 'имени', dative: 'имени', accusative: 'имя', instrumental: 'именем', prepositional: 'имени' },
@@ -48,7 +46,7 @@ const nounSpecialDeclensions: Record<string, Record<RussianCase, string>> = {
   животное: { nominative: 'животное', genitive: 'животного', dative: 'животному', accusative: 'животное', instrumental: 'животным', prepositional: 'животном' },
 }
 
-const indeclinableNouns = new Set(['метро', 'кафе', 'радио', 'меню', 'пальто'])
+const indeclinableNouns = new Set(['метро', 'кафе', 'кофе', 'радио', 'меню', 'пальто'])
 const pluralOnlyNouns = new Set(['деньги', 'брюки'])
 const spellingRuleLetters = new Set(['г', 'к', 'х', 'ж', 'ч', 'ш', 'щ'])
 
@@ -58,7 +56,10 @@ const makeNounDeclension = (
   animate = false,
 ): Record<RussianCase, string> | undefined => {
   if (pluralOnlyNouns.has(word) || word.includes(' ')) return undefined
-  if (nounSpecialDeclensions[word]) return nounSpecialDeclensions[word]
+
+  const special = nounSpecialDeclensions[word]
+  if (special) return special
+
   if (indeclinableNouns.has(word)) {
     return { nominative: word, genitive: word, dative: word, accusative: word, instrumental: word, prepositional: word }
   }
@@ -170,6 +171,7 @@ const verbOverrides: Record<string, readonly [string, string, string, string, st
   становить: ['становлю', 'становишь', 'становит', 'становим', 'становите', 'становят'],
   искать: ['ищу', 'ищешь', 'ищет', 'ищем', 'ищете', 'ищут'],
   звать: ['зову', 'зовёшь', 'зовёт', 'зовём', 'зовёте', 'зовут'],
+  нравить: ['нравлю', 'нравишь', 'нравит', 'нравим', 'нравите', 'нравят'],
   смеяться: ['смеюсь', 'смеёшься', 'смеётся', 'смеёмся', 'смеётесь', 'смеются'],
   приносить: ['приношу', 'приносишь', 'приносит', 'приносим', 'приносите', 'приносят'],
   пить: ['пью', 'пьёшь', 'пьёт', 'пьём', 'пьёте', 'пьют'],
@@ -192,13 +194,19 @@ const verbOverrides: Record<string, readonly [string, string, string, string, st
 const addReflexive = (form: string) => `${form}${/[аеёиоуыэюя]$/u.test(form) ? 'сь' : 'ся'}`
 
 const conjugateBare = (word: string): readonly [string, string, string, string, string, string] | undefined => {
-  if (verbOverrides[word]) return verbOverrides[word]
+  const override = verbOverrides[word]
+  if (override) return override
 
   if (word.endsWith('ся') || word.endsWith('сь')) {
     const base = word.slice(0, -2)
     const baseForms = conjugateBare(base)
     if (!baseForms) return undefined
     return baseForms.map(addReflexive) as unknown as readonly [string, string, string, string, string, string]
+  }
+
+  if (word.endsWith('ировать')) {
+    const stem = word.slice(0, -7)
+    return [`${stem}ирую`, `${stem}ируешь`, `${stem}ирует`, `${stem}ируем`, `${stem}ируете`, `${stem}ируют`]
   }
 
   if (word.endsWith('овать')) {
@@ -241,17 +249,17 @@ export const makeVerb = (id: string, seed: WordSeed): VerbVocabularyItem => {
     aspect: 'imperfective',
     presentConjugation,
     example: presentConjugation
-      ? { sentence: `${presentConjugation.firstSingular.replace(/^я /, 'Я ')}.`, translation: `私は「${meaning}」。` }
+      ? { sentence: `${presentConjugation.firstSingular.replace(/^я /, 'Я ')}.`, translation: `「${meaning}」の1人称単数の例。` }
       : undefined,
   }
 }
 
 const makeAdjectiveGrammar = (word: string): { forms: AdjectiveForms; declension: Record<RussianCase, AdjectiveForms> } => {
+  const stem = word.slice(0, -2)
+  const finalStemLetter = stem.at(-1) ?? ''
   const soft = word.endsWith('ний') || word === 'синий'
-  const velar = /[кгх]ий$/u.test(word)
-  const husher = /[жшчщ]ий$/u.test(word)
-  const ending = word.endsWith('ый') || word.endsWith('ой') ? 2 : 2
-  const stem = word.slice(0, -ending)
+  const iEndingAfterHusher = word.endsWith('ий') && /[жшчщ]/u.test(finalStemLetter)
+  const velarOrHusher = /[кгхжшчщ]/u.test(finalStemLetter)
 
   let forms: AdjectiveForms
   let genM: string
@@ -266,12 +274,12 @@ const makeAdjectiveGrammar = (word: string): { forms: AdjectiveForms; declension
   if (soft) {
     forms = { masculine: word, feminine: `${stem}яя`, neuter: `${stem}ее`, plural: `${stem}ие` }
     genM = `${stem}его`; datM = `${stem}ему`; insM = `${stem}им`; prepM = `${stem}ем`; genF = `${stem}ей`; pluralGen = `${stem}их`; pluralDat = `${stem}им`; pluralIns = `${stem}ими`
-  } else if (velar) {
-    forms = { masculine: word, feminine: `${stem}ая`, neuter: `${stem}ое`, plural: `${stem}ие` }
-    genM = `${stem}ого`; datM = `${stem}ому`; insM = `${stem}им`; prepM = `${stem}ом`; genF = `${stem}ой`; pluralGen = `${stem}их`; pluralDat = `${stem}им`; pluralIns = `${stem}ими`
-  } else if (husher) {
+  } else if (iEndingAfterHusher) {
     forms = { masculine: word, feminine: `${stem}ая`, neuter: `${stem}ее`, plural: `${stem}ие` }
     genM = `${stem}его`; datM = `${stem}ему`; insM = `${stem}им`; prepM = `${stem}ем`; genF = `${stem}ей`; pluralGen = `${stem}их`; pluralDat = `${stem}им`; pluralIns = `${stem}ими`
+  } else if (velarOrHusher) {
+    forms = { masculine: word, feminine: `${stem}ая`, neuter: `${stem}ое`, plural: `${stem}ие` }
+    genM = `${stem}ого`; datM = `${stem}ому`; insM = `${stem}им`; prepM = `${stem}ом`; genF = `${stem}ой`; pluralGen = `${stem}их`; pluralDat = `${stem}им`; pluralIns = `${stem}ими`
   } else {
     forms = { masculine: word, feminine: `${stem}ая`, neuter: `${stem}ое`, plural: `${stem}ые` }
     genM = `${stem}ого`; datM = `${stem}ому`; insM = `${stem}ым`; prepM = `${stem}ом`; genF = `${stem}ой`; pluralGen = `${stem}ых`; pluralDat = `${stem}ым`; pluralIns = `${stem}ыми`
@@ -305,7 +313,7 @@ export const makeAdjective = (id: string, seed: WordSeed): AdjectiveVocabularyIt
     meaning,
     partOfSpeech: 'adjective',
     ...grammar,
-    example: { sentence: `Это ${grammar.forms.masculine} дом.`, translation: `これは「${meaning}」家です。` },
+    example: { sentence: `Это ${grammar.forms.masculine} дом.`, translation: `「${meaning}」を使った基本例。` },
   }
 }
 
