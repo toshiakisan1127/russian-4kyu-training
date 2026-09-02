@@ -1,7 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { section1Questions } from '~/data/section1'
+import { shuffle } from '~/utils/shuffle'
 
+const createQuestionSet = () => shuffle(section1Questions).map((question) => {
+  const correctWord = question.choices[question.answer]!.word
+  const choices = shuffle(question.choices)
+
+  return {
+    ...question,
+    choices,
+    answer: choices.findIndex((choice) => choice.word === correctWord),
+  }
+})
+
+const questionSet = ref(createQuestionSet())
 const currentIndex = ref(0)
 const selectedAnswer = ref<number | null>(null)
 const answered = ref(false)
@@ -9,7 +22,7 @@ const correctCount = ref(0)
 const completed = ref(false)
 const speechSupported = ref(false)
 
-const currentQuestion = computed(() => section1Questions[currentIndex.value]!)
+const currentQuestion = computed(() => questionSet.value[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.answer)
 
 onMounted(() => {
@@ -32,7 +45,7 @@ const goNext = () => {
 
   window.speechSynthesis?.cancel()
 
-  if (currentIndex.value === section1Questions.length - 1) {
+  if (currentIndex.value === questionSet.value.length - 1) {
     completed.value = true
     return
   }
@@ -44,6 +57,7 @@ const goNext = () => {
 
 const restart = () => {
   window.speechSynthesis?.cancel()
+  questionSet.value = createQuestionSet()
   currentIndex.value = 0
   selectedAnswer.value = null
   answered.value = false
@@ -112,7 +126,7 @@ const choiceClasses = (index: number) => {
             <h1 class="text-2xl font-black tracking-tight sm:text-3xl">第I問・発音</h1>
           </div>
           <span class="shrink-0 rounded-full bg-sky-700 px-3 py-1.5 text-sm font-black text-white">
-            {{ Math.min(currentIndex + 1, section1Questions.length) }} / {{ section1Questions.length }}
+            {{ Math.min(currentIndex + 1, questionSet.length) }} / {{ questionSet.length }}
           </span>
         </header>
 
@@ -225,14 +239,14 @@ const choiceClasses = (index: number) => {
               class="min-h-13 w-full rounded-2xl bg-sky-700 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-800"
               @click="goNext"
             >
-              {{ currentIndex === section1Questions.length - 1 ? '結果を見る' : '次の問題へ' }}
+              {{ currentIndex === questionSet.length - 1 ? '結果を見る' : '次の問題へ' }}
             </button>
           </section>
         </div>
 
         <section v-else class="py-10 text-center">
           <p class="mb-2 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">Section I Result</p>
-          <h2 class="mb-3 text-4xl font-black text-sky-800 sm:text-5xl">{{ correctCount }} / {{ section1Questions.length }}</h2>
+          <h2 class="mb-3 text-4xl font-black text-sky-800 sm:text-5xl">{{ correctCount }} / {{ questionSet.length }}</h2>
           <p class="mx-auto mb-0 max-w-md leading-7 text-slate-600">
             第I問は、無声化・有声化・母音の弱化・例外的な発音を見抜けるかがポイント。
           </p>
