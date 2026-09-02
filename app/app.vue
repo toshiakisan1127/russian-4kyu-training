@@ -74,14 +74,33 @@ const restart = () => {
             :disabled="answered"
             @click="selectAnswer(choice.value)"
           >
-            {{ choice.value }}
+            <span class="choice-value">{{ choice.value }}</span>
+            <span
+              v-if="answered && choice.value === currentQuestion.answer"
+              class="choice-status choice-status-correct"
+            >
+              正解
+            </span>
+            <span
+              v-else-if="answered && selectedAnswer === choice.value"
+              class="choice-status choice-status-wrong"
+            >
+              あなたの回答
+            </span>
           </button>
         </div>
 
         <section v-if="answered" class="explanation-panel">
-          <p class="result" :class="isCorrect ? 'result-correct' : 'result-wrong'">
-            {{ isCorrect ? '正解！' : `不正解。正解は「${currentQuestion.answer}」` }}
-          </p>
+          <div class="feedback-card" :class="isCorrect ? 'feedback-correct' : 'feedback-wrong'">
+            <div class="feedback-icon" aria-hidden="true">{{ isCorrect ? '○' : '×' }}</div>
+            <div>
+              <p class="feedback-title">{{ isCorrect ? '正解！' : '不正解' }}</p>
+              <p v-if="!isCorrect" class="correct-answer">
+                正解は <strong>「{{ currentQuestion.answer }}」</strong>
+              </p>
+              <p v-else class="feedback-subtext">その調子！</p>
+            </div>
+          </div>
 
           <div class="main-explanation">
             <h2>なぜ？</h2>
@@ -219,7 +238,12 @@ h1 {
 }
 
 .choice-button {
-  min-height: 58px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
   border: 1px solid #d5d5cf;
   background: #fafaf8;
   font-size: 1.15rem;
@@ -233,16 +257,41 @@ h1 {
 
 .choice-button:disabled {
   cursor: default;
+  opacity: 1;
 }
 
 .choice-button.correct {
-  border-color: #4c8a5c;
+  border: 2px solid #3f8a54;
   background: #e8f4eb;
+  color: #256238;
 }
 
 .choice-button.wrong {
-  border-color: #b45b55;
-  background: #fbeaea;
+  border: 2px solid #b64e49;
+  background: #fbe8e7;
+  color: #8d312d;
+}
+
+.choice-value {
+  font-size: 1.18rem;
+}
+
+.choice-status {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.choice-status-correct {
+  background: #cfe9d5;
+  color: #256238;
+}
+
+.choice-status-wrong {
+  background: #f3c9c7;
+  color: #8d312d;
 }
 
 .explanation-panel {
@@ -251,18 +300,59 @@ h1 {
   border-top: 1px solid #e6e6e0;
 }
 
-.result {
-  margin-bottom: 18px;
-  font-size: 1.05rem;
+.feedback-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 2px solid;
+}
+
+.feedback-correct {
+  border-color: #62a875;
+  background: #edf8f0;
+  color: #235f35;
+}
+
+.feedback-wrong {
+  border-color: #c76059;
+  background: #fff0ef;
+  color: #8c2e29;
+}
+
+.feedback-icon {
+  flex: 0 0 auto;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  font-size: 2.1rem;
   font-weight: 800;
+  line-height: 1;
 }
 
-.result-correct {
-  color: #357847;
+.feedback-wrong .feedback-icon {
+  border-radius: 14px;
 }
 
-.result-wrong {
-  color: #a84640;
+.feedback-title {
+  margin-bottom: 4px;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.correct-answer,
+.feedback-subtext {
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.correct-answer strong {
+  font-size: 1.22rem;
 }
 
 .main-explanation,
@@ -349,6 +439,16 @@ h1 {
 
   .choices {
     grid-template-columns: 1fr;
+  }
+
+  .feedback-card {
+    padding: 16px;
+  }
+
+  .feedback-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
   }
 }
 </style>
