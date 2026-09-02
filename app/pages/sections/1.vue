@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { section1Questions } from '~/data/section1'
 
 const currentIndex = ref(0)
@@ -7,9 +7,14 @@ const selectedAnswer = ref<number | null>(null)
 const answered = ref(false)
 const correctCount = ref(0)
 const completed = ref(false)
+const speechSupported = ref(false)
 
 const currentQuestion = computed(() => section1Questions[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.answer)
+
+onMounted(() => {
+  speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+})
 
 const selectAnswer = (index: number) => {
   if (answered.value) return
@@ -25,6 +30,8 @@ const selectAnswer = (index: number) => {
 const goNext = () => {
   if (!answered.value) return
 
+  window.speechSynthesis?.cancel()
+
   if (currentIndex.value === section1Questions.length - 1) {
     completed.value = true
     return
@@ -36,11 +43,37 @@ const goNext = () => {
 }
 
 const restart = () => {
+  window.speechSynthesis?.cancel()
   currentIndex.value = 0
   selectedAnswer.value = null
   answered.value = false
   correctCount.value = 0
   completed.value = false
+}
+
+const speak = (stressedWord: string) => {
+  if (!speechSupported.value) return
+
+  const text = stressedWord
+    .normalize('NFD')
+    .replace(/\u0301/g, '')
+    .normalize('NFC')
+
+  window.speechSynthesis.cancel()
+
+  const utterance = new SpeechSynthesisUtterance(text)
+  utterance.lang = 'ru-RU'
+  utterance.rate = 0.9
+
+  const russianVoice = window.speechSynthesis
+    .getVoices()
+    .find((voice) => voice.lang.toLowerCase().startsWith('ru'))
+
+  if (russianVoice) {
+    utterance.voice = russianVoice
+  }
+
+  window.speechSynthesis.speak(utterance)
 }
 
 const choiceClasses = (index: number) => {
@@ -142,7 +175,7 @@ const choiceClasses = (index: number) => {
                   {{ isCorrect ? '正解！' : '不正解' }}
                 </p>
                 <p v-if="!isCorrect" class="m-0 text-sm text-slate-700">
-                  正解は {{ currentQuestion.answer + 1 }}. {{ currentQuestion.choices[currentQuestion.answer]!.word }}
+                  正解は {{ currentQuestion.answer + 1 }}. {{ currentQuestion.choices[currentQuestion.answer]!.stressedWord }}
                 </p>
               </div>
             </div>
@@ -159,12 +192,31 @@ const choiceClasses = (index: number) => {
                 :key="`detail-${choice.word}`"
                 class="border-t border-slate-200 py-4"
               >
-                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <strong class="text-lg">{{ index + 1 }}. {{ choice.word }}</strong>
-                  <span class="font-mono text-sm text-slate-600">{{ choice.ipa }}</span>
-                  <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-black text-slate-700">下線部 {{ choice.targetSound }}</span>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <strong
+                        class="text-xl"
+                        style="font-family: 'PT Serif', Georgia, serif"
+                      >
+                        {{ index + 1 }}. {{ choice.stressedWord }}
+                      </strong>
+                      <span class="font-mono text-sm text-slate-600">{{ choice.ipa }}</span>
+                      <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-black text-slate-700">下線部 {{ choice.targetSound }}</span>
+                    </div>
+                    <p class="mt-1 text-xs font-medium text-slate-500">{{ choice.meaning }}</p>
+                  </div>
+                  <button
+                    type="button"
+                    class="grid size-10 shrink-0 place-items-center rounded-full border border-sky-200 bg-sky-50 text-lg transition hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    :disabled="!speechSupported"
+                    :aria-label="`${choice.word} を読み上げる`"
+                    @click="speak(choice.stressedWord)"
+                  >
+                    🔊
+                  </button>
                 </div>
-                <p class="mt-1.5 mb-0 leading-7 text-slate-700">{{ choice.explanation }}</p>
+                <p class="mt-2 mb-0 leading-7 text-slate-700">{{ choice.explanation }}</p>
               </article>
             </div>
 
