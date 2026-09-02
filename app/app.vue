@@ -42,429 +42,145 @@ const restart = () => {
   correctCount.value = 0
   completed.value = false
 }
+
+const choiceClasses = (value: string) => {
+  const base = 'flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-lg font-bold transition'
+
+  if (!answered.value) {
+    return `${base} border-stone-300 bg-white text-zinc-950 hover:-translate-y-0.5 hover:border-zinc-500 hover:bg-stone-50`
+  }
+
+  if (value === currentQuestion.value.answer) {
+    return `${base} border-[3px] border-solid border-zinc-950 bg-white text-zinc-950 shadow-[inset_6px_0_0_#18181b]`
+  }
+
+  if (selectedAnswer.value === value) {
+    return `${base} border-[3px] border-dashed border-zinc-950 bg-stone-100 text-zinc-950`
+  }
+
+  return `${base} border-stone-200 bg-stone-50 text-zinc-400 opacity-55`
+}
 </script>
 
 <template>
-  <main class="page-shell">
-    <section class="app-card">
-      <header class="app-header">
+  <main class="min-h-screen bg-stone-100 px-4 py-8 text-zinc-950 sm:py-12">
+    <section class="mx-auto w-full max-w-2xl rounded-3xl border border-stone-200 bg-white p-5 shadow-xl shadow-stone-300/30 sm:p-8">
+      <header class="mb-8 flex items-start justify-between gap-4">
         <div>
-          <p class="eyebrow">ロシア語能力検定4級</p>
-          <h1>前置詞ミニトレーニング</h1>
+          <p class="mb-1 text-xs font-black tracking-[0.14em] text-zinc-500 uppercase">ロシア語能力検定4級</p>
+          <h1 class="text-2xl font-black tracking-tight sm:text-3xl">前置詞ミニトレーニング</h1>
         </div>
-        <span class="progress">{{ Math.min(currentIndex + 1, questions.length) }} / {{ questions.length }}</span>
+        <span class="shrink-0 rounded-full bg-zinc-950 px-3 py-1.5 text-sm font-black text-white">
+          {{ Math.min(currentIndex + 1, questions.length) }} / {{ questions.length }}
+        </span>
       </header>
 
-      <div v-if="!completed" class="quiz-area">
-        <div class="question-block">
-          <p class="category">前置詞</p>
-          <p class="question">{{ currentQuestion.prompt }}</p>
+      <div v-if="!completed">
+        <div class="mb-6">
+          <p class="mb-2 text-xs font-black tracking-[0.14em] text-zinc-500 uppercase">前置詞</p>
+          <p
+            class="m-0 text-[clamp(1.9rem,7vw,2.8rem)] leading-[1.45]"
+            style="font-family: 'PT Serif', Georgia, serif"
+          >
+            {{ currentQuestion.prompt }}
+          </p>
         </div>
 
-        <div class="choices">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <button
             v-for="choice in currentQuestion.choices"
             :key="choice.value"
             type="button"
-            class="choice-button"
-            :class="{
-              correct: answered && choice.value === currentQuestion.answer,
-              wrong: answered && selectedAnswer === choice.value && choice.value !== currentQuestion.answer,
-              muted:
-                answered &&
-                choice.value !== currentQuestion.answer &&
-                selectedAnswer !== choice.value,
-            }"
+            :class="choiceClasses(choice.value)"
             :disabled="answered"
             @click="selectAnswer(choice.value)"
           >
-            <span class="choice-value">{{ choice.value }}</span>
+            <span>{{ choice.value }}</span>
             <span
               v-if="answered && choice.value === currentQuestion.answer"
-              class="choice-status choice-status-correct"
+              class="shrink-0 rounded-full bg-zinc-950 px-2.5 py-1 text-xs font-black text-white"
             >
               ✓ 正解
             </span>
             <span
               v-else-if="answered && selectedAnswer === choice.value"
-              class="choice-status choice-status-wrong"
+              class="shrink-0 rounded-full border-2 border-dashed border-zinc-950 bg-white px-2.5 py-1 text-xs font-black text-zinc-950"
             >
               × あなたの回答
             </span>
           </button>
         </div>
 
-        <section v-if="answered" class="explanation-panel">
-          <div class="feedback-card" :class="isCorrect ? 'feedback-correct' : 'feedback-wrong'">
-            <div class="feedback-icon" aria-hidden="true">{{ isCorrect ? '○' : '×' }}</div>
+        <section v-if="answered" class="mt-7 border-t border-stone-200 pt-6" aria-live="polite">
+          <div
+            class="mb-7 flex items-center gap-4 rounded-2xl border-[3px] border-zinc-950 p-4 sm:p-5"
+            :class="isCorrect ? 'border-solid bg-white' : 'border-dashed bg-stone-100'"
+          >
+            <div
+              class="grid size-14 shrink-0 place-items-center border-[3px] border-zinc-950 text-3xl font-black leading-none"
+              :class="isCorrect ? 'rounded-full' : 'rounded-xl'"
+              aria-hidden="true"
+            >
+              {{ isCorrect ? '○' : '×' }}
+            </div>
             <div>
-              <p class="feedback-title">{{ isCorrect ? '正解！' : '不正解' }}</p>
-              <p v-if="!isCorrect" class="correct-answer">
-                正解は <strong>「{{ currentQuestion.answer }}」</strong>
+              <p class="mb-1 text-xl font-black">{{ isCorrect ? '正解！' : '不正解' }}</p>
+              <p v-if="!isCorrect" class="m-0 text-base">
+                正解は <strong class="text-xl">「{{ currentQuestion.answer }}」</strong>
               </p>
-              <p v-else class="feedback-subtext">その調子！</p>
+              <p v-else class="m-0 text-sm text-zinc-600">その調子！</p>
             </div>
           </div>
 
-          <div class="main-explanation">
-            <h2>なぜ？</h2>
-            <p>{{ currentQuestion.correctExplanation }}</p>
+          <div class="mb-7">
+            <h2 class="mb-2 text-base font-black">なぜ？</h2>
+            <p class="m-0 leading-7 text-zinc-700">{{ currentQuestion.correctExplanation }}</p>
           </div>
 
-          <div class="choice-explanations">
-            <h2>他の選択肢も確認</h2>
+          <div class="mb-7">
+            <h2 class="mb-2 text-base font-black">他の選択肢も確認</h2>
             <article
               v-for="choice in currentQuestion.choices"
               :key="`explanation-${choice.value}`"
-              class="choice-explanation"
+              class="border-t border-stone-200 py-4"
             >
-              <strong>{{ choice.value }}</strong>
-              <span v-if="choice.value === currentQuestion.answer" class="answer-label">正解</span>
-              <p>{{ choice.explanation }}</p>
+              <div class="flex items-center gap-2">
+                <strong class="text-lg">{{ choice.value }}</strong>
+                <span
+                  v-if="choice.value === currentQuestion.answer"
+                  class="rounded-full bg-zinc-950 px-2 py-0.5 text-[11px] font-black text-white"
+                >
+                  ✓ 正解
+                </span>
+              </div>
+              <p class="mt-1.5 mb-0 leading-7 text-zinc-700">{{ choice.explanation }}</p>
             </article>
           </div>
 
-          <button type="button" class="next-button" @click="goNext">
+          <button
+            type="button"
+            class="min-h-13 w-full rounded-2xl bg-zinc-950 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
+            @click="goNext"
+          >
             {{ currentIndex === questions.length - 1 ? '結果を見る' : '次の問題へ' }}
           </button>
         </section>
       </div>
 
-      <section v-else class="result-screen">
-        <p class="eyebrow">RESULT</p>
-        <h2>{{ correctCount }} / {{ questions.length }} 問正解</h2>
-        <p>まずはこの5問をテンポよく回せればOK。解説の読みやすさを見ながら問題を増やしていく。</p>
-        <button type="button" class="next-button" @click="restart">もう一度やる</button>
+      <section v-else class="py-10 text-center">
+        <p class="mb-2 text-xs font-black tracking-[0.14em] text-zinc-500 uppercase">Result</p>
+        <h2 class="mb-3 text-4xl font-black sm:text-5xl">{{ correctCount }} / {{ questions.length }}</h2>
+        <p class="mx-auto mb-0 max-w-md leading-7 text-zinc-600">
+          まずはこの5問をテンポよく回せればOK。解説を確認しながら、前置詞の使い分けを固めていこう。
+        </p>
+        <button
+          type="button"
+          class="mt-7 min-h-13 w-full rounded-2xl bg-zinc-950 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
+          @click="restart"
+        >
+          もう一度やる
+        </button>
       </section>
     </section>
   </main>
 </template>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap');
-
-:root {
-  color-scheme: light;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f4f4f1;
-  color: #20211f;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-button {
-  font: inherit;
-}
-
-.page-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 32px 16px;
-}
-
-.app-card {
-  width: min(720px, 100%);
-  background: #ffffff;
-  border: 1px solid #deded8;
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 16px 40px rgb(0 0 0 / 8%);
-}
-
-.app-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.eyebrow,
-.category {
-  margin: 0 0 6px;
-  color: #66675f;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-h1,
-h2,
-p {
-  margin-top: 0;
-}
-
-h1 {
-  margin-bottom: 0;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-}
-
-.progress {
-  white-space: nowrap;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f0f0eb;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.question-block {
-  margin-bottom: 24px;
-}
-
-.question {
-  margin-bottom: 0;
-  font-family: "PT Serif", Georgia, serif;
-  font-size: clamp(1.8rem, 6vw, 2.7rem);
-  line-height: 1.45;
-}
-
-.choices {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.choice-button,
-.next-button {
-  border: 0;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-}
-
-.choice-button {
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 16px;
-  border: 1px solid #d5d5cf;
-  background: #fafaf8;
-  color: #20211f;
-  font-size: 1.15rem;
-  font-weight: 700;
-}
-
-.choice-button:not(:disabled):hover {
-  transform: translateY(-1px);
-  background: #f1f1ec;
-}
-
-.choice-button:disabled {
-  cursor: default;
-  opacity: 1;
-}
-
-.choice-button.correct {
-  border: 3px solid #20211f;
-  background: #eef7ef;
-  color: #20211f;
-  box-shadow: inset 6px 0 0 #357847;
-}
-
-.choice-button.wrong {
-  border: 3px dashed #20211f;
-  background: #f7f3f3;
-  color: #20211f;
-  box-shadow: inset 6px 0 0 #a84640;
-}
-
-.choice-button.muted {
-  border-color: #deded8;
-  background: #f7f7f4;
-  color: #77786f;
-  opacity: 0.58;
-}
-
-.choice-value {
-  font-size: 1.18rem;
-}
-
-.choice-status {
-  flex: 0 0 auto;
-  padding: 4px 9px;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.01em;
-}
-
-.choice-status-correct {
-  background: #20211f;
-  color: #ffffff;
-}
-
-.choice-status-wrong {
-  border: 2px dashed #20211f;
-  background: #ffffff;
-  color: #20211f;
-}
-
-.explanation-panel {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid #e6e6e0;
-}
-
-.feedback-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding: 18px;
-  border-radius: 16px;
-  border: 2px solid;
-}
-
-.feedback-correct {
-  border-color: #62a875;
-  background: #edf8f0;
-  color: #235f35;
-}
-
-.feedback-wrong {
-  border-color: #c76059;
-  background: #fff0ef;
-  color: #8c2e29;
-}
-
-.feedback-icon {
-  flex: 0 0 auto;
-  width: 58px;
-  height: 58px;
-  display: grid;
-  place-items: center;
-  border: 3px solid currentColor;
-  border-radius: 50%;
-  font-size: 2.1rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.feedback-wrong .feedback-icon {
-  border-radius: 14px;
-}
-
-.feedback-title {
-  margin-bottom: 4px;
-  font-size: 1.35rem;
-  font-weight: 900;
-}
-
-.correct-answer,
-.feedback-subtext {
-  margin-bottom: 0;
-  line-height: 1.5;
-}
-
-.correct-answer strong {
-  font-size: 1.22rem;
-}
-
-.main-explanation,
-.choice-explanations {
-  margin-bottom: 22px;
-}
-
-.main-explanation h2,
-.choice-explanations h2 {
-  margin-bottom: 10px;
-  font-size: 1rem;
-}
-
-.main-explanation p,
-.choice-explanation p,
-.result-screen p {
-  line-height: 1.7;
-}
-
-.choice-explanation {
-  position: relative;
-  padding: 14px 0;
-  border-top: 1px solid #ecece6;
-}
-
-.choice-explanation strong {
-  display: inline-block;
-  min-width: 28px;
-  font-size: 1.05rem;
-}
-
-.choice-explanation p {
-  margin: 6px 0 0;
-  color: #454641;
-}
-
-.answer-label {
-  margin-left: 6px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: #e8f4eb;
-  color: #357847;
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-
-.next-button {
-  width: 100%;
-  min-height: 52px;
-  padding: 12px 18px;
-  background: #20211f;
-  color: #ffffff;
-  font-weight: 800;
-}
-
-.next-button:hover {
-  transform: translateY(-1px);
-  background: #343531;
-}
-
-.result-screen {
-  padding: 40px 0 12px;
-  text-align: center;
-}
-
-.result-screen h2 {
-  margin-bottom: 14px;
-  font-size: clamp(2rem, 8vw, 3.2rem);
-}
-
-.result-screen .next-button {
-  margin-top: 18px;
-}
-
-@media (max-width: 540px) {
-  .app-card {
-    padding: 22px 18px;
-    border-radius: 16px;
-  }
-
-  .app-header {
-    margin-bottom: 26px;
-  }
-
-  .choices {
-    grid-template-columns: 1fr;
-  }
-
-  .feedback-card {
-    padding: 16px;
-  }
-
-  .feedback-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.8rem;
-  }
-}
-</style>
