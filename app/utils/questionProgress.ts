@@ -6,6 +6,8 @@ export type QuestionProgress = {
 
 export type QuestionStatus = 'new' | 'review' | 'learning' | 'mastered'
 
+export type QuestionStatusCounts = Record<QuestionStatus, number>
+
 const STORAGE_KEY = 'russian-study-question-progress-v1'
 
 const emptyProgress = (): QuestionProgress => ({
@@ -14,24 +16,27 @@ const emptyProgress = (): QuestionProgress => ({
   lastResult: null,
 })
 
-export const getQuestionProgress = (questionId: string): QuestionProgress => {
-  if (!import.meta.client) return emptyProgress()
+const readAllProgress = (): Record<string, QuestionProgress> => {
+  if (!import.meta.client) return {}
 
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY)
-    if (!stored) return emptyProgress()
-
-    const allProgress = JSON.parse(stored) as Record<string, QuestionProgress>
-    return allProgress[questionId] ?? emptyProgress()
+    return stored ? JSON.parse(stored) as Record<string, QuestionProgress> : {}
   } catch {
-    return emptyProgress()
+    return {}
   }
+}
+
+export const getQuestionProgress = (questionId: string): QuestionProgress => {
+  const allProgress = readAllProgress()
+  return allProgress[questionId] ?? emptyProgress()
 }
 
 export const recordQuestionResult = (questionId: string, correct: boolean): QuestionProgress => {
   if (!import.meta.client) return emptyProgress()
 
-  const current = getQuestionProgress(questionId)
+  const allProgress = readAllProgress()
+  const current = allProgress[questionId] ?? emptyProgress()
   const next: QuestionProgress = {
     attempts: current.attempts + 1,
     consecutiveCorrect: correct ? current.consecutiveCorrect + 1 : 0,
@@ -39,11 +44,6 @@ export const recordQuestionResult = (questionId: string, correct: boolean): Ques
   }
 
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY)
-    const allProgress = stored
-      ? JSON.parse(stored) as Record<string, QuestionProgress>
-      : {}
-
     allProgress[questionId] = next
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress))
   } catch {
@@ -58,6 +58,23 @@ export const getQuestionStatus = (progress: QuestionProgress): QuestionStatus =>
   if (progress.lastResult === 'incorrect') return 'review'
   if (progress.consecutiveCorrect >= 3) return 'mastered'
   return 'learning'
+}
+
+export const getQuestionStatusCounts = (questionIds: string[]): QuestionStatusCounts => {
+  const allProgress = readAllProgress()
+  const counts: QuestionStatusCounts = {
+    new: 0,
+    review: 0,
+    learning: 0,
+    mastered: 0,
+  }
+
+  questionIds.forEach((questionId) => {
+    const status = getQuestionStatus(allProgress[questionId] ?? emptyProgress())
+    counts[status] += 1
+  })
+
+  return counts
 }
 
 export const questionStatusLabel: Record<QuestionStatus, string> = {
