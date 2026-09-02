@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { vocabularyItems } from '~/data/vocabulary'
+import { vocabularyItems, type RussianCase } from '~/data/vocabulary'
 import { shuffle } from '~/utils/shuffle'
 import {
   getQuestionProgress,
@@ -8,6 +8,34 @@ import {
   questionStatusLabel,
   recordQuestionResult,
 } from '~/utils/questionProgress'
+
+const caseItems: { key: RussianCase; label: string }[] = [
+  { key: 'nominative', label: '主格' },
+  { key: 'genitive', label: '生格' },
+  { key: 'dative', label: '与格' },
+  { key: 'accusative', label: '対格' },
+  { key: 'instrumental', label: '造格' },
+  { key: 'prepositional', label: '前置格' },
+]
+
+const partOfSpeechLabel = {
+  noun: '名詞',
+  verb: '動詞',
+  adjective: '形容詞',
+} as const
+
+const genderLabel = {
+  masculine: '男性',
+  feminine: '女性',
+  neuter: '中性',
+} as const
+
+const adjectiveFormItems = [
+  { key: 'masculine', label: '男性' },
+  { key: 'feminine', label: '女性' },
+  { key: 'neuter', label: '中性' },
+  { key: 'plural', label: '複数' },
+] as const
 
 const createQuestionSet = () => shuffle(vocabularyItems).map((item) => {
   const distractors = shuffle(vocabularyItems.filter((candidate) => candidate.id !== item.id))
@@ -48,10 +76,10 @@ onMounted(() => {
   progressVersion.value += 1
 })
 
-const speakCurrentWord = () => {
+const speak = (stressedText: string) => {
   if (!speechSupported.value) return
 
-  const text = currentQuestion.value.stressedWord
+  const text = stressedText
     .normalize('NFD')
     .replace(/\u0301/g, '')
     .normalize('NFC')
@@ -173,7 +201,7 @@ const choiceClasses = (value: string) => {
               type="button"
               class="mt-3 inline-flex min-h-10 items-center justify-center rounded-xl border border-indigo-200 bg-white px-3 py-2 text-sm font-black text-indigo-700 transition hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40"
               :disabled="!speechSupported"
-              @click="speakCurrentWord"
+              @click="speak(currentQuestion.stressedWord)"
             >
               🔊 読み上げ
             </button>
@@ -225,8 +253,24 @@ const choiceClasses = (value: string) => {
               </div>
             </div>
 
-            <div class="mb-7 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-4">
-              <p class="mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">Pronunciation</p>
+            <div class="mb-5 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-4">
+              <div class="mb-3 flex flex-wrap items-center gap-2">
+                <span class="rounded-full bg-indigo-600 px-2.5 py-1 text-xs font-black text-white">
+                  {{ partOfSpeechLabel[currentQuestion.partOfSpeech] }}
+                </span>
+                <span
+                  v-if="currentQuestion.partOfSpeech === 'noun'"
+                  class="rounded-full border border-indigo-200 bg-white px-2.5 py-1 text-xs font-black text-indigo-800"
+                >
+                  {{ genderLabel[currentQuestion.gender] }}名詞
+                </span>
+                <span
+                  v-if="currentQuestion.partOfSpeech === 'verb'"
+                  class="rounded-full border border-indigo-200 bg-white px-2.5 py-1 text-xs font-black text-indigo-800"
+                >
+                  {{ currentQuestion.aspect === 'imperfective' ? '不完了体' : '完了体' }}
+                </span>
+              </div>
               <div class="flex items-center justify-between gap-3">
                 <div>
                   <p class="m-0 text-xl font-bold" style="font-family: 'PT Serif', Georgia, serif">
@@ -238,12 +282,114 @@ const choiceClasses = (value: string) => {
                   type="button"
                   class="grid size-10 shrink-0 place-items-center rounded-full border border-indigo-200 bg-white text-lg transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-40"
                   :disabled="!speechSupported"
-                  @click="speakCurrentWord"
+                  :aria-label="`${currentQuestion.word} を読み上げる`"
+                  @click="speak(currentQuestion.stressedWord)"
                 >
                   🔊
                 </button>
               </div>
             </div>
+
+            <div class="mb-5 rounded-2xl border border-slate-200 bg-white px-4 py-4">
+              <p class="mb-2 text-xs font-black tracking-[0.12em] text-slate-500 uppercase">Example</p>
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="m-0 text-xl font-bold leading-8" style="font-family: 'PT Serif', Georgia, serif">
+                    {{ currentQuestion.example.sentence }}
+                  </p>
+                  <p class="mt-1 mb-0 leading-6 text-slate-700">{{ currentQuestion.example.translation }}</p>
+                  <p class="mt-2 mb-0 font-mono text-xs text-slate-500">{{ currentQuestion.example.ipa }}</p>
+                </div>
+                <button
+                  type="button"
+                  class="grid size-10 shrink-0 place-items-center rounded-full border border-slate-200 bg-slate-50 text-lg transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="例文を読み上げる"
+                  @click="speak(currentQuestion.example.sentence)"
+                >
+                  🔊
+                </button>
+              </div>
+            </div>
+
+            <div
+              v-if="currentQuestion.partOfSpeech === 'noun'"
+              class="mb-5 overflow-hidden rounded-2xl border border-slate-200"
+            >
+              <div class="border-b border-slate-200 bg-slate-100 px-4 py-3">
+                <p class="m-0 text-sm font-black">名詞の格変化</p>
+              </div>
+              <div class="divide-y divide-slate-200">
+                <div
+                  v-for="caseItem in caseItems"
+                  :key="caseItem.key"
+                  class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3"
+                >
+                  <span class="text-sm font-black text-slate-500">{{ caseItem.label }}</span>
+                  <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">
+                    {{ currentQuestion.declension[caseItem.key] }}
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-if="currentQuestion.partOfSpeech === 'verb'"
+              class="mb-5 overflow-hidden rounded-2xl border border-slate-200"
+            >
+              <div class="border-b border-slate-200 bg-slate-100 px-4 py-3">
+                <p class="m-0 text-sm font-black">現在形の活用</p>
+              </div>
+              <div class="grid gap-px bg-slate-200 sm:grid-cols-2">
+                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.firstSingular }}</strong></div>
+                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.secondSingular }}</strong></div>
+                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.thirdSingular }}</strong></div>
+                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.firstPlural }}</strong></div>
+                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.secondPlural }}</strong></div>
+                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.thirdPlural }}</strong></div>
+              </div>
+            </div>
+
+            <template v-if="currentQuestion.partOfSpeech === 'adjective'">
+              <div class="mb-5 rounded-2xl border border-slate-200 px-4 py-4">
+                <p class="mb-3 text-sm font-black">基本形</p>
+                <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <div
+                    v-for="formItem in adjectiveFormItems"
+                    :key="formItem.key"
+                    class="rounded-xl bg-slate-100 px-3 py-2"
+                  >
+                    <span class="block text-xs font-black text-slate-500">{{ formItem.label }}</span>
+                    <strong class="mt-1 block" style="font-family: 'PT Serif', Georgia, serif">
+                      {{ currentQuestion.forms[formItem.key] }}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-5 overflow-x-auto rounded-2xl border border-slate-200">
+                <table class="w-full min-w-[640px] border-collapse text-left text-sm">
+                  <thead class="bg-slate-100">
+                    <tr>
+                      <th class="px-3 py-3 font-black">格</th>
+                      <th class="px-3 py-3 font-black">男性</th>
+                      <th class="px-3 py-3 font-black">女性</th>
+                      <th class="px-3 py-3 font-black">中性</th>
+                      <th class="px-3 py-3 font-black">複数</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200">
+                    <tr v-for="caseItem in caseItems" :key="`adjective-${caseItem.key}`">
+                      <th class="px-3 py-3 font-black text-slate-500">{{ caseItem.label }}</th>
+                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].masculine }}</td>
+                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].feminine }}</td>
+                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].neuter }}</td>
+                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].plural }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </template>
 
             <button
               type="button"
@@ -259,7 +405,7 @@ const choiceClasses = (value: string) => {
           <p class="mb-2 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Vocabulary Result</p>
           <h2 class="mb-3 text-4xl font-black text-indigo-700 sm:text-5xl">{{ correctCount }} / {{ questionSet.length }}</h2>
           <p class="mx-auto mb-0 max-w-md leading-7 text-slate-600">
-            まずは5語で操作感を確認。語彙マスターを増やせば、この形式のまま問題を自動生成できる。
+            単語の意味だけでなく、例文・発音・品詞ごとの文法情報までまとめて確認する。
           </p>
           <button
             type="button"
