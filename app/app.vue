@@ -70,6 +70,10 @@ const restart = () => {
             :class="{
               correct: answered && choice.value === currentQuestion.answer,
               wrong: answered && selectedAnswer === choice.value && choice.value !== currentQuestion.answer,
+              muted:
+                answered &&
+                choice.value !== currentQuestion.answer &&
+                selectedAnswer !== choice.value,
             }"
             :disabled="answered"
             @click="selectAnswer(choice.value)"
@@ -79,13 +83,13 @@ const restart = () => {
               v-if="answered && choice.value === currentQuestion.answer"
               class="choice-status choice-status-correct"
             >
-              正解
+              ✓ 正解
             </span>
             <span
               v-else-if="answered && selectedAnswer === choice.value"
               class="choice-status choice-status-wrong"
             >
-              あなたの回答
+              × あなたの回答
             </span>
           </button>
         </div>
@@ -246,6 +250,7 @@ h1 {
   padding: 12px 16px;
   border: 1px solid #d5d5cf;
   background: #fafaf8;
+  color: #20211f;
   font-size: 1.15rem;
   font-weight: 700;
 }
@@ -261,15 +266,24 @@ h1 {
 }
 
 .choice-button.correct {
-  border: 2px solid #3f8a54;
-  background: #e8f4eb;
-  color: #256238;
+  border: 3px solid #20211f;
+  background: #eef7ef;
+  color: #20211f;
+  box-shadow: inset 6px 0 0 #357847;
 }
 
 .choice-button.wrong {
-  border: 2px solid #b64e49;
-  background: #fbe8e7;
-  color: #8d312d;
+  border: 3px dashed #20211f;
+  background: #f7f3f3;
+  color: #20211f;
+  box-shadow: inset 6px 0 0 #a84640;
+}
+
+.choice-button.muted {
+  border-color: #deded8;
+  background: #f7f7f4;
+  color: #77786f;
+  opacity: 0.58;
 }
 
 .choice-value {
@@ -278,20 +292,22 @@ h1 {
 
 .choice-status {
   flex: 0 0 auto;
-  padding: 3px 8px;
+  padding: 4px 9px;
   border-radius: 999px;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 900;
+  letter-spacing: 0.01em;
 }
 
 .choice-status-correct {
-  background: #cfe9d5;
-  color: #256238;
+  background: #20211f;
+  color: #ffffff;
 }
 
 .choice-status-wrong {
-  background: #f3c9c7;
-  color: #8d312d;
+  border: 2px dashed #20211f;
+  background: #ffffff;
+  color: #20211f;
 }
 
 .explanation-panel {
