@@ -1,10 +1,21 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+import { questions } from '~/data/questions'
+import { section1Questions } from '~/data/section1'
+import { generatedSection1Questions } from '~/data/section1Extra'
+import {
+  getQuestionStatusCounts,
+  questionStatusLabel,
+  type QuestionStatus,
+} from '~/utils/questionProgress'
+
 const trainingItems = [
   {
     title: '前置詞',
     description: 'в / на / из / с / к など、場所や方向を表す前置詞を練習。',
     to: '/prepositions',
     status: 'available',
+    progressKey: 'prepositions',
   },
   {
     title: '格変化',
@@ -27,6 +38,34 @@ const trainingItems = [
     status: 'coming-soon',
   },
 ]
+
+const allSection1Questions = [...section1Questions, ...generatedSection1Questions]
+const progressVersion = ref(0)
+
+const statusItems: { status: QuestionStatus; barClass: string; dotClass: string }[] = [
+  { status: 'new', barClass: 'bg-sky-400', dotClass: 'bg-sky-400' },
+  { status: 'review', barClass: 'bg-amber-400', dotClass: 'bg-amber-400' },
+  { status: 'learning', barClass: 'bg-violet-500', dotClass: 'bg-violet-500' },
+  { status: 'mastered', barClass: 'bg-emerald-500', dotClass: 'bg-emerald-500' },
+]
+
+onMounted(() => {
+  progressVersion.value += 1
+})
+
+const prepositionProgress = computed(() => {
+  progressVersion.value
+  const counts = getQuestionStatusCounts(questions.map((question) => question.id))
+  return { counts, total: questions.length }
+})
+
+const section1Progress = computed(() => {
+  progressVersion.value
+  const counts = getQuestionStatusCounts(allSection1Questions.map((question) => question.id))
+  return { counts, total: allSection1Questions.length }
+})
+
+const statusWidth = (count: number, total: number) => total > 0 ? `${(count / total) * 100}%` : '0%'
 </script>
 
 <template>
@@ -62,6 +101,32 @@ const trainingItems = [
                   <div class="mb-4 inline-flex rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-700">学習可能</div>
                   <h3 class="mb-2 text-xl font-black">{{ item.title }}</h3>
                   <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
+
+                  <div v-if="item.progressKey === 'prepositions'" class="mt-5 border-t border-indigo-100 pt-4">
+                    <div class="mb-2 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
+                      <span>学習状況</span>
+                      <span>{{ prepositionProgress.total }}問</span>
+                    </div>
+                    <div
+                      class="flex h-3 w-full overflow-hidden rounded-full bg-slate-100"
+                      role="img"
+                      :aria-label="`前置詞の学習状況。新規${prepositionProgress.counts.new}問、要復習${prepositionProgress.counts.review}問、練習中${prepositionProgress.counts.learning}問、定着${prepositionProgress.counts.mastered}問`"
+                    >
+                      <div
+                        v-for="statusItem in statusItems"
+                        :key="statusItem.status"
+                        :class="statusItem.barClass"
+                        :style="{ width: statusWidth(prepositionProgress.counts[statusItem.status], prepositionProgress.total) }"
+                      />
+                    </div>
+                    <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs font-bold text-slate-600">
+                      <div v-for="statusItem in statusItems" :key="`prepositions-${statusItem.status}`" class="flex items-center gap-2">
+                        <span class="size-2 shrink-0 rounded-full" :class="statusItem.dotClass" />
+                        <span>{{ questionStatusLabel[statusItem.status] }}</span>
+                        <strong class="ml-auto text-slate-900">{{ prepositionProgress.counts[statusItem.status] }}</strong>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="mt-5 text-sm font-black text-indigo-700">はじめる →</div>
               </NuxtLink>
@@ -91,13 +156,39 @@ const trainingItems = [
           to="/sections/1"
           class="group block rounded-3xl border border-sky-200 bg-sky-50 p-6 transition hover:-translate-y-1 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-100 sm:p-7"
         >
-          <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div class="min-w-0 flex-1">
               <div class="mb-3 inline-flex rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</div>
               <h3 class="mb-2 text-xl font-black text-slate-900">第I問・発音</h3>
               <p class="m-0 max-w-2xl leading-7 text-slate-600">
-                下線部の発音が他の3語と異なる単語を選ぶ4択問題。無声化・有声化・母音の弱化・例外的な発音を10問で練習する。
+                下線部の発音が他の3語と異なる単語を選ぶ4択問題。100問プールから習熟度を考慮して10問を出題する。
               </p>
+
+              <div class="mt-5 max-w-2xl border-t border-sky-200 pt-4">
+                <div class="mb-2 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
+                  <span>学習状況</span>
+                  <span>{{ section1Progress.total }}問</span>
+                </div>
+                <div
+                  class="flex h-3 w-full overflow-hidden rounded-full bg-white"
+                  role="img"
+                  :aria-label="`第I問・発音の学習状況。新規${section1Progress.counts.new}問、要復習${section1Progress.counts.review}問、練習中${section1Progress.counts.learning}問、定着${section1Progress.counts.mastered}問`"
+                >
+                  <div
+                    v-for="statusItem in statusItems"
+                    :key="statusItem.status"
+                    :class="statusItem.barClass"
+                    :style="{ width: statusWidth(section1Progress.counts[statusItem.status], section1Progress.total) }"
+                  />
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-x-5 gap-y-2 text-xs font-bold text-slate-600 sm:grid-cols-4">
+                  <div v-for="statusItem in statusItems" :key="`section1-${statusItem.status}`" class="flex items-center gap-2">
+                    <span class="size-2 shrink-0 rounded-full" :class="statusItem.dotClass" />
+                    <span>{{ questionStatusLabel[statusItem.status] }}</span>
+                    <strong class="ml-auto text-slate-900">{{ section1Progress.counts[statusItem.status] }}</strong>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="shrink-0 rounded-2xl border border-sky-300 bg-white px-4 py-3 text-sm font-black text-sky-800 transition group-hover:bg-sky-700 group-hover:text-white">10問 はじめる →</div>
           </div>
