@@ -2,6 +2,9 @@
   "name": "toshiaki-russia-language",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
@@ -9,6 +12,6 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "nuxt": "3.21.11"
+    "nuxt": "4.5.2"
   }
 }
