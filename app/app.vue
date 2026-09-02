@@ -197,9 +197,9 @@ h1 {
 
 .question {
   margin-bottom: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-size: clamp(1.8rem, 6vw, 2.7rem);
-  line-height: 1.35;
+  line-height: 1.45;
 }
 
 .choices {
