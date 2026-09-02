@@ -38,7 +38,13 @@ const adjectiveFormItems = [
 ] as const
 
 const createQuestionSet = () => shuffle(vocabularyItems).map((item) => {
-  const distractors = shuffle(vocabularyItems.filter((candidate) => candidate.id !== item.id))
+  const samePartOfSpeech = shuffle(vocabularyItems.filter((candidate) =>
+    candidate.id !== item.id && candidate.partOfSpeech === item.partOfSpeech,
+  ))
+  const otherPartsOfSpeech = shuffle(vocabularyItems.filter((candidate) =>
+    candidate.id !== item.id && candidate.partOfSpeech !== item.partOfSpeech,
+  ))
+  const distractors = [...samePartOfSpeech, ...otherPartsOfSpeech]
     .slice(0, 3)
     .map((candidate) => candidate.meaning)
 
