@@ -3,13 +3,24 @@ import { computed, onMounted, ref } from 'vue'
 import { questions } from '~/data/questions'
 import { section1Questions } from '~/data/section1'
 import { generatedSection1Questions } from '~/data/section1Extra'
+import { vocabularyItems } from '~/data/vocabulary'
 import {
   getQuestionStatusCounts,
   questionStatusLabel,
   type QuestionStatus,
 } from '~/utils/questionProgress'
 
-const trainingItems = [
+type TrainingProgressKey = 'prepositions' | 'vocabulary'
+
+type TrainingItem = {
+  title: string
+  description: string
+  status: 'available' | 'coming-soon'
+  to?: string
+  progressKey?: TrainingProgressKey
+}
+
+const trainingItems: TrainingItem[] = [
   {
     title: '前置詞',
     description: 'в / на / из / с / к など、場所や方向を表す前置詞を練習。',
@@ -29,8 +40,10 @@ const trainingItems = [
   },
   {
     title: '語彙',
-    description: '4級で押さえたい基本単語をテンポよく確認。',
-    status: 'coming-soon',
+    description: '4級で押さえたい基本単語をテンポよく確認。まずは5語で試作中。',
+    to: '/vocabulary',
+    status: 'available',
+    progressKey: 'vocabulary',
   },
   {
     title: '総合',
@@ -53,10 +66,19 @@ onMounted(() => {
   progressVersion.value += 1
 })
 
-const prepositionProgress = computed(() => {
+const trainingProgress = computed(() => {
   progressVersion.value
-  const counts = getQuestionStatusCounts(questions.map((question) => question.id))
-  return { counts, total: questions.length }
+
+  return {
+    prepositions: {
+      counts: getQuestionStatusCounts(questions.map((question) => question.id)),
+      total: questions.length,
+    },
+    vocabulary: {
+      counts: getQuestionStatusCounts(vocabularyItems.map((item) => item.id)),
+      total: vocabularyItems.length,
+    },
+  }
 })
 
 const section1Progress = computed(() => {
@@ -102,28 +124,28 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                   <h3 class="mb-2 text-xl font-black">{{ item.title }}</h3>
                   <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
 
-                  <div v-if="item.progressKey === 'prepositions'" class="mt-5 border-t border-indigo-100 pt-4">
+                  <div v-if="item.progressKey" class="mt-5 border-t border-indigo-100 pt-4">
                     <div class="mb-2 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
                       <span>学習状況</span>
-                      <span>{{ prepositionProgress.total }}問</span>
+                      <span>{{ trainingProgress[item.progressKey].total }}問</span>
                     </div>
                     <div
                       class="flex h-3 w-full overflow-hidden rounded-full bg-slate-100"
                       role="img"
-                      :aria-label="`前置詞の学習状況。新規${prepositionProgress.counts.new}問、要復習${prepositionProgress.counts.review}問、練習中${prepositionProgress.counts.learning}問、定着${prepositionProgress.counts.mastered}問`"
+                      :aria-label="`${item.title}の学習状況。新規${trainingProgress[item.progressKey].counts.new}問、要復習${trainingProgress[item.progressKey].counts.review}問、練習中${trainingProgress[item.progressKey].counts.learning}問、定着${trainingProgress[item.progressKey].counts.mastered}問`"
                     >
                       <div
                         v-for="statusItem in statusItems"
                         :key="statusItem.status"
                         :class="statusItem.barClass"
-                        :style="{ width: statusWidth(prepositionProgress.counts[statusItem.status], prepositionProgress.total) }"
+                        :style="{ width: statusWidth(trainingProgress[item.progressKey].counts[statusItem.status], trainingProgress[item.progressKey].total) }"
                       />
                     </div>
                     <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs font-bold text-slate-600">
-                      <div v-for="statusItem in statusItems" :key="`prepositions-${statusItem.status}`" class="flex items-center gap-2">
+                      <div v-for="statusItem in statusItems" :key="`${item.progressKey}-${statusItem.status}`" class="flex items-center gap-2">
                         <span class="size-2 shrink-0 rounded-full" :class="statusItem.dotClass" />
                         <span>{{ questionStatusLabel[statusItem.status] }}</span>
-                        <strong class="ml-auto text-slate-900">{{ prepositionProgress.counts[statusItem.status] }}</strong>
+                        <strong class="ml-auto text-slate-900">{{ trainingProgress[item.progressKey].counts[statusItem.status] }}</strong>
                       </div>
                     </div>
                   </div>
