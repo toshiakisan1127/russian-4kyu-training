@@ -1,24 +1,66 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { section1Questions } from '~/data/section1'
+import { generatedSection1Questions } from '~/data/section1Extra'
 import { shuffle } from '~/utils/shuffle'
 import {
   getQuestionProgress,
   getQuestionStatus,
   questionStatusLabel,
   recordQuestionResult,
+  type QuestionStatus,
 } from '~/utils/questionProgress'
 
-const createQuestionSet = () => shuffle(section1Questions).map((question) => {
-  const correctWord = question.choices[question.answer]!.word
-  const choices = shuffle(question.choices)
+const SESSION_SIZE = 10
+const allSection1Questions = [...section1Questions, ...generatedSection1Questions]
 
-  return {
-    ...question,
-    choices,
-    answer: choices.findIndex((choice) => choice.word === correctWord),
+const createQuestionSet = () => {
+  const buckets: Record<QuestionStatus, typeof allSection1Questions> = {
+    new: [],
+    review: [],
+    learning: [],
+    mastered: [],
   }
-})
+
+  allSection1Questions.forEach((question) => {
+    const status = getQuestionStatus(getQuestionProgress(question.id))
+    buckets[status].push(question)
+  })
+
+  const queues: Record<QuestionStatus, typeof allSection1Questions> = {
+    new: shuffle(buckets.new),
+    review: shuffle(buckets.review),
+    learning: shuffle(buckets.learning),
+    mastered: shuffle(buckets.mastered),
+  }
+
+  const selected: typeof allSection1Questions = []
+  const take = (status: QuestionStatus, count: number) => {
+    if (count <= 0) return
+    selected.push(...queues[status].splice(0, count))
+  }
+
+  // 苦手を拾いつつ、新しい問題も進める。
+  take('review', 4)
+  take('new', 4)
+  take('learning', 2)
+
+  // 枠が余った場合は、優先度順に10問まで補充する。
+  for (const status of ['review', 'new', 'learning', 'mastered'] as QuestionStatus[]) {
+    take(status, SESSION_SIZE - selected.length)
+  }
+
+  return shuffle(selected).map((question) => {
+    const correctWord = question.choices[question.answer]!.word
+    const choices = shuffle(question.choices)
+
+    return {
+      ...question,
+      choices,
+      answer: choices.findIndex((choice) => choice.word === correctWord),
+    }
+  })
+}
 
 const questionSet = ref(createQuestionSet())
 const currentIndex = ref(0)
@@ -148,6 +190,7 @@ const choiceClasses = (index: number) => {
           <div>
             <p class="mb-1 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">大問別問題集</p>
             <h1 class="text-2xl font-black tracking-tight sm:text-3xl">第I問・発音</h1>
+            <p class="mt-1 mb-0 text-xs font-bold text-slate-500">100問プールから習熟度に合わせて10問</p>
           </div>
           <span class="shrink-0 rounded-full bg-sky-700 px-3 py-1.5 text-sm font-black text-white">
             {{ Math.min(currentIndex + 1, questionSet.length) }} / {{ questionSet.length }}
@@ -281,14 +324,14 @@ const choiceClasses = (index: number) => {
           <p class="mb-2 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">Section I Result</p>
           <h2 class="mb-3 text-4xl font-black text-sky-800 sm:text-5xl">{{ correctCount }} / {{ questionSet.length }}</h2>
           <p class="mx-auto mb-0 max-w-md leading-7 text-slate-600">
-            第I問は、無声化・有声化・母音の弱化・例外的な発音を見抜けるかがポイント。
+            100問プールから、要復習・新規を優先して今回の10問を選出。定着した問題は出題頻度が下がります。
           </p>
           <button
             type="button"
             class="mt-7 min-h-13 w-full rounded-2xl bg-sky-700 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-800"
             @click="restart"
           >
-            もう一度やる
+            次の10問をやる
           </button>
         </section>
       </div>
