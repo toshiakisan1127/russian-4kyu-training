@@ -19,7 +19,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Кто',
     keywordMeaning: '誰',
-    explanation: 'кто は人をたずねる疑問詞。答えには人・人物名・職業などが来る。',
+    explanation: 'кто́ は人をたずねる疑問詞。答えには人・人物名・職業などが来る。',
     rows: [
       { question: 'Кто это?', answer: 'Это мой брат.' },
       { question: 'Кто работает в школе?', answer: 'Там работает моя мама.' },
@@ -36,7 +36,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Что',
     keywordMeaning: '何',
-    explanation: 'что は物・内容・行為などを「何」とたずねる疑問詞。',
+    explanation: 'что́ は物・内容・行為などを「何」とたずねる疑問詞。',
     rows: [
       { question: 'Что это?', answer: 'Это словарь.' },
       { question: 'Что ты читаешь?', answer: 'Я читаю газету.' },
@@ -53,7 +53,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Где',
     keywordMeaning: 'どこで・どこに',
-    explanation: 'где は人や物がいる・ある場所をたずねる。移動先ではなく現在地を答える。',
+    explanation: 'где́ は人や物がいる・ある場所をたずねる。移動先ではなく現在地を答える。',
     rows: [
       { question: 'Где работает Павел?', answer: 'Он работает в банке.' },
       { question: 'Где книга?', answer: 'Она на столе.' },
@@ -138,7 +138,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Как',
     keywordMeaning: 'どのように・どう',
-    explanation: 'как は方法・状態・様子を「どう・どのように」とたずねる。',
+    explanation: 'ка́к は方法・状態・様子を「どう・どのように」とたずねる。',
     rows: [
       { question: 'Как тебя зовут?', answer: 'Меня зовут Таро.' },
       { question: 'Как ты себя чувствуешь?', answer: 'Хорошо, спасибо.' },
