@@ -1,4 +1,5 @@
 import { bulkVocabularyItems } from './vocabularyBulk'
+import { getVocabularyExample, vocabularyExampleCount } from './vocabularyExamples'
 import type { VocabularyItem } from '~/types/vocabulary'
 
 export type {
@@ -129,13 +130,40 @@ const coreVocabularyItems: VocabularyItem[] = [
   },
 ]
 
-export const vocabularyItems: VocabularyItem[] = [
+const rawVocabularyItems: VocabularyItem[] = [
   ...coreVocabularyItems,
   ...bulkVocabularyItems,
 ]
 
+export const vocabularyItems: VocabularyItem[] = rawVocabularyItems.map((item) => ({
+  ...item,
+  example: getVocabularyExample(item.word),
+}) as VocabularyItem)
+
 if (vocabularyItems.length !== 550) {
   throw new Error(`Vocabulary pool must contain 550 items, got ${vocabularyItems.length}`)
+}
+
+if (vocabularyExampleCount !== vocabularyItems.length) {
+  throw new Error(`Vocabulary examples must match the 550-word pool, got ${vocabularyExampleCount}`)
+}
+
+const exampleOwners = new Map<string, string>()
+const duplicateExampleSentences: string[] = []
+for (const item of vocabularyItems) {
+  const sentence = item.example?.sentence
+  if (!sentence) throw new Error(`Vocabulary item has no example: ${item.id}:${item.word}`)
+
+  const existingWord = exampleOwners.get(sentence)
+  if (existingWord) {
+    duplicateExampleSentences.push(`${existingWord}/${item.word}`)
+  } else {
+    exampleOwners.set(sentence, item.word)
+  }
+}
+
+if (duplicateExampleSentences.length > 0) {
+  throw new Error(`Vocabulary examples must be unique: ${duplicateExampleSentences.join(', ')}`)
 }
 
 const stripStress = (text: string) => text
