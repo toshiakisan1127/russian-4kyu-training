@@ -34,9 +34,9 @@ const caseLabels: Record<Section5TargetCase, string> = {
 
 const contexts: Record<Section5TargetCase, { before: string; after: string; explanation: string }> = {
   genitive: {
-    before: 'Здесь нет',
+    before: 'Зде́сь не́т',
     after: '.',
-    explanation: 'нет の後の名詞句は生格になる。',
+    explanation: 'не́т の後の名詞句は生格になる。',
   },
   dative: {
     before: 'Я подошёл к',
@@ -44,19 +44,19 @@ const contexts: Record<Section5TargetCase, { before: string; after: string; expl
     explanation: 'к + 与格で「〜のところへ・〜に近づいて」を表す。',
   },
   accusative: {
-    before: 'Я вижу',
+    before: 'Я ви́жу',
     after: '.',
-    explanation: 'видеть の直接目的語なので対格になる。',
+    explanation: 'ви́деть の直接目的語なので対格になる。',
   },
   instrumental: {
-    before: 'Я стою перед',
+    before: 'Я стою́ пе́ред',
     after: '.',
-    explanation: 'перед + 造格で「〜の前に」を表す。',
+    explanation: 'пе́ред + 造格で「〜の前に」を表す。',
   },
   prepositional: {
-    before: 'Мы говорим об',
+    before: 'Мы говори́м о́б',
     after: '.',
-    explanation: 'об + 前置格で「〜について」を表す。',
+    explanation: 'о́б + 前置格で「〜について」を表す。',
   },
 }
 
