@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { questions } from '~/data/questions'
+import { russianToJapaneseQuestions } from '~/data/russianToJapanese'
 import { section1Questions } from '~/data/section1'
 import { generatedSection1Questions } from '~/data/section1Extra'
 import { section2Questions } from '~/data/section2'
@@ -19,6 +20,7 @@ import {
 
 type TrainingProgressKey = 'prepositions' | 'vocabulary'
 type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7' | 'section8'
+type TranslationProgressKey = 'ruJa'
 
 type TrainingItem = {
   title: string
@@ -40,6 +42,9 @@ type ExamItem = {
 type TranslationItem = {
   title: string
   description: string
+  status: 'available' | 'coming-soon'
+  to?: string
+  progressKey?: TranslationProgressKey
 }
 
 const trainingItems: TrainingItem[] = [
@@ -144,11 +149,15 @@ const examItems: ExamItem[] = [
 const translationItems: TranslationItem[] = [
   {
     title: '露文和訳',
-    description: '4級レベルの短いロシア語文を読み、日本語に訳す。',
+    description: '4級レベルのロシア語文を読み、日本語へ訳して模範訳と比べる。',
+    status: 'available',
+    to: '/translations/ru-ja',
+    progressKey: 'ruJa',
   },
   {
     title: '和文露訳',
     description: '4級の基本語彙・文法を使って、日本語文をロシア語に訳す。',
+    status: 'coming-soon',
   },
 ]
 
@@ -168,7 +177,6 @@ onMounted(() => {
 
 const trainingProgress = computed(() => {
   progressVersion.value
-
   return {
     prepositions: {
       counts: getQuestionStatusCounts(questions.map((question) => question.id)),
@@ -183,7 +191,6 @@ const trainingProgress = computed(() => {
 
 const examProgress = computed(() => {
   progressVersion.value
-
   return {
     section1: {
       counts: getQuestionStatusCounts(allSection1Questions.map((question) => question.id)),
@@ -220,6 +227,16 @@ const examProgress = computed(() => {
   }
 })
 
+const translationProgress = computed(() => {
+  progressVersion.value
+  return {
+    ruJa: {
+      counts: getQuestionStatusCounts(russianToJapaneseQuestions.map((question) => question.id)),
+      total: russianToJapaneseQuestions.length,
+    },
+  }
+})
+
 const statusWidth = (count: number, total: number) => total > 0 ? `${(count / total) * 100}%` : '0%'
 </script>
 
@@ -248,7 +265,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <template v-for="item in trainingItems" :key="item.title">
               <NuxtLink
-                v-if="item.status === 'available'"
+                v-if="item.status === 'available' && item.progressKey"
                 :to="item.to"
                 class="group/item flex min-h-40 flex-col justify-between rounded-3xl border border-indigo-200 bg-white p-5 transition hover:-translate-y-1 hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-100"
               >
@@ -257,7 +274,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                   <h3 class="mb-2 text-xl font-black">{{ item.title }}</h3>
                   <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
 
-                  <div v-if="item.progressKey" class="mt-5 border-t border-indigo-100 pt-4">
+                  <div class="mt-5 border-t border-indigo-100 pt-4">
                     <div class="mb-2 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
                       <span>学習状況</span>
                       <span>{{ trainingProgress[item.progressKey].total }}問</span>
@@ -351,15 +368,50 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
               </article>
             </template>
 
-            <article
-              v-for="item in translationItems"
-              :key="item.title"
-              class="rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500"
-            >
-              <div class="mb-3 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">COMING SOON</div>
-              <h3 class="mb-2 text-xl font-black text-slate-700">{{ item.title }}</h3>
-              <p class="m-0 leading-6">{{ item.description }}</p>
-            </article>
+            <template v-for="item in translationItems" :key="item.title">
+              <NuxtLink
+                v-if="item.status === 'available' && item.progressKey"
+                :to="item.to"
+                class="group/item flex flex-col rounded-3xl border border-sky-200 bg-sky-50 p-5 transition hover:-translate-y-1 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-100"
+              >
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <span class="rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</span>
+                  <span class="text-xs font-black text-sky-800">{{ translationProgress[item.progressKey].total }}問</span>
+                </div>
+                <h3 class="mb-2 text-xl font-black text-slate-900">{{ item.title }}</h3>
+                <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
+
+                <div class="mt-5 border-t border-sky-200 pt-4">
+                  <div class="mb-2 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
+                    <span>学習状況</span>
+                    <span>{{ translationProgress[item.progressKey].total }}問</span>
+                  </div>
+                  <div class="flex h-3 w-full overflow-hidden rounded-full bg-white">
+                    <div
+                      v-for="statusItem in statusItems"
+                      :key="statusItem.status"
+                      :class="statusItem.barClass"
+                      :style="{ width: statusWidth(translationProgress[item.progressKey].counts[statusItem.status], translationProgress[item.progressKey].total) }"
+                    />
+                  </div>
+                  <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs font-bold text-slate-600">
+                    <div v-for="statusItem in statusItems" :key="`${item.title}-${statusItem.status}`" class="flex items-center gap-2">
+                      <span class="size-2 shrink-0 rounded-full" :class="statusItem.dotClass" />
+                      <span>{{ questionStatusLabel[statusItem.status] }}</span>
+                      <strong class="ml-auto text-slate-900">{{ translationProgress[item.progressKey].counts[statusItem.status] }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-5 text-sm font-black text-sky-800">10問 はじめる →</div>
+              </NuxtLink>
+
+              <article v-else class="rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500">
+                <div class="mb-3 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">COMING SOON</div>
+                <h3 class="mb-2 text-xl font-black text-slate-700">{{ item.title }}</h3>
+                <p class="m-0 leading-6">{{ item.description }}</p>
+              </article>
+            </template>
           </div>
         </div>
       </details>
