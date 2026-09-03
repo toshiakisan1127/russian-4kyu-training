@@ -1,6 +1,8 @@
+// @ts-expect-error russian-nouns-js ships without TypeScript declarations.
+import RussianNouns from 'russian-nouns-js'
 import { vocabularyItems } from '~/data/vocabulary'
 import type { NounVocabularyItem } from '~/types/vocabulary'
-import { stripStress } from '~/utils/russianStress'
+import { stressNounPluralBase, stripStress } from '~/utils/russianStress'
 
 export type Section3Pronoun = 'он' | 'она' | 'оно' | 'они'
 
@@ -30,9 +32,34 @@ const genderPronoun: Record<NounVocabularyItem['gender'], Section3Pronoun> = {
   neuter: 'оно',
 }
 
+const nounEngine = new RussianNouns.Engine()
+const nounGender = {
+  masculine: RussianNouns.Gender.MASCULINE,
+  feminine: RussianNouns.Gender.FEMININE,
+  neuter: RussianNouns.Gender.NEUTER,
+} as const
+const indeclinableNouns = new Set(['метро', 'кафе', 'кофе', 'радио', 'меню', 'пальто'])
+
 const nouns = vocabularyItems.filter(
   (item): item is NounVocabularyItem => item.partOfSpeech === 'noun',
 )
+
+const getStressedPlural = (noun: NounVocabularyItem) => {
+  if (noun.plural === '通常複数形なし' || noun.plural === '複数形のみ') return noun.plural
+
+  try {
+    const lemma = RussianNouns.Lemma.create({
+      text: noun.word,
+      gender: nounGender[noun.gender],
+      animate: noun.animate ?? false,
+      indeclinable: indeclinableNouns.has(noun.word),
+    })
+    const endingStress = nounEngine.sd.hasStressedEndingPlural(lemma, RussianNouns.CASES[0])?.[0] as boolean | undefined
+    return stressNounPluralBase(noun.word, noun.plural, noun.stressedWord, endingStress)
+  } catch {
+    return stressNounPluralBase(noun.word, noun.plural, noun.stressedWord)
+  }
+}
 
 const singularNouns = nouns.filter((noun) => noun.plural !== '複数形のみ')
 
@@ -53,7 +80,7 @@ const singularQuestions = (['masculine', 'feminine', 'neuter'] as const).flatMap
     gender: noun.gender,
     lemma: noun.word,
     stressedLemma: noun.stressedWord,
-    plural: noun.plural,
+    plural: getStressedPlural(noun),
     correctPronoun: genderPronoun[noun.gender],
   })),
 )
@@ -101,7 +128,7 @@ const pluralQuestions = pluralForms.map(({ lemma, stressedForm }) => {
     gender: noun.gender,
     lemma: noun.word,
     stressedLemma: noun.stressedWord,
-    plural: noun.plural,
+    plural: stressedForm,
     correctPronoun: 'они' as const,
   }
 })
