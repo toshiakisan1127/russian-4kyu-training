@@ -208,6 +208,14 @@ const speak = (stressedText: string) => {
   window.speechSynthesis.speak(utterance)
 }
 
+const speakForm = (value: string) => {
+  const speechText = value
+    .replace(/（[^）]*）/gu, '')
+    .replace(/\s*\/\s*/gu, ', ')
+    .trim()
+  speak(speechText)
+}
+
 const selectAnswer = (value: string) => {
   if (answered.value) return
 
@@ -373,14 +381,20 @@ const choiceClasses = (value: string) => {
               </div>
               <div class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3">
                 <span class="text-sm font-black text-slate-500">複数形</span>
-                <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.plural }}</strong>
+                <div class="flex items-center justify-between gap-2">
+                  <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.plural }}</strong>
+                  <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported || currentQuestion.plural === '通常複数形なし' || currentQuestion.plural === '複数形のみ'" aria-label="複数形を読み上げ" @click="speakForm(currentQuestion.plural)">🔊</button>
+                </div>
               </div>
               <template v-if="currentQuestion.declension">
                 <div class="border-y border-slate-200 bg-slate-50 px-4 py-2 text-xs font-black text-slate-500">単数6格</div>
                 <div class="divide-y divide-slate-200">
                   <div v-for="caseItem in caseItems" :key="caseItem.key" class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3">
                     <span class="text-sm font-black text-slate-500">{{ caseItem.label }}</span>
-                    <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.declension[caseItem.key] }}</strong>
+                    <div class="flex items-center justify-between gap-2">
+                      <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.declension[caseItem.key] }}</strong>
+                      <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`${caseItem.label}を読み上げ`" @click="speakForm(currentQuestion.declension[caseItem.key])">🔊</button>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -392,7 +406,10 @@ const choiceClasses = (value: string) => {
                 <div class="divide-y divide-slate-200 border-t border-indigo-100">
                   <div v-for="caseItem in caseItems" :key="`plural-${caseItem.key}`" class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3">
                     <span class="text-sm font-black text-slate-500">{{ caseItem.label }}</span>
-                    <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentPluralDeclension[caseItem.key] }}</strong>
+                    <div class="flex items-center justify-between gap-2">
+                      <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentPluralDeclension[caseItem.key] }}</strong>
+                      <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`複数${caseItem.label}を読み上げ`" @click="speakForm(currentPluralDeclension[caseItem.key])">🔊</button>
+                    </div>
                   </div>
                 </div>
               </details>
@@ -401,12 +418,10 @@ const choiceClasses = (value: string) => {
             <div v-if="currentQuestion.partOfSpeech === 'verb' && currentQuestion.presentConjugation" class="mb-5 overflow-hidden rounded-2xl border border-slate-200">
               <div class="border-b border-slate-200 bg-slate-100 px-4 py-3"><p class="m-0 text-sm font-black">現在形の活用</p></div>
               <div class="grid gap-px bg-slate-200 sm:grid-cols-2">
-                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.firstSingular }}</strong></div>
-                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.secondSingular }}</strong></div>
-                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.thirdSingular }}</strong></div>
-                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.firstPlural }}</strong></div>
-                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.secondPlural }}</strong></div>
-                <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.thirdPlural }}</strong></div>
+                <div v-for="form in Object.values(currentQuestion.presentConjugation)" :key="form" class="flex items-center justify-between gap-2 bg-white px-4 py-3">
+                  <strong>{{ form }}</strong>
+                  <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="活用形を読み上げ" @click="speakForm(form)">🔊</button>
+                </div>
               </div>
             </div>
 
@@ -416,23 +431,28 @@ const choiceClasses = (value: string) => {
                 <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   <div v-for="formItem in adjectiveFormItems" :key="formItem.key" class="rounded-xl bg-slate-100 px-3 py-2">
                     <span class="block text-xs font-black text-slate-500">{{ formItem.label }}</span>
-                    <strong class="mt-1 block" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.forms[formItem.key] }}</strong>
+                    <div class="mt-1 flex items-center justify-between gap-1">
+                      <strong style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.forms[formItem.key] }}</strong>
+                      <button type="button" class="grid size-7 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs transition hover:bg-slate-50 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`${formItem.label}形を読み上げ`" @click="speakForm(currentQuestion.forms[formItem.key])">🔊</button>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div class="mb-5 overflow-x-auto rounded-2xl border border-slate-200">
-                <table class="w-full min-w-[640px] border-collapse text-left text-sm">
+                <table class="w-full min-w-[720px] border-collapse text-left text-sm">
                   <thead class="bg-slate-100">
                     <tr><th class="px-3 py-3 font-black">格</th><th class="px-3 py-3 font-black">男性</th><th class="px-3 py-3 font-black">女性</th><th class="px-3 py-3 font-black">中性</th><th class="px-3 py-3 font-black">複数</th></tr>
                   </thead>
                   <tbody class="divide-y divide-slate-200">
                     <tr v-for="caseItem in caseItems" :key="`adjective-${caseItem.key}`">
                       <th class="px-3 py-3 font-black text-slate-500">{{ caseItem.label }}</th>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].masculine }}</td>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].feminine }}</td>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].neuter }}</td>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].plural }}</td>
+                      <td v-for="formItem in adjectiveFormItems" :key="`${caseItem.key}-${formItem.key}`" class="px-3 py-3 font-bold">
+                        <div class="flex items-center justify-between gap-2">
+                          <span>{{ currentQuestion.declension[caseItem.key][formItem.key] }}</span>
+                          <button type="button" class="grid size-7 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs transition hover:bg-slate-50 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`${caseItem.label}${formItem.label}形を読み上げ`" @click="speakForm(currentQuestion.declension[caseItem.key][formItem.key])">🔊</button>
+                        </div>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
