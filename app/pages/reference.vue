@@ -134,7 +134,7 @@ const numberWords = [
 
 const weekdays = [
   { word: 'понеде́льник', on: 'в понеде́льник', translation: '月曜日' },
-  { word: 'вторни́к', on: 'во вторни́к', translation: '火曜日' },
+  { word: 'вто́рник', on: 'во вто́рник', translation: '火曜日' },
   { word: 'среда́', on: 'в сре́ду', translation: '水曜日' },
   { word: 'четве́рг', on: 'в четве́рг', translation: '木曜日' },
   { word: 'пя́тница', on: 'в пя́тницу', translation: '金曜日' },
@@ -154,8 +154,8 @@ const relativeDays = [
   { word: 'вчера́', translation: '昨日', example: 'Вчера́ бы́л дождь.', exampleTranslation: '昨日は雨でした。' },
   { word: 'за́втра', translation: '明日', example: 'За́втра я рабо́таю.', exampleTranslation: '明日、私は働きます。' },
   { word: 'послеза́втра', translation: '明後日', example: 'Послеза́втра мы отдыха́ем.', exampleTranslation: '明後日、私たちは休みます。' },
-  { word: 'че́рез два дня', translation: '2日後（明後日）', example: 'Че́рез два дня бу́дет экза́мен.', exampleTranslation: '2日後に試験があります。' },
-  { word: 'че́рез три дня', translation: '3日後（明明後日）', example: 'Че́рез три дня я уезжа́ю.', exampleTranslation: '3日後、私は出発します。' },
+  { word: 'че́рез два́ дня́', translation: '2日後（明後日）', example: 'Че́рез два́ дня́ бу́дет экза́мен.', exampleTranslation: '2日後に試験があります。' },
+  { word: 'че́рез три́ дня́', translation: '3日後（明明後日）', example: 'Че́рез три́ дня́ я уезжа́ю.', exampleTranslation: '3日後、私は出発します。' },
 ]
 
 const months = [
@@ -275,7 +275,7 @@ const months = [
               <p class="m-0 text-sm font-bold text-slate-600">{{ day.translation }}</p>
             </div>
           </div>
-          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「〜曜日に」は基本的に <span style="font-family: 'PT Serif', Georgia, serif">в + 対格</span>。вторник だけは <span style="font-family: 'PT Serif', Georgia, serif">во вторни́к</span> となる。</p>
+          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「〜曜日に」は基本的に <span style="font-family: 'PT Serif', Georgia, serif">в + 対格</span>。вто́рник だけは <span style="font-family: 'PT Serif', Georgia, serif">во вто́рник</span> となる。</p>
         </div>
 
         <div class="mb-5 border-t border-violet-100 pt-5">
@@ -336,7 +336,7 @@ const months = [
               <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-500">{{ day.exampleTranslation }}</p>
             </div>
           </div>
-          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「明明後日」は日常的には一語で無理に言わず、<span style="font-family: 'PT Serif', Georgia, serif">че́рез три дня</span>（3日後）とするのが自然。</p>
+          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「明明後日」は日常的には一語で無理に言わず、<span style="font-family: 'PT Serif', Georgia, serif">че́рез три́ дня́</span>（3日後）とするのが自然。</p>
         </div>
 
         <div class="border-t border-violet-100 pt-5">
@@ -387,7 +387,7 @@ const months = [
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">私は20歳です。</p>
             </div>
             <div class="rounded-2xl border border-indigo-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Ему́ два́дцать оди́н год. Ей два́дцать два го́да.</p>
+              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Ему́ два́дцать оди́н год. Ей два́дцать два́ го́да.</p>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">彼は21歳です。彼女は22歳です。</p>
             </div>
           </div>
@@ -454,7 +454,7 @@ const months = [
           </div>
           <div class="mt-4 space-y-2 text-sm font-bold leading-6 text-slate-700">
             <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">ка́ждый де́нь</span>：毎日 ／ <span style="font-family: 'PT Serif', Georgia, serif">раз в неде́лю</span>：週に1回</p>
-            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">два ра́за в ме́сяц</span>：月に2回 ／ <span style="font-family: 'PT Serif', Georgia, serif">по выходны́м</span>：週末に</p>
+            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">два́ ра́за в ме́сяц</span>：月に2回 ／ <span style="font-family: 'PT Serif', Georgia, serif">по выходны́м</span>：週末に</p>
           </div>
         </article>
 
@@ -477,7 +477,7 @@ const months = [
                 >🔊</button>
               </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">一方の学生は読んでいて、もう一人は書いています。</p>
-              <p class="m-0 text-xs font-bold leading-5 text-slate-500">один …, другой … は、二つの人・物を対比して「一方は〜、他方は〜」と表す。女性なら одна́ …, друга́я …。</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">оди́н …, друго́й … は、二つの人・物を対比して「一方は〜、他方は〜」と表す。女性なら одна́ …, друга́я …。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ есть кни́га.</p>
@@ -507,7 +507,7 @@ const months = [
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне мо́жно войти́?</p>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">入ってもいいですか。</p>
-              <p class="m-0 text-xs font-bold leading-5 text-slate-500">можно + 不定形で許可。「Нельзя́」なら禁止。</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">мо́жно + 不定形で許可。「Нельзя́」なら禁止。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ бо́лит голова́.</p>
