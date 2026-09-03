@@ -26,7 +26,7 @@ const coreQuestions: MultipleChoiceQuestion[] = [
     fullSentence: 'Я иду́ к врачу́.',
     ipa: '[ja ɪˈdu k vrɐˈtɕu]',
     answer: 'к',
-    correctExplanation: '`к + 与格` で、人や物の「ところへ／方向へ」を表します。врач は与格で врачу́ になります。',
+    correctExplanation: '`к + 与格` で、人や物の「ところへ／方向へ」を表します。вра́ч は与格で врачу́ になります。',
     choices: [
       { value: 'к', explanation: '人・物への方向を表します。例: к врачу́（医者のところへ）, к дру́гу（友人のところへ）' },
       { value: 'у', explanation: '「〜のそばに」「〜のところに」「〜が持っている」。後ろは生格です。例: у врача́（医者のところで）' },
@@ -58,7 +58,7 @@ const coreQuestions: MultipleChoiceQuestion[] = [
     fullSentence: 'Кни́га лежи́т на столе́.',
     ipa: '[ˈknʲigə lʲɪˈʐɨt nə stɐˈlʲe]',
     answer: 'на',
-    correctExplanation: '`на + 前置格` で「〜の上にある」を表します。стол は前置格で столе́ になります。',
+    correctExplanation: '`на + 前置格` で「〜の上にある」を表します。сто́л は前置格で столе́ になります。',
     choices: [
       { value: 'на', explanation: '物理的な「〜の上に」や一部の場所を表します。例: на столе́（机の上に）' },
       { value: 'в', explanation: '「〜の中に」。例: в столе́（机の中に）。この文では本が机の上にあるので意味が変わります。' },
