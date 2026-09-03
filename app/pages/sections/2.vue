@@ -101,7 +101,7 @@ const speak = (stressedWord: string) => {
 
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'ru-RU'
-  utterance.rate = 0.7
+  utterance.rate = 0.4
 
   const russianVoice = window.speechSynthesis
     .getVoices()
