@@ -12,6 +12,7 @@ export type Section7Question = {
   question: string
   correctAnswer: string
   choices: string[]
+  choiceExplanations: Record<string, string>
   forms: Section7Form[]
   translation: string
 }
@@ -89,6 +90,15 @@ export const section7Questions: Section7Question[] = verbs.flatMap((verb, verbIn
   return subjects.map((subject, personIndex) => {
     const candidateIndexes = [personIndex, (personIndex + 1) % 6, (personIndex + 2) % 6, (personIndex + 3) % 6]
     const choices = candidateIndexes.map((index) => verb.forms[index])
+    const choiceExplanations = Object.fromEntries(candidateIndexes.map((index, choiceIndex) => {
+      const choiceSubject = subjects[index]
+      return [
+        choices[choiceIndex]!,
+        choiceSubject === subject
+          ? `${choiceSubject} に対応する現在形。この文の主語に合っている。`
+          : `${choiceSubject} に対応する現在形。この文の主語は ${subject} なので、この形は選ばない。`,
+      ]
+    }))
 
     return {
       id: `s7-${String(verbIndex + 1).padStart(2, '0')}-${personIndex + 1}`,
@@ -99,6 +109,7 @@ export const section7Questions: Section7Question[] = verbs.flatMap((verb, verbIn
       question: `${displaySubject(subject)} ___ ${verb.complement}`,
       correctAnswer: verb.forms[personIndex],
       choices,
+      choiceExplanations,
       forms,
       translation: `${subjectTranslations[subject]}${verbTranslations[verb.infinitive] ?? verb.meaning}。`,
     }
