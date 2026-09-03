@@ -23,7 +23,7 @@ const speak = (text: string) => {
   if (russianVoice) utterance.voice = russianVoice
 
   window.speechSynthesis.speak(utterance)
-})
+}
 
 useHead({
   title: '4級重要表現まとめ | ロシア語4級トレーニング',
