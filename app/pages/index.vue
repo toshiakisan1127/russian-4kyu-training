@@ -13,6 +13,7 @@ import { section5Questions } from '~/data/section5'
 import { section6Questions } from '~/data/section6'
 import { section7Questions } from '~/data/section7'
 import { section8Questions } from '~/data/section8'
+import { verbTrainingQuestions } from '~/data/verbTraining'
 import { vocabularyItems } from '~/data/vocabulary'
 import {
   getQuestionStatusCounts,
@@ -20,7 +21,7 @@ import {
   type QuestionStatus,
 } from '~/utils/questionProgress'
 
-type TrainingProgressKey = 'prepositions' | 'cases' | 'vocabulary'
+type TrainingProgressKey = 'prepositions' | 'cases' | 'verbs' | 'vocabulary'
 type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7' | 'section8'
 type TranslationProgressKey = 'ruJa' | 'jaRu'
 
@@ -66,8 +67,10 @@ const trainingItems: TrainingItem[] = [
   },
   {
     title: '動詞',
-    description: '現在形の活用や基本動詞の使い分けを練習。',
-    status: 'coming-soon',
+    description: '現在形・過去形・未来形・移動動詞・完了体/不完了体を分けて集中練習。',
+    to: '/verbs',
+    status: 'available',
+    progressKey: 'verbs',
   },
   {
     title: '語彙',
@@ -191,6 +194,10 @@ const trainingProgress = computed(() => {
     cases: {
       counts: getQuestionStatusCounts(caseTrainingQuestions.map((question) => question.id)),
       total: caseTrainingQuestions.length,
+    },
+    verbs: {
+      counts: getQuestionStatusCounts(verbTrainingQuestions.map((question) => question.id)),
+      total: verbTrainingQuestions.length,
     },
     vocabulary: {
       counts: getQuestionStatusCounts(vocabularyItems.map((item) => item.id)),
