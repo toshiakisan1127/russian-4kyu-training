@@ -190,32 +190,59 @@ const months = [
         </p>
       </header>
 
-      <details class="mb-5 rounded-3xl border border-sky-200 bg-sky-50">
+      <details class="group mb-5 rounded-3xl border border-sky-200 bg-sky-50">
         <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 text-xl font-black transition hover:bg-sky-100 sm:p-6 [&::-webkit-details-marker]:hidden">
           <span>数字 1〜100</span>
           <span class="grid size-9 place-items-center rounded-full bg-white text-lg text-sky-700 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
         </summary>
         <div class="border-t border-sky-100 px-5 pt-5 pb-6 sm:px-6">
-          <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
-            <div v-for="item in numberWords" :key="item.number" class="flex items-center gap-2 rounded-xl border border-sky-100 bg-white px-3 py-2">
-              <span class="grid size-7 shrink-0 place-items-center rounded-full bg-sky-100 text-xs font-black text-sky-700">{{ item.number }}</span>
-              <div class="flex min-w-0 flex-1 items-center justify-between gap-1">
-                <strong class="text-base" style="font-family: 'PT Serif', Georgia, serif">{{ item.word }}</strong>
-                <button
-                  type="button"
-                  class="grid size-8 shrink-0 place-items-center rounded-full border border-sky-200 bg-white text-sm transition hover:bg-sky-100 disabled:opacity-40"
-                  :disabled="!speechSupported"
-                  :aria-label="item.word + 'を読み上げ'"
-                  @click="speak(item.word)"
-                >🔊</button>
+          <div class="mb-4">
+            <h3 class="mb-3 text-lg font-black">1〜10</h3>
+            <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              <div v-for="item in numberWords.slice(0, 10)" :key="item.number" class="flex items-center gap-2 rounded-xl border border-sky-100 bg-white px-3 py-2">
+                <span class="grid size-7 shrink-0 place-items-center rounded-full bg-sky-100 text-xs font-black text-sky-700">{{ item.number }}</span>
+                <div class="flex min-w-0 flex-1 items-center justify-between gap-1">
+                  <strong class="text-base" style="font-family: 'PT Serif', Georgia, serif">{{ item.word }}</strong>
+                  <button
+                    type="button"
+                    class="grid size-8 shrink-0 place-items-center rounded-full border border-sky-200 bg-white text-sm transition hover:bg-sky-100 disabled:opacity-40"
+                    :disabled="!speechSupported"
+                    :aria-label="item.word + 'を読み上げ'"
+                    @click="speak(item.word)"
+                  >🔊</button>
+                </div>
               </div>
             </div>
           </div>
+
+          <details class="group rounded-2xl border border-sky-200 bg-white">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-black text-sky-800 transition hover:bg-sky-50 [&::-webkit-details-marker]:hidden">
+              <span>11〜100を表示</span>
+              <span class="text-sm" aria-hidden="true">＋</span>
+            </summary>
+            <div class="border-t border-sky-100 p-4">
+              <div class="grid gap-2">
+                <div v-for="item in numberWords.slice(10)" :key="item.number" class="flex items-center gap-3 rounded-xl border border-sky-100 bg-sky-50 px-3 py-2">
+                  <span class="grid size-8 shrink-0 place-items-center rounded-full bg-white text-xs font-black text-sky-700">{{ item.number }}</span>
+                  <strong class="flex-1 text-base" style="font-family: 'PT Serif', Georgia, serif">{{ item.word }}</strong>
+                  <button
+                    type="button"
+                    class="grid size-8 shrink-0 place-items-center rounded-full border border-sky-200 bg-white text-sm transition hover:bg-sky-100 disabled:opacity-40"
+                    :disabled="!speechSupported"
+                    :aria-label="item.word + 'を読み上げ'"
+                    @click="speak(item.word)"
+                  >🔊</button>
+                </div>
+              </div>
+            </div>
+          </details>
+
           <p class="mt-4 mb-0 text-sm font-bold leading-6 text-slate-700">
             21以上は「十の位 + 一の位」の順で、間に空白を入れる。年齢では 21歳が два́дцать оди́н год、22歳が два́дцать два́ го́да、25歳が два́дцать пя́ть лет になる。
           </p>
         </div>
       </details>
+
 
       <article class="mb-5 rounded-3xl border border-violet-200 bg-violet-50 p-5 sm:p-7">
         <p class="mb-1 text-xs font-black tracking-[0.14em] text-violet-700 uppercase">Calendar & Time</p>
@@ -225,7 +252,16 @@ const months = [
           <h3 class="mb-3 text-lg font-black">曜日</h3>
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="day in weekdays" :key="day.word" class="rounded-2xl border border-violet-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="day.word + 'を読み上げ'"
+                  @click="speak(day.word)"
+                >🔊</button>
+              </div>
               <div class="mt-1 mb-1 flex items-center gap-2">
                 <p class="m-0 text-sm font-bold text-violet-700">{{ day.on }}</p>
                 <button
@@ -246,7 +282,16 @@ const months = [
           <h3 class="mb-3 text-lg font-black">朝・昼・夕方・夜</h3>
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="part in dayParts" :key="part.word" class="rounded-2xl border border-violet-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ part.word }} → {{ part.form }}</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ part.word }} → {{ part.form }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="時間帯の表現を読み上げ"
+                  @click="speak(part.word + '. ' + part.form)"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">{{ part.translation }}</p>
               <div class="flex items-start gap-2">
                 <p class="m-0 flex-1 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ part.example }}</p>
@@ -267,7 +312,16 @@ const months = [
           <h3 class="mb-3 text-lg font-black">今日・昨日・明日</h3>
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div v-for="day in relativeDays" :key="day.word" class="rounded-2xl border border-violet-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="day.word + 'を読み上げ'"
+                  @click="speak(day.word)"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ day.translation }}</p>
               <div class="flex items-start gap-2">
                 <p class="m-0 flex-1 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ day.example }}</p>
@@ -289,7 +343,16 @@ const months = [
           <h3 class="mb-3 text-lg font-black">月</h3>
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="month in months" :key="month.word" class="rounded-2xl border border-violet-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.word }}</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.word }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="month.word + 'を読み上げ'"
+                  @click="speak(month.word)"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ month.translation }}</p>
               <div class="flex items-center gap-2">
                 <p class="m-0 flex-1 text-sm font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.inMonth }}</p>
