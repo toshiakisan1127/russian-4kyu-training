@@ -87,18 +87,18 @@ export const section1Questions: PronunciationQuestion[] = [
   {
     id: 'pron-007',
     answer: 3,
-    rule: 'что の ч は例外的に [ʂ]（ш の音）で発音します。',
+    rule: 'что́ の ч は例外的に [ʂ]（ш の音）で発音します。',
     choices: [
       { word: 'чай', stressedWord: 'ча́й', prefix: '', target: 'ч', suffix: 'ай', meaning: 'お茶', ipa: '/tɕaj/', targetSound: '[tɕ]', explanation: 'ч は通常の [tɕ]。' },
       { word: 'час', stressedWord: 'ча́с', prefix: '', target: 'ч', suffix: 'ас', meaning: '時間・1時', ipa: '/tɕas/', targetSound: '[tɕ]', explanation: 'ч は通常の [tɕ]。' },
       { word: 'врач', stressedWord: 'вра́ч', prefix: 'вра', target: 'ч', suffix: '', meaning: '医者', ipa: '/vratɕ/', targetSound: '[tɕ]', explanation: '語末でも ч は [tɕ]。' },
-      { word: 'что', stressedWord: 'что́', prefix: '', target: 'ч', suffix: 'то', meaning: '何', ipa: '/ʂto/', targetSound: '[ʂ]', explanation: 'что は綴り ч でも [ʂ] と発音する重要な例外。' },
+      { word: 'что', stressedWord: 'что́', prefix: '', target: 'ч', suffix: 'то', meaning: '何', ipa: '/ʂto/', targetSound: '[ʂ]', explanation: 'что́ は綴り ч でも [ʂ] と発音する重要な例外。' },
     ],
   },
   {
     id: 'pron-008',
     answer: 3,
-    rule: 'его́ などの -его́ の г は [v] と発音されます。',
+    rule: 'его́ などの -его の г は [v] と発音されます。',
     choices: [
       { word: 'гора', stressedWord: 'гора́', prefix: '', target: 'г', suffix: 'ора', meaning: '山', ipa: '/ɡɐˈra/', targetSound: '[ɡ]', explanation: '通常の г で [ɡ]。' },
       { word: 'газета', stressedWord: 'газе́та', prefix: '', target: 'г', suffix: 'азета', meaning: '新聞', ipa: '/ɡɐˈzʲetə/', targetSound: '[ɡ]', explanation: '通常の г で [ɡ]。' },
