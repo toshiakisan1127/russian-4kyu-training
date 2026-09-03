@@ -12,6 +12,7 @@ const routes = [
   '/sections/5',
   '/sections/6',
   '/sections/7',
+  '/sections/8',
 ] as const
 
 for (const route of routes) {
