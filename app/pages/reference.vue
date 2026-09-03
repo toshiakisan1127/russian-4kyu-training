@@ -2,6 +2,195 @@
 useHead({
   title: '4級重要表現まとめ | ロシア語4級トレーニング',
 })
+
+const numberWords = [
+  { number: 1, word: 'оди́н' },
+  { number: 2, word: 'два́' },
+  { number: 3, word: 'три́' },
+  { number: 4, word: 'четы́ре' },
+  { number: 5, word: 'пя́ть' },
+  { number: 6, word: 'ше́сть' },
+  { number: 7, word: 'се́мь' },
+  { number: 8, word: 'во́семь' },
+  { number: 9, word: 'де́вять' },
+  { number: 10, word: 'де́сять' },
+  { number: 11, word: 'оди́ннадцать' },
+  { number: 12, word: 'двена́дцать' },
+  { number: 13, word: 'трина́дцать' },
+  { number: 14, word: 'четы́рнадцать' },
+  { number: 15, word: 'пятна́дцать' },
+  { number: 16, word: 'шестна́дцать' },
+  { number: 17, word: 'семна́дцать' },
+  { number: 18, word: 'восемна́дцать' },
+  { number: 19, word: 'девятна́дцать' },
+  { number: 20, word: 'два́дцать' },
+  { number: 21, word: 'два́дцать оди́н' },
+  { number: 22, word: 'два́дцать два́' },
+  { number: 23, word: 'два́дцать три́' },
+  { number: 24, word: 'два́дцать четы́ре' },
+  { number: 25, word: 'два́дцать пя́ть' },
+  { number: 26, word: 'два́дцать ше́сть' },
+  { number: 27, word: 'два́дцать се́мь' },
+  { number: 28, word: 'два́дцать во́семь' },
+  { number: 29, word: 'два́дцать де́вять' },
+  { number: 30, word: 'три́дцать' },
+  { number: 31, word: 'три́дцать оди́н' },
+  { number: 32, word: 'три́дцать два́' },
+  { number: 33, word: 'три́дцать три́' },
+  { number: 34, word: 'три́дцать четы́ре' },
+  { number: 35, word: 'три́дцать пя́ть' },
+  { number: 36, word: 'три́дцать ше́сть' },
+  { number: 37, word: 'три́дцать се́мь' },
+  { number: 38, word: 'три́дцать во́семь' },
+  { number: 39, word: 'три́дцать де́вять' },
+  { number: 40, word: 'со́рок' },
+  { number: 41, word: 'со́рок оди́н' },
+  { number: 42, word: 'со́рок два́' },
+  { number: 43, word: 'со́рок три́' },
+  { number: 44, word: 'со́рок четы́ре' },
+  { number: 45, word: 'со́рок пя́ть' },
+  { number: 46, word: 'со́рок ше́сть' },
+  { number: 47, word: 'со́рок се́мь' },
+  { number: 48, word: 'со́рок во́семь' },
+  { number: 49, word: 'со́рок де́вять' },
+  { number: 50, word: 'пятьдеся́т' },
+  { number: 51, word: 'пятьдеся́т оди́н' },
+  { number: 52, word: 'пятьдеся́т два́' },
+  { number: 53, word: 'пятьдеся́т три́' },
+  { number: 54, word: 'пятьдеся́т четы́ре' },
+  { number: 55, word: 'пятьдеся́т пя́ть' },
+  { number: 56, word: 'пятьдеся́т ше́сть' },
+  { number: 57, word: 'пятьдеся́т се́мь' },
+  { number: 58, word: 'пятьдеся́т во́семь' },
+  { number: 59, word: 'пятьдеся́т де́вять' },
+  { number: 60, word: 'шестьдеся́т' },
+  { number: 61, word: 'шестьдеся́т оди́н' },
+  { number: 62, word: 'шестьдеся́т два́' },
+  { number: 63, word: 'шестьдеся́т три́' },
+  { number: 64, word: 'шестьдеся́т четы́ре' },
+  { number: 65, word: 'шестьдеся́т пя́ть' },
+  { number: 66, word: 'шестьдеся́т ше́сть' },
+  { number: 67, word: 'шестьдеся́т се́мь' },
+  { number: 68, word: 'шестьдеся́т во́семь' },
+  { number: 69, word: 'шестьдеся́т де́вять' },
+  { number: 70, word: 'се́мьдесят' },
+  { number: 71, word: 'се́мьдесят оди́н' },
+  { number: 72, word: 'се́мьдесят два́' },
+  { number: 73, word: 'се́мьдесят три́' },
+  { number: 74, word: 'се́мьдесят четы́ре' },
+  { number: 75, word: 'се́мьдесят пя́ть' },
+  { number: 76, word: 'се́мьдесят ше́сть' },
+  { number: 77, word: 'се́мьдесят се́мь' },
+  { number: 78, word: 'се́мьдесят во́семь' },
+  { number: 79, word: 'се́мьдесят де́вять' },
+  { number: 80, word: 'во́семьдесят' },
+  { number: 81, word: 'во́семьдесят оди́н' },
+  { number: 82, word: 'во́семьдесят два́' },
+  { number: 83, word: 'во́семьдесят три́' },
+  { number: 84, word: 'во́семьдесят четы́ре' },
+  { number: 85, word: 'во́семьдесят пя́ть' },
+  { number: 86, word: 'во́семьдесят ше́сть' },
+  { number: 87, word: 'во́семьдесят се́мь' },
+  { number: 88, word: 'во́семьдесят во́семь' },
+  { number: 89, word: 'во́семьдесят де́вять' },
+  { number: 90, word: 'девяно́сто' },
+  { number: 91, word: 'девяно́сто оди́н' },
+  { number: 92, word: 'девяно́сто два́' },
+  { number: 93, word: 'девяно́сто три́' },
+  { number: 94, word: 'девяно́сто четы́ре' },
+  { number: 95, word: 'девяно́сто пя́ть' },
+  { number: 96, word: 'девяно́сто ше́сть' },
+  { number: 97, word: 'девяно́сто се́мь' },
+  { number: 98, word: 'девяно́сто во́семь' },
+  { number: 99, word: 'девяно́сто де́вять' },
+  { number: 100, word: 'сто' },
+]
+
+const weekdays = [
+  { word: 'понеде́льник', on: 'в понеде́льник', translation: '月曜日' },
+  { word: 'вторни́к', on: 'во вторни́к', translation: '火曜日' },
+  { word: 'среда́', on: 'в сре́ду', translation: '水曜日' },
+  { word: 'четве́рг', on: 'в четве́рг', translation: '木曜日' },
+  { word: 'пя́тница', on: 'в пя́тницу', translation: '金曜日' },
+  { word: 'суббо́та', on: 'в суббо́ту', translation: '土曜日' },
+  { word: 'воскресе́нье', on: 'в воскресе́нье', translation: '日曜日' },
+]
+
+const dayParts = [
+  { word: 'у́тро', form: 'у́тром', translation: '朝に・朝は', example: 'У́тром я пью́ ко́фе.', exampleTranslation: '朝、私はコーヒーを飲みます。' },
+  { word: 'де́нь', form: 'днём', translation: '昼に・昼は', example: 'Днём я рабо́таю.', exampleTranslation: '昼、私は働きます。' },
+  { word: 'ве́чер', form: 'ве́чером', translation: '夕方・夜に', example: 'Ве́чером мы чита́ем.', exampleTranslation: '夕方、私たちは読書をします。' },
+  { word: 'но́чь', form: 'но́чью', translation: '夜に・夜は', example: 'Но́чью я сплю́.', exampleTranslation: '夜、私は寝ます。' },
+]
+
+const relativeDays = [
+  { word: 'сего́дня', translation: '今日', example: 'Сего́дня понеде́льник.', exampleTranslation: '今日は月曜日です。' },
+  { word: 'вчера́', translation: '昨日', example: 'Вчера́ бы́л дождь.', exampleTranslation: '昨日は雨でした。' },
+  { word: 'за́втра', translation: '明日', example: 'За́втра я рабо́таю.', exampleTranslation: '明日、私は働きます。' },
+  { word: 'послеза́втра', translation: '明後日', example: 'Послеза́втра мы отдыха́ем.', exampleTranslation: '明後日、私たちは休みます。' },
+  { word: 'че́рез два дня', translation: '2日後（明後日）', example: 'Че́рез два дня бу́дет экза́мен.', exampleTranslation: '2日後に試験があります。' },
+  { word: 'че́рез три дня', translation: '3日後（明明後日）', example: 'Че́рез три дня я уезжа́ю.', exampleTranslation: '3日後、私は出発します。' },
+]
+
+const months = [
+  { word: 'янва́рь', inMonth: 'в январе́', translation: '1月' },
+  { word: 'февра́ль', inMonth: 'в феврале́', translation: '2月' },
+  { word: 'март', inMonth: 'в ма́рте', translation: '3月' },
+  { word: 'апре́ль', inMonth: 'в апре́ле', translation: '4月' },
+  { word: 'ма́й', inMonth: 'в ма́е', translation: '5月' },
+  { word: 'ию́нь', inMonth: 'в ию́не', translation: '6月' },
+  { word: 'ию́ль', inMonth: 'в ию́ле', translation: '7月' },
+  { word: 'а́вгуст', inMonth: 'в а́вгусте', translation: '8月' },
+  { word: 'сентя́брь', inMonth: 'в сентябре́', translation: '9月' },
+  { word: 'октя́брь', inMonth: 'в октябре́', translation: '10月' },
+  { word: 'ноя́брь', inMonth: 'в ноябре́', translation: '11月' },
+  { word: 'дека́брь', inMonth: 'в декабре́', translation: '12月' },
+]
+
+const contrastPairs = [
+  {
+    left: 'У меня́ есть кни́га.',
+    leftTranslation: '私は本を持っています。',
+    right: 'У меня́ нет кни́ги.',
+    rightTranslation: '私は本を持っていません。',
+    note: 'естьの否定は нет。нет の後ろは生格になる。',
+  },
+  {
+    left: 'Мне нра́вится кни́га.',
+    leftTranslation: '私は本が好きです。',
+    right: 'Мне нра́вятся кни́ги.',
+    rightTranslation: '私は本々が好きです。',
+    note: '単数なら нра́вится、複数なら нра́вятся。',
+  },
+  {
+    left: 'Мне ну́жна кни́га.',
+    leftTranslation: '私は本が必要です。',
+    right: 'Мне ну́жны кни́ги.',
+    rightTranslation: '私は本々が必要です。',
+    note: 'ну́жен / ну́жна / ну́жно / ну́жны は後ろの名詞に一致する。',
+  },
+  {
+    left: 'Мне мо́жно войти́?',
+    leftTranslation: '入ってもいいですか。',
+    right: 'Мне нельзя́ входи́ть.',
+    rightTranslation: '入ってはいけません。',
+    note: 'мо́жно は許可、нельзя́ は禁止を表す。',
+  },
+  {
+    left: 'Я иду́ в шко́лу.',
+    leftTranslation: '私は学校へ行きます。',
+    right: 'Я иду́ из шко́лы.',
+    rightTranslation: '私は学校から出ます。',
+    note: 'в + 対格は到達先、из + 生格は起点を表す。',
+  },
+  {
+    left: 'Я хочу́ чита́ть.',
+    leftTranslation: '私は読みたいです。',
+    right: 'Я не хочу́ чита́ть.',
+    rightTranslation: '私は読みたくありません。',
+    note: 'не は否定する動詞の前に置く。',
+  },
+]
 </script>
 
 <template>
@@ -18,6 +207,78 @@ useHead({
           問題演習の途中で確認したくなる表現を、年齢・季節・頻度・重要構文に分けて整理しています。ロシア語文法を一通り学習した人の復習用です。
         </p>
       </header>
+
+      <details class="mb-5 rounded-3xl border border-sky-200 bg-sky-50">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 text-xl font-black transition hover:bg-sky-100 sm:p-6 [&::-webkit-details-marker]:hidden">
+          <span>数字 1〜100</span>
+          <span class="grid size-9 place-items-center rounded-full bg-white text-lg text-sky-700 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+        </summary>
+        <div class="border-t border-sky-100 px-5 pt-5 pb-6 sm:px-6">
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+            <div v-for="item in numberWords" :key="item.number" class="flex items-center gap-2 rounded-xl border border-sky-100 bg-white px-3 py-2">
+              <span class="grid size-7 shrink-0 place-items-center rounded-full bg-sky-100 text-xs font-black text-sky-700">{{ item.number }}</span>
+              <strong class="text-base" style="font-family: 'PT Serif', Georgia, serif">{{ item.word }}</strong>
+            </div>
+          </div>
+          <p class="mt-4 mb-0 text-sm font-bold leading-6 text-slate-700">
+            21以上は「十の位 + 一の位」の順で、間に空白を入れる。年齢では 21歳が два́дцать оди́н год、22歳が два́дцать два́ го́да、25歳が два́дцать пя́ть лет になる。
+          </p>
+        </div>
+      </details>
+
+      <article class="mb-5 rounded-3xl border border-violet-200 bg-violet-50 p-5 sm:p-7">
+        <p class="mb-1 text-xs font-black tracking-[0.14em] text-violet-700 uppercase">Calendar & Time</p>
+        <h2 class="mb-4 text-2xl font-black">曜日・時間帯・日付・月</h2>
+
+        <div class="mb-5">
+          <h3 class="mb-3 text-lg font-black">曜日</h3>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div v-for="day in weekdays" :key="day.word" class="rounded-2xl border border-violet-100 bg-white p-4">
+              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
+              <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ day.on }}</p>
+              <p class="m-0 text-sm font-bold text-slate-600">{{ day.translation }}</p>
+            </div>
+          </div>
+          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「〜曜日に」は基本的に <span style="font-family: 'PT Serif', Georgia, serif">в + 対格</span>。вторник だけは <span style="font-family: 'PT Serif', Georgia, serif">во вторни́к</span> となる。</p>
+        </div>
+
+        <div class="mb-5 border-t border-violet-100 pt-5">
+          <h3 class="mb-3 text-lg font-black">朝・昼・夕方・夜</h3>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div v-for="part in dayParts" :key="part.word" class="rounded-2xl border border-violet-100 bg-white p-4">
+              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ part.word }} → {{ part.form }}</p>
+              <p class="mt-1 mb-1 text-sm font-bold text-slate-600">{{ part.translation }}</p>
+              <p class="m-0 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ part.example }}</p>
+              <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-500">{{ part.exampleTranslation }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-5 border-t border-violet-100 pt-5">
+          <h3 class="mb-3 text-lg font-black">今日・昨日・明日</h3>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div v-for="day in relativeDays" :key="day.word" class="rounded-2xl border border-violet-100 bg-white p-4">
+              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
+              <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ day.translation }}</p>
+              <p class="m-0 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ day.example }}</p>
+              <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-500">{{ day.exampleTranslation }}</p>
+            </div>
+          </div>
+          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「明明後日」は日常的には一語で無理に言わず、<span style="font-family: 'PT Serif', Georgia, serif">че́рез три дня</span>（3日後）とするのが自然。</p>
+        </div>
+
+        <div class="border-t border-violet-100 pt-5">
+          <h3 class="mb-3 text-lg font-black">月</h3>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div v-for="month in months" :key="month.word" class="rounded-2xl border border-violet-100 bg-white p-4">
+              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.word }}</p>
+              <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ month.translation }}</p>
+              <p class="m-0 text-sm font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.inMonth }}</p>
+            </div>
+          </div>
+          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700"><span style="font-family: 'PT Serif', Georgia, serif">в январе́</span> のように、月に「〜に」を付けるときは <span style="font-family: 'PT Serif', Georgia, serif">в + 前置格</span> を使う。</p>
+        </div>
+      </article>
 
       <div class="grid gap-5 lg:grid-cols-2">
         <article class="rounded-3xl border border-indigo-200 bg-indigo-50 p-5 sm:p-7">
@@ -150,6 +411,28 @@ useHead({
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Я у́чусь, потому́ что хочу́ сда́ть экза́мен.</p>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は試験に合格したいので、勉強しています。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">потому́ что + 文で理由。「なぜなら〜だから」。</p>
+            </div>
+          </div>
+
+          <div class="mt-6 border-t border-rose-200 pt-6">
+            <h3 class="mb-3 text-xl font-black">使い分けのペア</h3>
+            <p class="mb-4 text-sm font-bold leading-6 text-slate-600">似た構文を左右に並べています。「一方ではどう言うか、他方ではどう変わるか」を確認しよう。</p>
+            <div class="grid gap-3 lg:grid-cols-2">
+              <div v-for="pair in contrastPairs" :key="pair.left + pair.right" class="rounded-2xl border border-rose-100 bg-white p-4">
+                <div class="grid gap-3 sm:grid-cols-2">
+                  <div class="rounded-xl bg-rose-50 p-3">
+                    <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-rose-700 uppercase">一方</p>
+                    <p class="m-0 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.left }}</p>
+                    <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-600">{{ pair.leftTranslation }}</p>
+                  </div>
+                  <div class="rounded-xl bg-slate-50 p-3">
+                    <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-slate-600 uppercase">他方</p>
+                    <p class="m-0 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.right }}</p>
+                    <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-600">{{ pair.rightTranslation }}</p>
+                  </div>
+                </div>
+                <p class="mt-3 mb-0 text-xs font-bold leading-5 text-slate-500">{{ pair.note }}</p>
+              </div>
             </div>
           </div>
         </article>
