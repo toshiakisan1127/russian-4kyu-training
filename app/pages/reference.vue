@@ -336,7 +336,7 @@ const months = [
               <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-500">{{ day.exampleTranslation }}</p>
             </div>
           </div>
-          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「明明後日」は日常的には一語で無理に言わず、<span style="font-family: 'PT Serif', Georgia, serif">че́рез три дня</span>（3日後）とするのが自然。</p>
+          <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700">「明明後日」は日常的には一語で無理に言わず、<span style="font-family: 'PT Serif', Georgia, serif">че́рез три́ дня́</span>（3日後）とするのが自然。</p>
         </div>
 
         <div class="border-t border-violet-100 pt-5">
@@ -454,7 +454,7 @@ const months = [
           </div>
           <div class="mt-4 space-y-2 text-sm font-bold leading-6 text-slate-700">
             <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">ка́ждый де́нь</span>：毎日 ／ <span style="font-family: 'PT Serif', Georgia, serif">раз в неде́лю</span>：週に1回</p>
-            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">два ра́за в ме́сяц</span>：月に2回 ／ <span style="font-family: 'PT Serif', Georgia, serif">по выходны́м</span>：週末に</p>
+            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">два́ ра́за в ме́сяц</span>：月に2回 ／ <span style="font-family: 'PT Serif', Georgia, serif">по выходны́м</span>：週末に</p>
           </div>
         </article>
 
