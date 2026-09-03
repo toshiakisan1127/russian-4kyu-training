@@ -73,15 +73,30 @@ export const stressNounForm = (
     const lemmaOrdinal = explicitStressVowelOrdinal(stressedLemma)
     const lemmaVowels = vowelIndexes(stripStress(stressedLemma)).length
 
+    if (lemmaOrdinal === null) return stressFirstVowel(plain)
+
     // Mobile-stress nouns such as рука́/голова́ move from a stressed
     // nominative ending back onto the stem in some forms (ру́ку/го́лову).
-    if (lemmaOrdinal !== null && lemmaOrdinal === lemmaVowels) return stressFirstVowel(plain)
+    if (lemmaOrdinal === lemmaVowels) return stressFirstVowel(plain)
 
-    return lemmaOrdinal === null ? plain : stressVowelOrdinal(plain, lemmaOrdinal)
+    return stressVowelOrdinal(plain, lemmaOrdinal)
   }
 
   return stressLikeLemma(plain, stressedLemma)
 }
+
+const nounPluralStressOverrides: Record<string, string> = {
+  'ребёнок': 'де́ти',
+  'дерево': 'дере́вья',
+  'колено': 'коле́ни',
+}
+
+export const stressNounPluralBase = (
+  lemma: string,
+  plural: string,
+  stressedLemma: string,
+  endingStress?: boolean,
+) => nounPluralStressOverrides[lemma] ?? stressNounForm(plural, stressedLemma, endingStress)
 
 const verbStressOverrides: Record<string, readonly string[]> = {
   'мочь': ['могу́', 'мо́жешь', 'мо́жет', 'мо́жем', 'мо́жете', 'мо́гут'],
