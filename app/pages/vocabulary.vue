@@ -224,6 +224,13 @@ const currentStatusClasses = computed(() => ({
   mastered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
 }[currentStatus.value]))
 const currentWordHasExplicitStress = computed(() => /[ёЁ\u0301]/u.test(currentQuestion.value.stressedWord))
+const vocabularyChoiceDetails = computed(() => currentQuestion.value.choices.map((choice) => ({
+  value: choice,
+  isCorrect: choice === currentQuestion.value.meaning,
+  explanation: choice === currentQuestion.value.meaning
+    ? `${currentQuestion.value.stressedWord}の意味は「${choice}」。この問題の正解。`
+    : `「${choice}」という意味の選択肢。この単語${currentQuestion.value.stressedWord}の意味ではない。`,
+})))
 
 const displayNounPlural = () => {
   const question = currentQuestion.value
@@ -415,6 +422,8 @@ const choiceClasses = (value: string) => {
                 <p class="m-0 text-sm text-slate-700">{{ currentQuestion.stressedWord }} = <strong>{{ currentQuestion.meaning }}</strong></p>
               </div>
             </div>
+
+            <ChoiceExplanationList :choices="vocabularyChoiceDetails" title="意味の選択肢を確認" />
 
             <div class="mb-5 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-4">
               <div class="mb-3 flex flex-wrap items-center gap-2">
