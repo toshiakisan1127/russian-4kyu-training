@@ -517,27 +517,27 @@ const months = [
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <div class="space-y-2">
                 <div class="flex items-start gap-2">
-                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У него́ но́вый телефо́н.</p>
+                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У нас в кла́ссе большо́е окно́.</p>
                   <button
                     type="button"
                     class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
                     :disabled="!speechSupported"
                     aria-label="естьを省略した例文を読み上げ"
-                    @click="speak('У него́ но́вый телефо́н.')"
+                    @click="speak('У нас в кла́ссе большо́е окно́.')"
                   >🔊</button>
                 </div>
                 <div class="flex items-start gap-2">
-                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У него́ есть но́вый телефо́н.</p>
+                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У нас в кла́ссе есть большо́е окно́.</p>
                   <button
                     type="button"
                     class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
                     :disabled="!speechSupported"
                     aria-label="естьを使った例文を読み上げ"
-                    @click="speak('У него́ есть но́вый телефо́н.')"
+                    @click="speak('У нас в кла́ссе есть большо́е окно́.')"
                   >🔊</button>
                 </div>
               </div>
-              <p class="mt-2 mb-1 text-sm font-bold text-slate-600">どちらも「彼には新しい携帯電話があります」。</p>
+              <p class="mt-2 mb-1 text-sm font-bold text-slate-600">どちらも「私たちの教室には大きな窓があります」。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">現在形の所有・存在では、文脈が明らかな場合は есть を省略できる。存在を明示・強調するときは есть を置く。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
@@ -569,7 +569,7 @@ const months = [
                 >🔊</button>
               </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は本を持っています。</p>
-              <p class="m-0 text-xs font-bold leading-5 text-slate-500">所有・存在。「У + 生格」で「〜のところに」を表す。</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">所有・存在。У нас в + 前置格 + есть 〜 で「私たちの〜には…がある」。「У + 生格」で「〜のところに」を表す。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <div class="flex items-start gap-2">
