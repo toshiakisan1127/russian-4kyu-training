@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "nuxt": "4.5.2",
+    "russian-nouns-js": "2.5.0",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0"
   },
