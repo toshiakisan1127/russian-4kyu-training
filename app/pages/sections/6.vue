@@ -241,6 +241,7 @@ const choiceClasses = (choice: string) => {
                 <div>
                   <p class="mb-1 text-xs font-black tracking-[0.12em] text-slate-500 uppercase">Natural Response</p>
                   <p class="m-0 text-xl font-bold leading-8" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.correctAnswer }}</p>
+                  <p class="mt-2 mb-0 text-base font-bold leading-7 text-slate-700">{{ currentQuestion.answerTranslation }}</p>
                 </div>
                 <button
                   type="button"
