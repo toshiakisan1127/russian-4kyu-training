@@ -211,34 +211,6 @@ const months = [
                     @click="speak(item.word)"
                   >🔊</button>
                 </div>
-            <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <div class="space-y-2">
-                <div class="flex items-start gap-2">
-                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У него́ но́вый телефо́н.</p>
-                  <button
-                    type="button"
-                    class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
-                    :disabled="!speechSupported"
-                    aria-label="естьを省略した例文を読み上げ"
-                    @click="speak('У него́ но́вый телефо́н.')"
-                  >🔊</button>
-                </div>
-                <div class="flex items-start gap-2">
-                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У него́ есть но́вый телефо́н.</p>
-                  <button
-                    type="button"
-                    class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
-                    :disabled="!speechSupported"
-                    aria-label="естьを使った例文を読み上げ"
-                    @click="speak('У него́ есть но́вый телефо́н.')"
-                  >🔊</button>
-                </div>
-              </div>
-              <p class="mt-2 mb-1 text-sm font-bold text-slate-600">どちらも「彼には新しい携帯電話があります」。</p>
-              <p class="m-0 text-xs font-bold leading-5 text-slate-500">現在形の所有・存在では、文脈が明らかな場合は есть を省略できる。存在を明示・強調するときは есть を置く。</p>
-            </div>
-              </div>
-            </div>
           </div>
 
           <details class="group rounded-2xl border border-sky-200 bg-white">
@@ -542,6 +514,32 @@ const months = [
           <p class="mb-1 text-xs font-black tracking-[0.14em] text-rose-700 uppercase">Important Patterns</p>
           <h2 class="mb-4 text-2xl font-black">重要構文</h2>
           <div class="grid gap-3 md:grid-cols-2">
+            <div class="rounded-2xl border border-rose-100 bg-white p-4">
+              <div class="space-y-2">
+                <div class="flex items-start gap-2">
+                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У него́ но́вый телефо́н.</p>
+                  <button
+                    type="button"
+                    class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                    :disabled="!speechSupported"
+                    aria-label="естьを省略した例文を読み上げ"
+                    @click="speak('У него́ но́вый телефо́н.')"
+                  >🔊</button>
+                </div>
+                <div class="flex items-start gap-2">
+                  <p class="m-0 flex-1 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">У него́ есть но́вый телефо́н.</p>
+                  <button
+                    type="button"
+                    class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                    :disabled="!speechSupported"
+                    aria-label="естьを使った例文を読み上げ"
+                    @click="speak('У него́ есть но́вый телефо́н.')"
+                  >🔊</button>
+                </div>
+              </div>
+              <p class="mt-2 mb-1 text-sm font-bold text-slate-600">どちらも「彼には新しい携帯電話があります」。</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">現在形の所有・存在では、文脈が明らかな場合は есть を省略できる。存在を明示・強調するときは есть を置く。</p>
+            </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <div class="flex items-start gap-2">
                 <div class="flex-1">
