@@ -92,7 +92,7 @@ const speakPassage = () => {
     currentPassage.value.paragraphs.map(stripStress).join(' '),
   )
   utterance.lang = 'ru-RU'
-  utterance.rate = 0.4
+  utterance.rate = Number(window.localStorage.getItem('russian-speech-rate') ?? '0.4')
   utterance.pitch = 1
 
   const russianVoice = window.speechSynthesis
