@@ -1,5 +1,6 @@
 import type { VocabularyExample } from '~/types/vocabulary'
 import { adjectiveExampleData } from './vocabularyExamplesAdjectives'
+import { vocabularyExampleLevel4Corrections } from './vocabularyExampleLevel4Corrections'
 import { nounExampleDataA } from './vocabularyExamplesNounsA'
 import { nounExampleDataB } from './vocabularyExamplesNounsB'
 import { simpleExampleData } from './vocabularyExamplesSimple'
@@ -33,6 +34,13 @@ for (const source of sources) {
 
     exampleMap.set(word, { sentence, translation })
   }
+}
+
+for (const [word, example] of Object.entries(vocabularyExampleLevel4Corrections)) {
+  if (!exampleMap.has(word)) {
+    throw new Error(`Level 4 vocabulary example correction has an unknown key: ${word}`)
+  }
+  exampleMap.set(word, example)
 }
 
 export const vocabularyExampleCount = exampleMap.size
