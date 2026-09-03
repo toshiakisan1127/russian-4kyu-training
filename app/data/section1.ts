@@ -98,12 +98,12 @@ export const section1Questions: PronunciationQuestion[] = [
   {
     id: 'pron-008',
     answer: 3,
-    rule: 'его などの -его の г は [v] と発音されます。',
+    rule: 'его́ などの -его́ の г は [v] と発音されます。',
     choices: [
       { word: 'гора', stressedWord: 'гора́', prefix: '', target: 'г', suffix: 'ора', meaning: '山', ipa: '/ɡɐˈra/', targetSound: '[ɡ]', explanation: '通常の г で [ɡ]。' },
       { word: 'газета', stressedWord: 'газе́та', prefix: '', target: 'г', suffix: 'азета', meaning: '新聞', ipa: '/ɡɐˈzʲetə/', targetSound: '[ɡ]', explanation: '通常の г で [ɡ]。' },
       { word: 'магазин', stressedWord: 'магази́н', prefix: 'ма', target: 'г', suffix: 'азин', meaning: '店', ipa: '/məɡɐˈzʲin/', targetSound: '[ɡ]', explanation: '語中の г は [ɡ]。' },
-      { word: 'его', stressedWord: 'его́', prefix: 'е', target: 'г', suffix: 'о', meaning: '彼の・彼を', ipa: '/jɪˈvo/', targetSound: '[v]', explanation: 'его の г は綴りと異なり [v] と発音します。' },
+      { word: 'его', stressedWord: 'его́', prefix: 'е', target: 'г', suffix: 'о', meaning: '彼の・彼を', ipa: '/jɪˈvo/', targetSound: '[v]', explanation: 'его́ の г は綴りと異なり [v] と発音します。' },
     ],
   },
   {
