@@ -24,9 +24,8 @@ const coreVocabularyItems: VocabularyItem[] = [
     gender: 'feminine',
     plural: 'книги',
     example: {
-      sentence: 'Э́то моя́ кни́га.',
-      translation: 'これは私の本です。',
-      ipa: '/ˈɛtə mɐˈja ˈknʲiɡə/',
+      sentence: 'Ве́чером я чита́ю э́ту кни́гу, потому́ что за́втра мы бу́дем говори́ть о ней на уро́ке.',
+      translation: '明日の授業でこの本について話すので、今晩この本を読んでいます。',
     },
     declension: {
       nominative: 'кни́га',
@@ -47,9 +46,8 @@ const coreVocabularyItems: VocabularyItem[] = [
     gender: 'feminine',
     plural: 'семьи',
     example: {
-      sentence: 'Моя́ семья́ живёт в Москве́.',
-      translation: '私の家族はモスクワに住んでいます。',
-      ipa: '/mɐˈja sʲɪˈmʲja ʐɨˈvʲɵt v mɐskˈvʲe/',
+      sentence: 'Моя́ семья́ живёт в Москве́, но ле́том мы ча́сто е́здим к ба́бушке.',
+      translation: '私の家族はモスクワに住んでいますが、夏にはよく祖母のところへ行きます。',
     },
     declension: {
       nominative: 'семья́',
@@ -69,9 +67,8 @@ const coreVocabularyItems: VocabularyItem[] = [
     partOfSpeech: 'verb',
     aspect: 'imperfective',
     example: {
-      sentence: 'Я чита́ю кни́гу.',
-      translation: '私は本を読んでいます。',
-      ipa: '/ja tɕɪˈtajʊ ˈknʲiɡʊ/',
+      sentence: 'Ка́ждый ве́чер я чита́ю по-ру́сски, потому́ что хочу́ лу́чше понима́ть просты́е те́ксты.',
+      translation: '簡単な文章をもっと理解したいので、毎晩ロシア語で読んでいます。',
     },
     presentConjugation: {
       firstSingular: 'я чита́ю',
@@ -90,9 +87,8 @@ const coreVocabularyItems: VocabularyItem[] = [
     ipa: '/ˈnovɨj/',
     partOfSpeech: 'adjective',
     example: {
-      sentence: 'У меня́ но́вая кни́га.',
-      translation: '私は新しい本を持っています。',
-      ipa: '/u mʲɪˈnʲa ˈnovəjə ˈknʲiɡə/',
+      sentence: 'Мы купи́ли но́вый стол, потому́ что ста́рый стол был о́чень ма́ленький.',
+      translation: '古い机がとても小さかったので、私たちは新しい机を買いました。',
     },
     forms: {
       masculine: 'но́вый',
@@ -119,9 +115,8 @@ const coreVocabularyItems: VocabularyItem[] = [
     gender: 'feminine',
     plural: 'воды',
     example: {
-      sentence: 'Я пью во́ду.',
-      translation: '私は水を飲みます。',
-      ipa: '/ja pʲju ˈvodʊ/',
+      sentence: 'По́сле футбо́ла я всегда́ пью во́ду, потому́ что о́чень хочу́ пить.',
+      translation: 'サッカーの後はとても喉が渇くので、いつも水を飲みます。',
     },
     declension: {
       nominative: 'вода́',
