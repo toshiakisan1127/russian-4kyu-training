@@ -401,25 +401,79 @@ const months = [
           <h2 class="mb-3 text-2xl font-black">季節・時期の表現</h2>
           <div class="grid gap-3 sm:grid-cols-2">
             <div class="rounded-2xl border border-emerald-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">весна́ → весно́й</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">весна́ → весно́й</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="季節の表現を読み上げ"
+                  @click="speak('весна́. весно́й')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">春 → 春に・春は</p>
             </div>
             <div class="rounded-2xl border border-emerald-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">ле́то → ле́том</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">ле́то → ле́том</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="季節の表現を読み上げ"
+                  @click="speak('ле́то. ле́том')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">夏 → 夏に・夏は</p>
             </div>
             <div class="rounded-2xl border border-emerald-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">о́сень → о́сенью</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">о́сень → о́сенью</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="季節の表現を読み上げ"
+                  @click="speak('о́сень. о́сенью')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">秋 → 秋に・秋は</p>
             </div>
             <div class="rounded-2xl border border-emerald-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">зима́ → зимо́й</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">зима́ → зимо́й</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="季節の表現を読み上げ"
+                  @click="speak('зима́. зимо́й')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">冬 → 冬に・冬は</p>
             </div>
           </div>
           <div class="mt-4 space-y-2 text-sm font-bold leading-6 text-slate-700">
-            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">в э́том го́ду</span>：今年に・今年は ／ <span style="font-family: 'PT Serif', Georgia, serif">в про́шлом го́ду</span>：去年に・去年は</p>
-            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">на э́той неде́ле</span>：今週に・今週は ／ <span style="font-family: 'PT Serif', Georgia, serif">в сле́дующем ме́сяце</span>：来月に・来月は</p>
+            <div class="flex items-center gap-2">
+              <p class="m-0 flex-1"><span style="font-family: 'PT Serif', Georgia, serif">в э́том го́ду</span>：今年に・今年は ／ <span style="font-family: 'PT Serif', Georgia, serif">в про́шлом го́ду</span>：去年に・去年は</p>
+              <button
+                type="button"
+                class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                :disabled="!speechSupported"
+                aria-label="時期の表現を読み上げ"
+                @click="speak('в э́том го́ду. в про́шлом го́ду')"
+              >🔊</button>
+            </div>
+            <div class="flex items-center gap-2">
+              <p class="m-0 flex-1"><span style="font-family: 'PT Serif', Georgia, serif">на э́той неде́ле</span>：今週に・今週は ／ <span style="font-family: 'PT Serif', Georgia, serif">в сле́дующем ме́сяце</span>：来月に・来月は</p>
+              <button
+                type="button"
+                class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                :disabled="!speechSupported"
+                aria-label="時期の表現を読み上げ"
+                @click="speak('на э́той неде́ле. в сле́дующем ме́сяце')"
+              >🔊</button>
+            </div>
           </div>
         </article>
 
@@ -480,42 +534,114 @@ const months = [
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">оди́н …, друго́й … は、二つの人・物を対比して「一方は〜、他方は〜」と表す。女性なら одна́ …, друга́я …。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ есть кни́га.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ есть кни́га.</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('У меня́ есть кни́га.')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は本を持っています。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">所有・存在。「У + 生格」で「〜のところに」を表す。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ нет кни́ги.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ нет кни́ги.</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('У меня́ нет кни́ги.')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は本を持っていません。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">нет の後ろは生格。есть の否定で形が変わる。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне нра́вится ру́сский язы́к.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне нра́вится ру́сский язы́к.</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('Мне нра́вится ру́сский язы́к.')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私はロシア語が好きです。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">「私に好ましい」という形。複数なら нра́вятся。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне ну́жно рабо́тать.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне ну́жно рабо́тать.</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('Мне ну́жно рабо́тать.')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は働く必要があります。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">мне ну́жно / мне на́до + 不定形で「〜する必要がある」。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Я хочу́ чита́ть.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Я хочу́ чита́ть.</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('Я хочу́ чита́ть.')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は読みたいです。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">хоте́ть + 不定形で「〜したい」。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне мо́жно войти́?</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне мо́жно войти́?</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('Мне мо́жно войти́?')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">入ってもいいですか。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">мо́жно + 不定形で許可。「Нельзя́」なら禁止。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ бо́лит голова́.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ бо́лит голова́.</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('У меня́ бо́лит голова́.')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">頭が痛いです。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">身体の状態は「У меня́ бо́лит + 部位」で表せる。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Я у́чусь, потому́ что хочу́ сда́ть экза́мен.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Я у́чусь, потому́ что хочу́ сда́ть экза́мен.</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="重要構文の例文を読み上げ"
+                  @click="speak('Я у́чусь, потому́ что хочу́ сда́ть экза́мен.')"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は試験に合格したいので、勉強しています。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">потому́ что + 文で理由。「なぜなら〜だから」。</p>
             </div>
