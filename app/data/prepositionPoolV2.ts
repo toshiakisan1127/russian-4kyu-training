@@ -11,13 +11,13 @@ const choice: Record<string, QuestionChoice> = {
   до: { value: 'до', explanation: '「〜まで」。後ろは生格。' },
   для: { value: 'для', explanation: '「〜のために／〜向け」。後ろは生格。' },
   без: { value: 'без', explanation: '「〜なしで」。後ろは生格。' },
-  после: { value: 'после', explanation: '「〜の後で」。後ろは生格。' },
-  о: { value: 'о', explanation: '「〜について」。後ろは前置格。母音の前では об を使うことがあります。' },
-  об: { value: 'об', explanation: 'о の形の一つ。母音で始まる語の前などで使い、後ろは前置格。' },
-  перед: { value: 'перед', explanation: '「〜の前に」。後ろは造格。' },
+  после: { value: 'после', explanation: '「〜の後で」。前置詞は по́сле。後ろは生格。' },
+  о: { value: 'о', explanation: '「〜について」。後ろは前置格。母音の前では о́б を使うことがあります。' },
+  об: { value: 'об', explanation: 'о́ の形の一つ。母音で始まる語の前などで使い、後ろは前置格。' },
+  перед: { value: 'перед', explanation: '「〜の前に」。前置詞は пе́ред。後ろは造格。' },
   под: { value: 'под', explanation: '場所の「〜の下に」は造格、方向の「〜の下へ」は対格。' },
   над: { value: 'над', explanation: '「〜の上方に」。後ろは造格。' },
-  между: { value: 'между', explanation: '「〜の間に」。後ろは造格。' },
+  между: { value: 'между', explanation: '「〜の間に」。前置詞は ме́жду。後ろは造格。' },
 }
 
 type Row = readonly [prompt: string, translation: string, fullSentence: string]
