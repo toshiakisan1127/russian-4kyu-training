@@ -9,6 +9,7 @@ import { section4Questions } from '~/data/section4'
 import { section5Questions } from '~/data/section5'
 import { section6Questions } from '~/data/section6'
 import { section7Questions } from '~/data/section7'
+import { section8Questions } from '~/data/section8'
 import { vocabularyItems } from '~/data/vocabulary'
 import {
   getQuestionStatusCounts,
@@ -17,7 +18,7 @@ import {
 } from '~/utils/questionProgress'
 
 type TrainingProgressKey = 'prepositions' | 'vocabulary'
-type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7'
+type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7' | 'section8'
 
 type TrainingItem = {
   title: string
@@ -134,7 +135,9 @@ const examItems: ExamItem[] = [
     roman: 'VIII',
     title: '過去形・未来形',
     description: '指定された文を過去形または未来形へ書き換える。',
-    status: 'coming-soon',
+    status: 'available',
+    to: '/sections/8',
+    progressKey: 'section8',
   },
 ]
 
@@ -209,6 +212,10 @@ const examProgress = computed(() => {
     section7: {
       counts: getQuestionStatusCounts(section7Questions.map((question) => question.id)),
       total: section7Questions.length,
+    },
+    section8: {
+      counts: getQuestionStatusCounts(section8Questions.map((question) => question.id)),
+      total: section8Questions.length,
     },
   }
 })
