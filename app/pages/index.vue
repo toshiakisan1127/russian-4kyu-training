@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { questions } from '~/data/questions'
 import { section1Questions } from '~/data/section1'
 import { generatedSection1Questions } from '~/data/section1Extra'
+import { section2Questions } from '~/data/section2'
 import { vocabularyItems } from '~/data/vocabulary'
 import {
   getQuestionStatusCounts,
@@ -11,6 +12,7 @@ import {
 } from '~/utils/questionProgress'
 
 type TrainingProgressKey = 'prepositions' | 'vocabulary'
+type ExamProgressKey = 'section1' | 'section2'
 
 type TrainingItem = {
   title: string
@@ -18,6 +20,15 @@ type TrainingItem = {
   status: 'available' | 'coming-soon'
   to?: string
   progressKey?: TrainingProgressKey
+}
+
+type ExamItem = {
+  roman: string
+  title: string
+  description: string
+  status: 'available' | 'coming-soon'
+  to?: string
+  progressKey?: ExamProgressKey
 }
 
 const trainingItems: TrainingItem[] = [
@@ -52,6 +63,61 @@ const trainingItems: TrainingItem[] = [
   },
 ]
 
+const examItems: ExamItem[] = [
+  {
+    roman: 'I',
+    title: '発音',
+    description: '下線部の発音が他の3語と異なる単語を選ぶ。',
+    status: 'available',
+    to: '/sections/1',
+    progressKey: 'section1',
+  },
+  {
+    roman: 'II',
+    title: 'アクセント',
+    description: 'アクセント位置が他の3語と異なる単語を選ぶ。',
+    status: 'available',
+    to: '/sections/2',
+    progressKey: 'section2',
+  },
+  {
+    roman: 'III',
+    title: '名詞の性・代名詞',
+    description: '名詞の性・数に合う он / она / оно / они を選ぶ。',
+    status: 'coming-soon',
+  },
+  {
+    roman: 'IV',
+    title: '名詞の複数形',
+    description: '名詞を主格複数形に直し、アクセントも確認する。',
+    status: 'coming-soon',
+  },
+  {
+    roman: 'V',
+    title: '格変化',
+    description: '文脈や格支配に合う名詞・形容詞などの格変化を選ぶ。',
+    status: 'coming-soon',
+  },
+  {
+    roman: 'VI',
+    title: '疑問文への応答',
+    description: '疑問詞と文意に合う自然な応答を選ぶ。',
+    status: 'coming-soon',
+  },
+  {
+    roman: 'VII',
+    title: '動詞の人称変化',
+    description: '主語に合わせて指定された動詞を正しく人称変化させる。',
+    status: 'coming-soon',
+  },
+  {
+    roman: 'VIII',
+    title: '過去形・未来形',
+    description: '指定された文を過去形または未来形へ書き換える。',
+    status: 'coming-soon',
+  },
+]
+
 const allSection1Questions = [...section1Questions, ...generatedSection1Questions]
 const progressVersion = ref(0)
 
@@ -81,10 +147,19 @@ const trainingProgress = computed(() => {
   }
 })
 
-const section1Progress = computed(() => {
+const examProgress = computed(() => {
   progressVersion.value
-  const counts = getQuestionStatusCounts(allSection1Questions.map((question) => question.id))
-  return { counts, total: allSection1Questions.length }
+
+  return {
+    section1: {
+      counts: getQuestionStatusCounts(allSection1Questions.map((question) => question.id)),
+      total: allSection1Questions.length,
+    },
+    section2: {
+      counts: getQuestionStatusCounts(section2Questions.map((question) => question.id)),
+      total: section2Questions.length,
+    },
+  }
 })
 
 const statusWidth = (count: number, total: number) => total > 0 ? `${(count / total) * 100}%` : '0%'
@@ -97,7 +172,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         <p class="mb-2 text-xs font-black tracking-[0.16em] text-indigo-600 uppercase">Russian 4th Grade Training</p>
         <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-5xl">ロシア語4級トレーニング</h1>
         <p class="m-0 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-          苦手分野をピンポイントで練習して、最後は本番形式へ。まずは分野別トレーニングから進めよう。
+          苦手分野をピンポイントで練習して、最後は本番形式へ。習熟度を見ながら少しずつ定着させよう。
         </p>
       </header>
 
@@ -129,11 +204,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                       <span>学習状況</span>
                       <span>{{ trainingProgress[item.progressKey].total }}問</span>
                     </div>
-                    <div
-                      class="flex h-3 w-full overflow-hidden rounded-full bg-slate-100"
-                      role="img"
-                      :aria-label="`${item.title}の学習状況。新規${trainingProgress[item.progressKey].counts.new}問、要復習${trainingProgress[item.progressKey].counts.review}問、練習中${trainingProgress[item.progressKey].counts.learning}問、定着${trainingProgress[item.progressKey].counts.mastered}問`"
-                    >
+                    <div class="flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
                       <div
                         v-for="statusItem in statusItems"
                         :key="statusItem.status"
@@ -153,12 +224,9 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                 <div class="mt-5 text-sm font-black text-indigo-700">はじめる →</div>
               </NuxtLink>
 
-              <article
-                v-else
-                class="flex min-h-40 flex-col justify-between rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500"
-              >
+              <article v-else class="flex min-h-40 flex-col justify-between rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500">
                 <div>
-                  <div class="mb-4 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">準備中</div>
+                  <div class="mb-4 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">COMING SOON</div>
                   <h3 class="mb-2 text-xl font-black text-slate-700">{{ item.title }}</h3>
                   <p class="m-0 leading-6">{{ item.description }}</p>
                 </div>
@@ -168,54 +236,65 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         </div>
       </details>
 
-      <section class="mb-8 sm:mb-10">
-        <div class="mb-5">
-          <p class="mb-1 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">Exam Sections</p>
-          <h2 class="m-0 text-2xl font-black">大問別問題集</h2>
-        </div>
+      <details class="group mb-8 rounded-3xl border border-sky-200 bg-white shadow-sm shadow-sky-100 sm:mb-10">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 transition hover:bg-sky-50 sm:p-6 [&::-webkit-details-marker]:hidden">
+          <div>
+            <p class="mb-1 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">Exam Sections</p>
+            <h2 class="mb-1 text-xl font-black sm:text-2xl">大問別問題集</h2>
+            <p class="m-0 text-sm font-medium text-slate-500">4級文法の第I問〜第VIII問を順番に攻略</p>
+          </div>
+          <span class="grid size-10 shrink-0 place-items-center rounded-full bg-sky-100 text-xl font-black text-sky-800 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+        </summary>
 
-        <NuxtLink
-          to="/sections/1"
-          class="group block rounded-3xl border border-sky-200 bg-sky-50 p-6 transition hover:-translate-y-1 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-100 sm:p-7"
-        >
-          <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div class="min-w-0 flex-1">
-              <div class="mb-3 inline-flex rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</div>
-              <h3 class="mb-2 text-xl font-black text-slate-900">第I問・発音</h3>
-              <p class="m-0 max-w-2xl leading-7 text-slate-600">
-                下線部の発音が他の3語と異なる単語を選ぶ4択問題。100問プールから習熟度を考慮して10問を出題する。
-              </p>
+        <div class="border-t border-sky-100 px-5 pt-5 pb-6 sm:px-6">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <template v-for="item in examItems" :key="item.roman">
+              <NuxtLink
+                v-if="item.status === 'available' && item.progressKey"
+                :to="item.to"
+                class="group/item flex flex-col rounded-3xl border border-sky-200 bg-sky-50 p-5 transition hover:-translate-y-1 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-100"
+              >
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <span class="rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</span>
+                  <span class="text-xs font-black text-sky-800">100問プール</span>
+                </div>
+                <h3 class="mb-2 text-xl font-black text-slate-900">第{{ item.roman }}問・{{ item.title }}</h3>
+                <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
 
-              <div class="mt-5 max-w-2xl border-t border-sky-200 pt-4">
-                <div class="mb-2 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
-                  <span>学習状況</span>
-                  <span>{{ section1Progress.total }}問</span>
-                </div>
-                <div
-                  class="flex h-3 w-full overflow-hidden rounded-full bg-white"
-                  role="img"
-                  :aria-label="`第I問・発音の学習状況。新規${section1Progress.counts.new}問、要復習${section1Progress.counts.review}問、練習中${section1Progress.counts.learning}問、定着${section1Progress.counts.mastered}問`"
-                >
-                  <div
-                    v-for="statusItem in statusItems"
-                    :key="statusItem.status"
-                    :class="statusItem.barClass"
-                    :style="{ width: statusWidth(section1Progress.counts[statusItem.status], section1Progress.total) }"
-                  />
-                </div>
-                <div class="mt-3 grid grid-cols-2 gap-x-5 gap-y-2 text-xs font-bold text-slate-600 sm:grid-cols-4">
-                  <div v-for="statusItem in statusItems" :key="`section1-${statusItem.status}`" class="flex items-center gap-2">
-                    <span class="size-2 shrink-0 rounded-full" :class="statusItem.dotClass" />
-                    <span>{{ questionStatusLabel[statusItem.status] }}</span>
-                    <strong class="ml-auto text-slate-900">{{ section1Progress.counts[statusItem.status] }}</strong>
+                <div class="mt-5 border-t border-sky-200 pt-4">
+                  <div class="mb-2 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
+                    <span>学習状況</span>
+                    <span>{{ examProgress[item.progressKey].total }}問</span>
+                  </div>
+                  <div class="flex h-3 w-full overflow-hidden rounded-full bg-white">
+                    <div
+                      v-for="statusItem in statusItems"
+                      :key="statusItem.status"
+                      :class="statusItem.barClass"
+                      :style="{ width: statusWidth(examProgress[item.progressKey].counts[statusItem.status], examProgress[item.progressKey].total) }"
+                    />
+                  </div>
+                  <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs font-bold text-slate-600">
+                    <div v-for="statusItem in statusItems" :key="`${item.roman}-${statusItem.status}`" class="flex items-center gap-2">
+                      <span class="size-2 shrink-0 rounded-full" :class="statusItem.dotClass" />
+                      <span>{{ questionStatusLabel[statusItem.status] }}</span>
+                      <strong class="ml-auto text-slate-900">{{ examProgress[item.progressKey].counts[statusItem.status] }}</strong>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div class="shrink-0 rounded-2xl border border-sky-300 bg-white px-4 py-3 text-sm font-black text-sky-800 transition group-hover:bg-sky-700 group-hover:text-white">10問 はじめる →</div>
+
+                <div class="mt-5 text-sm font-black text-sky-800">10問 はじめる →</div>
+              </NuxtLink>
+
+              <article v-else class="rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500">
+                <div class="mb-3 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">COMING SOON</div>
+                <h3 class="mb-2 text-xl font-black text-slate-700">第{{ item.roman }}問・{{ item.title }}</h3>
+                <p class="m-0 leading-6">{{ item.description }}</p>
+              </article>
+            </template>
           </div>
-        </NuxtLink>
-      </section>
+        </div>
+      </details>
 
       <section>
         <div class="mb-5">
@@ -226,11 +305,9 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         <article class="rounded-3xl border border-amber-200 bg-amber-50 p-6 sm:p-7">
           <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div class="mb-3 inline-flex rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-black text-amber-800">準備中</div>
+              <div class="mb-3 inline-flex rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-black text-amber-800">COMING SOON</div>
               <h3 class="mb-2 text-xl font-black text-slate-900">最後は通しで実力チェック</h3>
-              <p class="m-0 max-w-2xl leading-7 text-slate-600">
-                複数分野をまとめて解く本番想定モード。大問別問題集に慣れてから挑戦する仕上げ用。
-              </p>
+              <p class="m-0 max-w-2xl leading-7 text-slate-600">複数分野をまとめて解く本番想定モード。大問別問題集に慣れてから挑戦する仕上げ用。</p>
             </div>
             <div class="shrink-0 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-black text-amber-900">COMING SOON</div>
           </div>
