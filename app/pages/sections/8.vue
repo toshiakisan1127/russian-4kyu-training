@@ -76,6 +76,11 @@ const currentStatusClasses = computed(() => ({
   mastered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
 }[currentStatus.value]))
 const tenseLabel = computed(() => currentQuestion.value.tense === 'past' ? '過去形' : '未来形')
+const tenseChoiceDetails = computed(() => currentQuestion.value.choices.map((choice) => ({
+  value: choice,
+  isCorrect: choice === currentQuestion.value.correctAnswer,
+  explanation: currentQuestion.value.choiceExplanations[choice] ?? 'この選択肢の詳しい説明はありません。',
+})))
 
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
@@ -237,6 +242,8 @@ const choiceClasses = (choice: string) => {
             <div class="mb-7 rounded-2xl border border-slate-200 bg-white p-4">
               <p class="m-0 font-bold leading-7 text-slate-800">{{ currentQuestion.explanation }}</p>
             </div>
+
+            <ChoiceExplanationList :choices="tenseChoiceDetails" title="時制の選択肢を確認" />
 
             <button type="button" class="min-h-13 w-full rounded-2xl bg-sky-700 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-800" @click="goNext">
               {{ currentIndex === questionSet.length - 1 ? '結果を見る' : '次の問題へ' }}
