@@ -1,4 +1,30 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+
+const speechSupported = ref(false)
+
+onMounted(() => {
+  speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+})
+
+const stripStress = (text: string) => text.normalize('NFD').replace(/\u0301/g, '').normalize('NFC')
+
+const speak = (text: string) => {
+  if (!speechSupported.value) return
+  window.speechSynthesis.cancel()
+
+  const utterance = new SpeechSynthesisUtterance(stripStress(text))
+  utterance.lang = 'ru-RU'
+  utterance.rate = Number(window.localStorage.getItem('russian-speech-rate') ?? '0.4')
+
+  const russianVoice = window.speechSynthesis
+    .getVoices()
+    .find((voice) => voice.lang.toLowerCase().startsWith('ru'))
+  if (russianVoice) utterance.voice = russianVoice
+
+  window.speechSynthesis.speak(utterance)
+})
+
 useHead({
   title: '4級重要表現まとめ | ロシア語4級トレーニング',
 })
@@ -217,7 +243,16 @@ const contrastPairs = [
           <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
             <div v-for="item in numberWords" :key="item.number" class="flex items-center gap-2 rounded-xl border border-sky-100 bg-white px-3 py-2">
               <span class="grid size-7 shrink-0 place-items-center rounded-full bg-sky-100 text-xs font-black text-sky-700">{{ item.number }}</span>
-              <strong class="text-base" style="font-family: 'PT Serif', Georgia, serif">{{ item.word }}</strong>
+              <div class="flex min-w-0 flex-1 items-center justify-between gap-1">
+                <strong class="text-base" style="font-family: 'PT Serif', Georgia, serif">{{ item.word }}</strong>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-sky-200 bg-white text-sm transition hover:bg-sky-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="item.word + 'を読み上げ'"
+                  @click="speak(item.word)"
+                >🔊</button>
+              </div>
             </div>
           </div>
           <p class="mt-4 mb-0 text-sm font-bold leading-6 text-slate-700">
@@ -235,7 +270,16 @@ const contrastPairs = [
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="day in weekdays" :key="day.word" class="rounded-2xl border border-violet-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
-              <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ day.on }}</p>
+              <div class="mt-1 mb-1 flex items-center gap-2">
+                <p class="m-0 text-sm font-bold text-violet-700">{{ day.on }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="day.on + 'を読み上げ'"
+                  @click="speak(day.on)"
+                >🔊</button>
+              </div>
               <p class="m-0 text-sm font-bold text-slate-600">{{ day.translation }}</p>
             </div>
           </div>
@@ -248,7 +292,16 @@ const contrastPairs = [
             <div v-for="part in dayParts" :key="part.word" class="rounded-2xl border border-violet-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ part.word }} → {{ part.form }}</p>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">{{ part.translation }}</p>
-              <p class="m-0 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ part.example }}</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ part.example }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="part.example + 'を読み上げ'"
+                  @click="speak(part.example)"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-500">{{ part.exampleTranslation }}</p>
             </div>
           </div>
@@ -260,7 +313,16 @@ const contrastPairs = [
             <div v-for="day in relativeDays" :key="day.word" class="rounded-2xl border border-violet-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ day.word }}</p>
               <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ day.translation }}</p>
-              <p class="m-0 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ day.example }}</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ day.example }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="day.example + 'を読み上げ'"
+                  @click="speak(day.example)"
+                >🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-500">{{ day.exampleTranslation }}</p>
             </div>
           </div>
@@ -273,7 +335,16 @@ const contrastPairs = [
             <div v-for="month in months" :key="month.word" class="rounded-2xl border border-violet-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.word }}</p>
               <p class="mt-1 mb-1 text-sm font-bold text-violet-700">{{ month.translation }}</p>
-              <p class="m-0 text-sm font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.inMonth }}</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-sm font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ month.inMonth }}</p>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-violet-200 bg-white text-sm transition hover:bg-violet-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  :aria-label="month.inMonth + 'を読み上げ'"
+                  @click="speak(month.inMonth)"
+                >🔊</button>
+              </div>
             </div>
           </div>
           <p class="mt-3 mb-0 text-sm font-bold leading-6 text-slate-700"><span style="font-family: 'PT Serif', Georgia, serif">в январе́</span> のように、月に「〜に」を付けるときは <span style="font-family: 'PT Serif', Georgia, serif">в + 前置格</span> を使う。</p>
@@ -422,12 +493,30 @@ const contrastPairs = [
                 <div class="grid gap-3 sm:grid-cols-2">
                   <div class="rounded-xl bg-rose-50 p-3">
                     <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-rose-700 uppercase">一方</p>
-                    <p class="m-0 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.left }}</p>
+                    <div class="flex items-start gap-2">
+                      <p class="m-0 flex-1 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.left }}</p>
+                      <button
+                        type="button"
+                        class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                        :disabled="!speechSupported"
+                        :aria-label="pair.left + 'を読み上げ'"
+                        @click="speak(pair.left)"
+                      >🔊</button>
+                    </div>
                     <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-600">{{ pair.leftTranslation }}</p>
                   </div>
                   <div class="rounded-xl bg-slate-50 p-3">
                     <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-slate-600 uppercase">他方</p>
-                    <p class="m-0 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.right }}</p>
+                    <div class="flex items-start gap-2">
+                      <p class="m-0 flex-1 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.right }}</p>
+                      <button
+                        type="button"
+                        class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                        :disabled="!speechSupported"
+                        :aria-label="pair.right + 'を読み上げ'"
+                        @click="speak(pair.right)"
+                      >🔊</button>
+                    </div>
                     <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-600">{{ pair.rightTranslation }}</p>
                   </div>
                 </div>
