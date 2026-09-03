@@ -77,6 +77,11 @@ const currentPoolSize = computed(() => poolFor(selectedFilter.value).length)
 const selectedFilterInfo = computed(() => caseTrainingFilters.find((item) => item.key === selectedFilter.value)!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.correctPhrase)
 const fullCorrectSentence = computed(() => `${currentQuestion.value.before} ${currentQuestion.value.correctPhrase}${currentQuestion.value.after}`)
+const caseChoiceDetails = computed(() => currentQuestion.value.choices.map((choice) => ({
+  value: choice,
+  isCorrect: choice === currentQuestion.value.correctPhrase,
+  explanation: currentQuestion.value.choiceExplanations[choice] ?? 'この選択肢の詳しい説明はありません。',
+})))
 const currentStatus = computed(() => {
   progressVersion.value
   return getQuestionStatus(getQuestionProgress(currentQuestion.value.id))
@@ -280,6 +285,8 @@ const choiceClasses = (choice: string) => {
               <p class="mb-1 text-xs font-black tracking-[0.12em] text-slate-500 uppercase">なぜこの格？</p>
               <p class="m-0 font-bold leading-7 text-slate-800">{{ currentQuestion.explanation }}</p>
             </div>
+
+            <ChoiceExplanationList :choices="caseChoiceDetails" />
 
             <button type="button" class="min-h-13 w-full rounded-2xl bg-indigo-600 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-indigo-700" @click="goNext">
               {{ currentIndex === questionSet.length - 1 ? '結果を見る' : '次の問題へ' }}
