@@ -63,6 +63,7 @@ const speechSupported = ref(false)
 const progressVersion = ref(0)
 
 const currentQuestion = computed(() => questionSet.value[currentIndex.value]!)
+const completedSentence = computed(() => currentQuestion.value.question.replace('___', currentQuestion.value.correctAnswer))
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.correctAnswer)
 const currentStatus = computed(() => {
   progressVersion.value
@@ -183,17 +184,9 @@ const choiceClasses = (choice: string) => {
               <p class="m-0 text-xl font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.infinitive }}</p>
               <span class="text-sm font-bold text-slate-500">{{ currentQuestion.meaning }}</span>
             </div>
-            <div class="flex items-start justify-between gap-4">
-              <p class="m-0 text-2xl font-bold leading-10 sm:text-3xl" style="font-family: 'PT Serif', Georgia, serif">
-                {{ currentQuestion.question }}
-              </p>
-              <button
-                type="button"
-                class="grid size-10 shrink-0 place-items-center rounded-full border border-sky-200 bg-white text-lg transition hover:bg-sky-100 disabled:opacity-40"
-                :disabled="!speechSupported"
-                @click="speak(currentQuestion.question.replace('___', currentQuestion.correctAnswer))"
-              >🔊</button>
-            </div>
+            <p class="m-0 text-2xl font-bold leading-10 sm:text-3xl" style="font-family: 'PT Serif', Georgia, serif">
+              {{ currentQuestion.question }}
+            </p>
           </div>
 
           <div class="grid gap-3">
@@ -220,6 +213,21 @@ const choiceClasses = (choice: string) => {
               <div>
                 <p class="mb-1 text-lg font-black" :class="isCorrect ? 'text-sky-800' : 'text-amber-900'">{{ isCorrect ? '正解！' : '不正解' }}</p>
                 <p class="m-0 text-sm text-slate-700">{{ currentQuestion.subject }} → <strong>{{ currentQuestion.correctAnswer }}</strong></p>
+              </div>
+            </div>
+
+            <div class="mb-6 rounded-2xl border border-sky-100 bg-sky-50 p-4">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="mb-1 text-xs font-black tracking-[0.12em] text-sky-700 uppercase">完成文</p>
+                  <p class="m-0 text-xl font-bold leading-8" style="font-family: 'PT Serif', Georgia, serif">{{ completedSentence }}</p>
+                </div>
+                <button
+                  type="button"
+                  class="grid size-10 shrink-0 place-items-center rounded-full border border-sky-200 bg-white text-lg transition hover:bg-sky-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  @click="speak(completedSentence)"
+                >🔊</button>
               </div>
             </div>
 
