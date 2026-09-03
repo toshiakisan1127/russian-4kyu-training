@@ -4,6 +4,7 @@ import { questions } from '~/data/questions'
 import { section1Questions } from '~/data/section1'
 import { generatedSection1Questions } from '~/data/section1Extra'
 import { section2Questions } from '~/data/section2'
+import { section3Questions } from '~/data/section3'
 import { vocabularyItems } from '~/data/vocabulary'
 import {
   getQuestionStatusCounts,
@@ -12,7 +13,7 @@ import {
 } from '~/utils/questionProgress'
 
 type TrainingProgressKey = 'prepositions' | 'vocabulary'
-type ExamProgressKey = 'section1' | 'section2'
+type ExamProgressKey = 'section1' | 'section2' | 'section3'
 
 type TrainingItem = {
   title: string
@@ -89,7 +90,9 @@ const examItems: ExamItem[] = [
     roman: 'III',
     title: '名詞の性・代名詞',
     description: '名詞の性・数に合う он / она / оно / они を選ぶ。',
-    status: 'coming-soon',
+    status: 'available',
+    to: '/sections/3',
+    progressKey: 'section3',
   },
   {
     roman: 'IV',
@@ -174,6 +177,10 @@ const examProgress = computed(() => {
     section2: {
       counts: getQuestionStatusCounts(section2Questions.map((question) => question.id)),
       total: section2Questions.length,
+    },
+    section3: {
+      counts: getQuestionStatusCounts(section3Questions.map((question) => question.id)),
+      total: section3Questions.length,
     },
   }
 })
