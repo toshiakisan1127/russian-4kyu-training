@@ -280,56 +280,16 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         </p>
       </header>
 
-      <details class="group mb-6 rounded-3xl border border-indigo-200 bg-white shadow-sm shadow-indigo-100">
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 transition hover:bg-indigo-50 sm:p-6 [&::-webkit-details-marker]:hidden">
-          <div>
-            <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Exam guide</p>
-            <h2 class="mb-1 text-xl font-black sm:text-2xl">ロシア語能力検定4級について</h2>
-            <p class="m-0 text-sm font-medium text-slate-500">試験の概要と、このサイトの前提条件</p>
-          </div>
-          <span class="grid size-10 shrink-0 place-items-center rounded-full bg-indigo-100 text-xl font-black text-indigo-700 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
-        </summary>
-
-        <div class="grid gap-5 border-t border-indigo-100 px-5 pt-5 pb-6 sm:px-6 lg:grid-cols-2">
-        <article class="rounded-3xl border border-indigo-200 bg-indigo-50 p-5 sm:p-6">
-          <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">About the exam</p>
-          <h2 id="exam-overview-heading" class="mb-3 text-xl font-black sm:text-2xl">ロシア語能力検定4級とは</h2>
-          <p class="mb-4 leading-7 text-slate-700">
-            ロシア語能力検定試験の4級は、初級段階のロシア語について、文法・読解・作文・朗読の力を確認する試験です。4級は250点満点で、日常的な内容を中心に出題されます。
-          </p>
-          <ul class="m-0 space-y-2 pl-5 text-sm font-bold leading-6 text-slate-700">
-            <li>文法：文字と発音、アクセント、格変化、動詞の時制、簡単な複文など</li>
-            <li>露文和訳：日常的なロシア語の文章を日本語に訳す</li>
-            <li>和文露訳：やさしい日常表現をロシア語に訳す</li>
-            <li>朗読：ロシア語の文章を声に出して読む</li>
-          </ul>
-          <a
-            href="https://www.tokyorus.ac.jp/kentei/grade.html"
-            target="_blank"
-            rel="noreferrer"
-            class="mt-5 inline-flex font-black text-indigo-700 underline decoration-indigo-300 underline-offset-4 transition hover:text-indigo-900"
-          >
-            詳しい試験内容は公式案内へ ↗
-          </a>
-        </article>
-
-        <article class="rounded-3xl border border-amber-200 bg-amber-50 p-5 sm:p-6">
-          <p class="mb-1 text-xs font-black tracking-[0.14em] text-amber-700 uppercase">About this site</p>
-          <h2 class="mb-3 text-xl font-black sm:text-2xl">このサイトの前提条件</h2>
-          <p class="mb-4 leading-7 text-slate-700">
-            このサイトは、ロシア語文法を一通り学習した経験があり、忘れた内容を問題演習で復習したい人を主な対象にしています。
-          </p>
-          <ul class="m-0 space-y-2 pl-5 text-sm font-bold leading-6 text-slate-700">
-            <li>ロシア文字を読め、基本的な文の意味を追えること</li>
-            <li>名詞の性・格変化、動詞の人称変化・過去形・未来形などを一度は学習済みであること</li>
-            <li>文法をゼロから講義する教材ではなく、4級範囲の確認と反復練習が中心であること</li>
-            <li>アクセント記号は発音補助で、音声は端末やブラウザのWeb Speech APIに依存すること</li>
-            <li>本試験の完全再現や公式過去問ではなく、出題内容を参考にした個人制作の練習サイトであること</li>
-          </ul>
-        </article>
-      
-        </div>
-      </details>
+      <div class="mb-8">
+        <NuxtLink
+          to="/about"
+          class="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-2.5 text-sm font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md"
+        >
+          <span aria-hidden="true">ⓘ</span>
+          <span>ロシア語能力検定4級とこのサイトについて</span>
+          <span aria-hidden="true">→</span>
+        </NuxtLink>
+      </div>
 
       <details class="group mb-8 rounded-3xl border border-indigo-200 bg-white shadow-sm shadow-indigo-100 sm:mb-10">
         <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 transition hover:bg-indigo-50 sm:p-6 [&::-webkit-details-marker]:hidden">
