@@ -31,6 +31,11 @@ type ExamItem = {
   progressKey?: ExamProgressKey
 }
 
+type TranslationItem = {
+  title: string
+  description: string
+}
+
 const trainingItems: TrainingItem[] = [
   {
     title: '前置詞',
@@ -115,6 +120,17 @@ const examItems: ExamItem[] = [
     title: '過去形・未来形',
     description: '指定された文を過去形または未来形へ書き換える。',
     status: 'coming-soon',
+  },
+]
+
+const translationItems: TranslationItem[] = [
+  {
+    title: '露文和訳',
+    description: '4級レベルの短いロシア語文を読み、日本語に訳す。',
+  },
+  {
+    title: '和文露訳',
+    description: '4級の基本語彙・文法を使って、日本語文をロシア語に訳す。',
   },
 ]
 
@@ -241,7 +257,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
           <div>
             <p class="mb-1 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">Exam Sections</p>
             <h2 class="mb-1 text-xl font-black sm:text-2xl">大問別問題集</h2>
-            <p class="m-0 text-sm font-medium text-slate-500">4級文法の第I問〜第VIII問を順番に攻略</p>
+            <p class="m-0 text-sm font-medium text-slate-500">第I問〜第VIII問と翻訳問題を順番に攻略</p>
           </div>
           <span class="grid size-10 shrink-0 place-items-center rounded-full bg-sky-100 text-xl font-black text-sky-800 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
         </summary>
@@ -256,7 +272,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
               >
                 <div class="mb-3 flex items-center justify-between gap-3">
                   <span class="rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</span>
-                  <span class="text-xs font-black text-sky-800">100問プール</span>
+                  <span class="text-xs font-black text-sky-800">100問</span>
                 </div>
                 <h3 class="mb-2 text-xl font-black text-slate-900">第{{ item.roman }}問・{{ item.title }}</h3>
                 <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
@@ -292,6 +308,16 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                 <p class="m-0 leading-6">{{ item.description }}</p>
               </article>
             </template>
+
+            <article
+              v-for="item in translationItems"
+              :key="item.title"
+              class="rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500"
+            >
+              <div class="mb-3 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">COMING SOON</div>
+              <h3 class="mb-2 text-xl font-black text-slate-700">{{ item.title }}</h3>
+              <p class="m-0 leading-6">{{ item.description }}</p>
+            </article>
           </div>
         </div>
       </details>
