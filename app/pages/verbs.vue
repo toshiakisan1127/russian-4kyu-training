@@ -273,6 +273,11 @@ const choiceClasses = (choice: string) => {
               </div>
             </div>
 
+            <div class="mb-5 rounded-2xl border border-indigo-100 bg-indigo-50 p-4">
+              <p class="mb-1 text-xs font-black tracking-[0.12em] text-indigo-700 uppercase">日本語訳</p>
+              <p class="m-0 font-bold leading-7 text-slate-800">{{ currentQuestion.answerTranslation ?? currentQuestion.meaning }}</p>
+            </div>
+
             <div class="mb-7 rounded-2xl border border-slate-200 bg-white p-4">
               <p class="mb-1 text-xs font-black tracking-[0.12em] text-slate-500 uppercase">ポイント</p>
               <p class="m-0 font-bold leading-7 text-slate-800">{{ currentQuestion.explanation }}</p>
