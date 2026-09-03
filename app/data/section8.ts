@@ -90,6 +90,7 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
     fullAnswer: `Вчера́ ${item.subject} ${verb.past[item.pastIndex]} ${verb.complement}`,
     choices: [...verb.past],
     explanation: `過去形は主語の性・数に一致する。この文は${item.label}なので「${verb.past[item.pastIndex]}」。`,
+    translation: translateTense('past', item.subject, verb.infinitive, '昨日'),
   }))
 
   const futureQuestions = subjects.map((subject, personIndex): Section8Question => {
@@ -107,6 +108,7 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
       fullAnswer: `За́втра ${subject} ${correct} ${verb.complement}`,
       choices: candidateIndexes.map((index) => `${futureAux[index]} ${verb.infinitive}`),
       explanation: `不完了体の未来は「быть の未来形 + 不定形」。主語 ${subject} には「${futureAux[personIndex]}」を使う。`,
+      translation: translateTense('future', subject, verb.infinitive, '明日'),
     }
   })
 
