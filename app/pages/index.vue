@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { caseTrainingQuestions } from '~/data/caseTraining'
 import { japaneseToRussianQuestions } from '~/data/japaneseToRussian'
+import { readingPassages } from '~/data/readingPassages'
 import { mixedTrainingQuestions } from '~/data/mixedTraining'
 import { questions } from '~/data/questions'
 import { russianToJapaneseQuestions } from '~/data/russianToJapanese'
@@ -335,6 +336,18 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                 </div>
               </article>
             </template>
+
+            <NuxtLink
+              to="/reading"
+              class="group/item flex min-h-40 flex-col justify-between rounded-3xl border border-rose-200 bg-rose-50 p-5 transition hover:-translate-y-1 hover:border-rose-400 hover:shadow-lg hover:shadow-rose-100"
+            >
+              <div>
+                <div class="mb-4 inline-flex rounded-full bg-rose-100 px-2.5 py-1 text-xs font-black text-rose-800">学習可能</div>
+                <h3 class="mb-2 text-xl font-black">朗読対策</h3>
+                <p class="m-0 leading-6 text-slate-600">4級本番を想定して、アクセント付きの短文を準備してから朗読する。</p>
+              </div>
+              <div class="mt-5 text-sm font-black text-rose-800">{{ readingPassages.length }}題 はじめる →</div>
+            </NuxtLink>
           </div>
         </div>
       </details>
