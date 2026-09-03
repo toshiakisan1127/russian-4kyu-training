@@ -211,6 +211,8 @@ const months = [
                     @click="speak(item.word)"
                   >🔊</button>
                 </div>
+              </div>
+            </div>
           </div>
 
           <details class="group rounded-2xl border border-sky-200 bg-white">
@@ -538,7 +540,7 @@ const months = [
                 </div>
               </div>
               <p class="mt-2 mb-1 text-sm font-bold text-slate-600">どちらも「私たちの教室には大きな窓があります」。</p>
-              <p class="m-0 text-xs font-bold leading-5 text-slate-500">現在形の所有・存在では、文脈が明らかな場合は есть を省略できる。存在を明示・強調するときは есть を置く。</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">現在形の所有・存在では、文脈が明らかな場合は есть を省略できる。У нас в + 前置格 + есть 〜 で「私たちの〜には…がある」。存在を明示・強調するときは есть を置く。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <div class="flex items-start gap-2">
@@ -569,7 +571,7 @@ const months = [
                 >🔊</button>
               </div>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は本を持っています。</p>
-              <p class="m-0 text-xs font-bold leading-5 text-slate-500">所有・存在。У нас в + 前置格 + есть 〜 で「私たちの〜には…がある」。「У + 生格」で「〜のところに」を表す。</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">所有・存在。「У + 生格」で「〜のところに」を表す。</p>
             </div>
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <div class="flex items-start gap-2">
