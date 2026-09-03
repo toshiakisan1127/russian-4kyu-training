@@ -8,7 +8,7 @@ const speedOpen = ref(false)
 onMounted(() => {
   const savedRate = Number(window.localStorage.getItem(STORAGE_KEY))
   if (Number.isFinite(savedRate)) {
-    speechRate.value = Math.min(1, Math.max(0.3, savedRate))
+    speechRate.value = Math.min(1, Math.max(0.1, savedRate))
   }
 })
 
@@ -52,7 +52,7 @@ const updateSpeechRate = (event: Event) => {
         id="global-speech-rate"
         v-model="speechRate"
         type="range"
-        min="0.3"
+        min="0.1"
         max="1"
         step="0.1"
         class="h-2 w-full cursor-pointer accent-indigo-600"
