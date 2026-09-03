@@ -4,6 +4,7 @@ const appBasePath = '/toshiaki_Russia_language'
 const routes = [
   '/',
   '/prepositions',
+  '/cases',
   '/vocabulary',
   '/sections/1',
   '/sections/2',
