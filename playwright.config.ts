@@ -8,7 +8,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: 'pnpm preview --host 127.0.0.1 --port 3000',
+    command: 'pnpm dev --host 127.0.0.1 --port 3000',
     url: 'http://127.0.0.1:3000/toshiaki_Russia_language/',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
