@@ -14,6 +14,7 @@ const routes = [
   '/sections/7',
   '/sections/8',
   '/translations/ru-ja',
+  '/translations/ja-ru',
 ] as const
 
 for (const route of routes) {
