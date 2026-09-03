@@ -5,14 +5,53 @@ import { shuffle } from '~/utils/shuffle'
 import {
   getQuestionProgress,
   getQuestionStatus,
+  getQuestionStatuses,
   questionStatusLabel,
   recordQuestionResult,
+  type QuestionStatus,
 } from '~/utils/questionProgress'
 
-const createQuestionSet = () => shuffle(questions).map((question) => ({
-  ...question,
-  choices: shuffle(question.choices),
-}))
+const SESSION_SIZE = 10
+
+const createQuestionSet = () => {
+  const statuses = getQuestionStatuses(questions.map((question) => question.id))
+  const buckets: Record<QuestionStatus, typeof questions> = {
+    new: [],
+    review: [],
+    learning: [],
+    mastered: [],
+  }
+
+  questions.forEach((question) => {
+    buckets[statuses[question.id] ?? 'new'].push(question)
+  })
+
+  const queues: Record<QuestionStatus, typeof questions> = {
+    new: shuffle(buckets.new),
+    review: shuffle(buckets.review),
+    learning: shuffle(buckets.learning),
+    mastered: shuffle(buckets.mastered),
+  }
+
+  const selected: typeof questions = []
+  const take = (status: QuestionStatus, count: number) => {
+    if (count <= 0) return
+    selected.push(...queues[status].splice(0, count))
+  }
+
+  take('review', 4)
+  take('new', 4)
+  take('learning', 2)
+
+  for (const status of ['review', 'new', 'learning', 'mastered'] as QuestionStatus[]) {
+    take(status, SESSION_SIZE - selected.length)
+  }
+
+  return shuffle(selected).map((question) => ({
+    ...question,
+    choices: shuffle(question.choices),
+  }))
+}
 
 const questionSet = ref(createQuestionSet())
 const currentIndex = ref(0)
@@ -52,9 +91,7 @@ const selectAnswer = (value: string) => {
   recordQuestionResult(currentQuestion.value.id, correct)
   progressVersion.value += 1
 
-  if (correct) {
-    correctCount.value += 1
-  }
+  if (correct) correctCount.value += 1
 }
 
 const speakCurrentSentence = () => {
@@ -62,10 +99,18 @@ const speakCurrentSentence = () => {
 
   window.speechSynthesis.cancel()
 
-  const speechText = currentQuestion.value.fullSentence.replace(/\u0301/g, '')
+  const speechText = currentQuestion.value.fullSentence
+    .normalize('NFD')
+    .replace(/\u0301/g, '')
+    .normalize('NFC')
   const utterance = new SpeechSynthesisUtterance(speechText)
   utterance.lang = 'ru-RU'
   utterance.rate = 0.7
+
+  const russianVoice = window.speechSynthesis
+    .getVoices()
+    .find((voice) => voice.lang.toLowerCase().startsWith('ru'))
+  if (russianVoice) utterance.voice = russianVoice
 
   window.speechSynthesis.speak(utterance)
 }
@@ -128,7 +173,8 @@ const choiceClasses = (value: string) => {
         <header class="mb-8 flex items-start justify-between gap-4">
           <div>
             <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">ロシア語能力検定4級</p>
-            <h1 class="text-2xl font-black tracking-tight sm:text-3xl">前置詞ミニトレーニング</h1>
+            <h1 class="text-2xl font-black tracking-tight sm:text-3xl">前置詞トレーニング</h1>
+            <p class="mt-1 mb-0 text-xs font-bold text-slate-500">100問から習熟度に合わせて10問</p>
           </div>
           <span class="shrink-0 rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-black text-white">
             {{ Math.min(currentIndex + 1, questionSet.length) }} / {{ questionSet.length }}
@@ -268,14 +314,14 @@ const choiceClasses = (value: string) => {
           <p class="mb-2 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Result</p>
           <h2 class="mb-3 text-4xl font-black text-indigo-700 sm:text-5xl">{{ correctCount }} / {{ questionSet.length }}</h2>
           <p class="mx-auto mb-0 max-w-md leading-7 text-slate-600">
-            まずはこの5問をテンポよく回せればOK。解説を確認しながら、前置詞の使い分けを固めていこう。
+            100問から要復習・新規を優先して10問ずつ出題。格支配と前置詞の使い分けを少しずつ定着させよう。
           </p>
           <button
             type="button"
             class="mt-7 min-h-13 w-full rounded-2xl bg-indigo-600 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-indigo-700"
             @click="restart"
           >
-            もう一度やる
+            次の10問をやる
           </button>
         </section>
       </div>
