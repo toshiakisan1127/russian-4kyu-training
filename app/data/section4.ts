@@ -103,3 +103,12 @@ const invalidQuestions = section4Questions.filter((question) => {
 if (invalidQuestions.length > 0) {
   throw new Error(`Section IV stress/plural mismatch: ${invalidQuestions.map((question) => question.lemma).join(', ')}`)
 }
+
+const missingStressQuestions = section4Questions.filter((question) => {
+  const vowelCount = question.stressedPlural.match(/[аеёиоуыэюя]/giu)?.length ?? 0
+  return vowelCount > 1 && !/[ёЁ\u0301]/u.test(question.stressedPlural)
+})
+
+if (missingStressQuestions.length > 0) {
+  throw new Error(`Section IV plural stress is missing: ${missingStressQuestions.map((question) => question.lemma).join(', ')}`)
+}
