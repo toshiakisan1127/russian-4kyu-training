@@ -90,7 +90,7 @@ const speak = (text: string) => {
 
   const utterance = new SpeechSynthesisUtterance(stripStress(text))
   utterance.lang = 'ru-RU'
-  utterance.rate = 0.4
+  utterance.rate = Number(window.localStorage.getItem('russian-speech-rate') ?? '0.4')
 
   const russianVoice = window.speechSynthesis
     .getVoices()
