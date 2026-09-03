@@ -153,7 +153,7 @@ const tokenNeedsStressMark = (token: string) => {
   return vowelCount > 1
 }
 
-const tokenHasStressMark = (token: string) => /[ёЁ\u0301]/u.test(token.normalize('NFD'))
+const tokenHasStressMark = (token: string) => /[ёЁ\u0301]/u.test(token)
 
 const invalidStressItems = vocabularyItems.filter((item) => {
   if (stripStress(item.stressedWord) !== item.word) return true
