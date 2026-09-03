@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: './tests',
   timeout: 30_000,
   use: {
-    baseURL: 'http://127.0.0.1:3000/toshiaki_Russia_language',
+    baseURL: 'http://127.0.0.1:3000',
     headless: true,
   },
   webServer: {
