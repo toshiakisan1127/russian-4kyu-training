@@ -280,13 +280,21 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         </p>
       </header>
 
-      <div class="mb-8">
+      <div class="mb-8 flex flex-wrap gap-3">
         <NuxtLink
           to="/about"
           class="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-2.5 text-sm font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md"
         >
           <span aria-hidden="true">ⓘ</span>
           <span>ロシア語能力検定4級とこのサイトについて</span>
+          <span aria-hidden="true">→</span>
+        </NuxtLink>
+        <NuxtLink
+          to="/reference"
+          class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 py-2.5 text-sm font-black text-emerald-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-md"
+        >
+          <span aria-hidden="true">☆</span>
+          <span>4級重要表現まとめ</span>
           <span aria-hidden="true">→</span>
         </NuxtLink>
       </div>
