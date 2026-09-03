@@ -262,8 +262,10 @@ const choiceClasses = (value: string) => {
                 {{ currentQuestion.fullSentence }}
               </p>
 
-              <p class="mt-3 mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">IPA</p>
-              <p class="m-0 text-sm leading-6 text-slate-600">{{ currentQuestion.ipa }}</p>
+              <template v-if="currentQuestion.ipa">
+                <p class="mt-3 mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">IPA</p>
+                <p class="m-0 text-sm leading-6 text-slate-600">{{ currentQuestion.ipa }}</p>
+              </template>
 
               <button
                 type="button"
