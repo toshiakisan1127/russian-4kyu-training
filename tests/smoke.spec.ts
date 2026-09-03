@@ -8,6 +8,7 @@ const routes = [
   '/verbs',
   '/mixed',
   '/vocabulary',
+  '/reading',
   '/sections/1',
   '/sections/2',
   '/sections/3',
