@@ -70,7 +70,7 @@ const seeds: PhraseSeed[] = [
   { determiner: 'мой', adjective: 'русский', noun: 'язык' },
   { determiner: 'наш', adjective: 'маленький', noun: 'магазин' },
   { determiner: 'этот', adjective: 'новый', noun: 'компьютер' },
-  { determiner: 'моя' as never, adjective: 'новый', noun: 'книга' },
+  { determiner: 'мой', adjective: 'новый', noun: 'книга' },
   { determiner: 'наш', adjective: 'большой', noun: 'школа' },
   { determiner: 'этот', adjective: 'русский', noun: 'газета' },
   { determiner: 'мой', adjective: 'красивый', noun: 'улица' },
