@@ -9,6 +9,7 @@ export type Section8Question = {
   fullAnswer: string
   choices: string[]
   explanation: string
+  translation: string
 }
 
 type VerbSeed = {
@@ -38,6 +39,38 @@ const verbs: readonly VerbSeed[] = [
 ]
 
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
+
+const tenseTranslations: Record<string, { past: string; future: string }> = {
+  чита́ть: { past: '本を読みました', future: '本を読むでしょう' },
+  писа́ть: { past: '手紙を書きました', future: '手紙を書くでしょう' },
+  говори́ть: { past: 'ロシア語を話しました', future: 'ロシア語を話すでしょう' },
+  де́лать: { past: '宿題をしました', future: '宿題をするでしょう' },
+  рабо́тать: { past: '家で働きました', future: '家で働くでしょう' },
+  учи́ться: { past: '大学で学びました', future: '大学で学ぶでしょう' },
+  смотре́ть: { past: '映画を見ました', future: '映画を見るでしょう' },
+  слу́шать: { past: '音楽を聞きました', future: '音楽を聞くでしょう' },
+  понима́ть: { past: 'この質問を理解しました', future: 'この質問を理解するでしょう' },
+  люби́ть: { past: '音楽が好きでした', future: '音楽が好きでしょう' },
+  гото́вить: { past: '夕食を作りました', future: '夕食を作るでしょう' },
+  игра́ть: { past: 'サッカーをしました', future: 'サッカーをするでしょう' },
+}
+
+const subjectTranslations: Record<string, string> = {
+  я: '私は',
+  ты: 'あなたは',
+  он: '彼は',
+  она: '彼女は',
+  мы: '私たちは',
+  вы: 'あなたたちは',
+  они: '彼らは',
+}
+
+const translateTense = (
+  tense: 'past' | 'future',
+  subject: string,
+  infinitive: string,
+  time: string,
+) => `${time}、${subjectTranslations[subject] ?? subject}${tenseTranslations[infinitive]?.[tense] ?? infinitive}。`
 
 const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) => {
   const pastSubjects = [
@@ -80,7 +113,7 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
   return [...pastQuestions, ...futureQuestions]
 })
 
-const neuterPast: readonly Omit<Section8Question, 'id' | 'tense'>[] = [
+const neuterPast: readonly Omit<Section8Question, 'id' | 'tense' | 'translation'>[] = [
   { infinitive: 'рабо́тать', meaning: '働く・作動する', sourceSentence: 'Ра́дио хорошо́ рабо́тает.', prompt: 'Вчера́ ра́дио хорошо́ ___.', correctAnswer: 'рабо́тало', fullAnswer: 'Вчера́ ра́дио хорошо́ рабо́тало.', choices: ['рабо́тал', 'рабо́тала', 'рабо́тало', 'рабо́тали'], explanation: 'ра́дио は中性名詞として扱うので、過去形は中性単数「рабо́тало」。' },
   { infinitive: 'лежа́ть', meaning: '横たわる・置かれている', sourceSentence: 'Письмо́ лежи́т на столе́.', prompt: 'Вчера́ письмо́ ___ на столе́.', correctAnswer: 'лежа́ло', fullAnswer: 'Вчера́ письмо́ лежа́ло на столе́.', choices: ['лежа́л', 'лежа́ла', 'лежа́ло', 'лежа́ли'], explanation: 'письмо́ は中性名詞なので「лежа́ло」。' },
   { infinitive: 'стоя́ть', meaning: '立っている・置かれている', sourceSentence: 'Окно́ стои́т откры́тым.', prompt: 'Вчера́ окно́ ___ откры́тым.', correctAnswer: 'стоя́ло', fullAnswer: 'Вчера́ окно́ стоя́ло откры́тым.', choices: ['стоя́л', 'стоя́ла', 'стоя́ло', 'стоя́ли'], explanation: 'окно́ は中性名詞なので「стоя́ло」。' },
@@ -95,11 +128,27 @@ const neuterPast: readonly Omit<Section8Question, 'id' | 'tense'>[] = [
   { infinitive: 'находи́ться', meaning: '位置している', sourceSentence: 'Кафе́ нахо́дится ря́дом.', prompt: 'Ра́ньше кафе́ ___ ря́дом.', correctAnswer: 'находи́лось', fullAnswer: 'Ра́ньше кафе́ находи́лось ря́дом.', choices: ['находи́лся', 'находи́лась', 'находи́лось', 'находи́лись'], explanation: 'кафе́ は中性名詞として扱うので「находи́лось」。' },
 ]
 
+const neuterTranslations = [
+  '昨日、ラジオはよく動いていました。',
+  '昨日、手紙は机の上に置かれていました。',
+  '昨日、窓は開いた状態で立っていました。',
+  '昨日、太陽は明るく照らしていました。',
+  '昨日、喉が痛かったです。',
+  '昨日、授業は9時に始まりました。',
+  '昨日、会議は5時に終わりました。',
+  '昨日、この言葉は変に聞こえました。',
+  '昨日、時間は速く進みました。',
+  '昨日、薬は効きました。',
+  '昨日、海は穏やかに見えました。',
+  '以前、カフェは近くにありました。',
+] as const
+
 export const section8Questions: Section8Question[] = [
   ...generatedQuestions,
   ...neuterPast.map((question, index) => ({
     ...question,
     id: `s8-n-${String(index + 1).padStart(2, '0')}`,
     tense: 'past' as const,
+    translation: neuterTranslations[index]!,
   })),
 ]
