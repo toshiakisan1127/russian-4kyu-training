@@ -280,7 +280,17 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         </p>
       </header>
 
-      <section class="mb-8 grid gap-5 lg:grid-cols-2" aria-labelledby="exam-overview-heading">
+      <details class="group mb-6 rounded-3xl border border-indigo-200 bg-white shadow-sm shadow-indigo-100">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 transition hover:bg-indigo-50 sm:p-6 [&::-webkit-details-marker]:hidden">
+          <div>
+            <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Exam guide</p>
+            <h2 class="mb-1 text-xl font-black sm:text-2xl">ロシア語能力検定4級について</h2>
+            <p class="m-0 text-sm font-medium text-slate-500">試験の概要と、このサイトの前提条件</p>
+          </div>
+          <span class="grid size-10 shrink-0 place-items-center rounded-full bg-indigo-100 text-xl font-black text-indigo-700 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+        </summary>
+
+        <div class="grid gap-5 border-t border-indigo-100 px-5 pt-5 pb-6 sm:px-6 lg:grid-cols-2">
         <article class="rounded-3xl border border-indigo-200 bg-indigo-50 p-5 sm:p-6">
           <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">About the exam</p>
           <h2 id="exam-overview-heading" class="mb-3 text-xl font-black sm:text-2xl">ロシア語能力検定4級とは</h2>
@@ -317,7 +327,9 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
             <li>本試験の完全再現や公式過去問ではなく、出題内容を参考にした個人制作の練習サイトであること</li>
           </ul>
         </article>
-      </section>
+      
+        </div>
+      </details>
 
       <details class="group mb-8 rounded-3xl border border-indigo-200 bg-white shadow-sm shadow-indigo-100 sm:mb-10">
         <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 transition hover:bg-indigo-50 sm:p-6 [&::-webkit-details-marker]:hidden">
