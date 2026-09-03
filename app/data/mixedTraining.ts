@@ -13,6 +13,7 @@ export type MixedTrainingQuestion = {
   subtext?: string
   correctAnswer: string
   choices: string[]
+  choiceExplanations?: Record<string, string>
   answerSentence: string
   answerTranslation?: string
   explanation: string
@@ -26,6 +27,7 @@ const prepositionQuestions: MixedTrainingQuestion[] = questions.map((question) =
   subtext: question.translation,
   correctAnswer: question.answer,
   choices: question.choices.map((choice) => choice.value),
+  choiceExplanations: Object.fromEntries(question.choices.map((choice) => [choice.value, choice.explanation])),
   answerSentence: question.fullSentence,
   answerTranslation: question.translation,
   explanation: question.correctExplanation,
@@ -39,6 +41,7 @@ const caseQuestions: MixedTrainingQuestion[] = caseTrainingQuestions.map((questi
   subtext: `基本形: ${question.basePhrase}`,
   correctAnswer: question.correctPhrase,
   choices: question.choices,
+  choiceExplanations: question.choiceExplanations,
   answerSentence: `${question.before} ${question.correctPhrase}${question.after}`,
   answerTranslation: question.answerTranslation,
   explanation: `${question.caseLabel}: ${question.explanation}`,
@@ -52,6 +55,7 @@ const verbQuestions: MixedTrainingQuestion[] = verbTrainingQuestions.map((questi
   subtext: `${question.infinitive} — ${question.meaning}`,
   correctAnswer: question.correctAnswer,
   choices: question.choices,
+  choiceExplanations: question.choiceExplanations,
   answerSentence: question.answerSentence,
   answerTranslation: question.answerTranslation ?? question.meaning,
   explanation: question.explanation,
