@@ -13,6 +13,7 @@ export type Section7Question = {
   correctAnswer: string
   choices: string[]
   forms: Section7Form[]
+  translation: string
 }
 
 type VerbSeed = {
@@ -50,6 +51,38 @@ const verbs: readonly VerbSeed[] = [
 
 const displaySubject = (subject: Section7Form['subject']) => subject === 'он/она' ? 'Он' : subject.charAt(0).toUpperCase() + subject.slice(1)
 
+const subjectTranslations: Record<Section7Form['subject'], string> = {
+  я: '私は',
+  ты: 'あなたは',
+  'он/она': '彼／彼女は',
+  мы: '私たちは',
+  вы: 'あなたたちは',
+  они: '彼らは',
+}
+
+const verbTranslations: Record<string, string> = {
+  чита́ть: '本を読む',
+  писа́ть: '手紙を書く',
+  говори́ть: 'ロシア語を話す',
+  де́лать: '宿題をする',
+  рабо́тать: '家で働く',
+  жить: 'モスクワに住む',
+  учи́ться: '大学で学ぶ',
+  смотре́ть: '映画を見る',
+  слу́шать: '音楽を聞く',
+  знать: 'この町を知っている',
+  понима́ть: 'この質問を理解する',
+  люби́ть: '音楽が好きだ',
+  хоте́ть: '家へ行きたい',
+  мочь: '助けることができる',
+  идти́: '学校へ歩いて行く',
+  е́хать: '仕事へ乗り物で行く',
+  есть: 'スープを食べる',
+  пить: 'お茶を飲む',
+  брать: '本を取る',
+  дава́ть: 'アドバイスをする',
+}
+
 export const section7Questions: Section7Question[] = verbs.flatMap((verb, verbIndex) => {
   const forms: Section7Form[] = subjects.map((subject, index) => ({ subject, form: verb.forms[index] }))
 
@@ -67,6 +100,7 @@ export const section7Questions: Section7Question[] = verbs.flatMap((verb, verbIn
       correctAnswer: verb.forms[personIndex],
       choices,
       forms,
+      translation: `${subjectTranslations[subject]}${verbTranslations[verb.infinitive] ?? verb.meaning}。`,
     }
   })
 })
