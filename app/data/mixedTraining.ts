@@ -79,21 +79,31 @@ const getVocabularyChoices = (index: number) => {
   return choices
 }
 
-const vocabularyQuestions: MixedTrainingQuestion[] = vocabularyItems.map((item, index) => ({
+const vocabularyQuestions: MixedTrainingQuestion[] = vocabularyItems.map((item, index) => {
+  const choices = getVocabularyChoices(index)
+  const choiceExplanations = Object.fromEntries(choices.map((choice) => [
+    choice,
+    choice === item.meaning
+      ? `${item.stressedWord}の意味は「${item.meaning}」。この問題の正解。`
+      : `「${choice}」という意味の選択肢。この単語「${item.stressedWord}」の意味ではない。`,
+  ]))
+
+  return {
   id: `mixed-vocab-${item.id}`,
   source: 'vocabulary',
   sourceLabel: '語彙',
   prompt: item.stressedWord,
   subtext: 'この単語の意味を選びなさい。',
   correctAnswer: item.meaning,
-  choices: getVocabularyChoices(index),
+  choices,
+  choiceExplanations,
   answerSentence: item.example?.sentence ?? `${item.stressedWord} — ${item.meaning}`,
   answerTranslation: item.example?.translation ?? item.meaning,
   explanation: item.example
     ? `${item.stressedWord} は「${item.meaning}」。例: ${item.example.sentence}（${item.example.translation}）`
     : `${item.stressedWord} は「${item.meaning}」。`,
-}))
-
+  }
+})
 export const mixedTrainingQuestions: MixedTrainingQuestion[] = [
   ...prepositionQuestions,
   ...caseQuestions,
