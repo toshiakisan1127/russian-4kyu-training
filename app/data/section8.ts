@@ -138,7 +138,7 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
   return [...pastQuestions, ...futureQuestions]
 })
 
-const neuterPast: readonly Omit<Section8Question, 'id' | 'tense' | 'translation'>[] = [
+const neuterPast: readonly Omit<Section8Question, 'id' | 'tense' | 'translation' | 'choiceExplanations'>[] = [
   { infinitive: 'рабо́тать', meaning: '働く・作動する', sourceSentence: 'Ра́дио хорошо́ рабо́тает.', prompt: 'Вчера́ ра́дио хорошо́ ___.', correctAnswer: 'рабо́тало', fullAnswer: 'Вчера́ ра́дио хорошо́ рабо́тало.', choices: ['рабо́тал', 'рабо́тала', 'рабо́тало', 'рабо́тали'], explanation: 'ра́дио は中性名詞として扱うので、過去形は中性単数「рабо́тало」。' },
   { infinitive: 'лежа́ть', meaning: '横たわる・置かれている', sourceSentence: 'Письмо́ лежи́т на столе́.', prompt: 'Вчера́ письмо́ ___ на столе́.', correctAnswer: 'лежа́ло', fullAnswer: 'Вчера́ письмо́ лежа́ло на столе́.', choices: ['лежа́л', 'лежа́ла', 'лежа́ло', 'лежа́ли'], explanation: 'письмо́ は中性名詞なので「лежа́ло」。' },
   { infinitive: 'стоя́ть', meaning: '立っている・置かれている', sourceSentence: 'Окно́ стои́т откры́тым.', prompt: 'Вчера́ окно́ ___ откры́тым.', correctAnswer: 'стоя́ло', fullAnswer: 'Вчера́ окно́ стоя́ло откры́тым.', choices: ['стоя́л', 'стоя́ла', 'стоя́ло', 'стоя́ли'], explanation: 'окно́ は中性名詞なので「стоя́ло」。' },
