@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { caseTrainingQuestions } from '~/data/caseTraining'
 import { japaneseToRussianQuestions } from '~/data/japaneseToRussian'
+import { mixedTrainingQuestions } from '~/data/mixedTraining'
 import { questions } from '~/data/questions'
 import { russianToJapaneseQuestions } from '~/data/russianToJapanese'
 import { section1Questions } from '~/data/section1'
@@ -21,7 +22,7 @@ import {
   type QuestionStatus,
 } from '~/utils/questionProgress'
 
-type TrainingProgressKey = 'prepositions' | 'cases' | 'verbs' | 'vocabulary'
+type TrainingProgressKey = 'prepositions' | 'cases' | 'verbs' | 'vocabulary' | 'mixed'
 type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7' | 'section8'
 type TranslationProgressKey = 'ruJa' | 'jaRu'
 
@@ -81,8 +82,10 @@ const trainingItems: TrainingItem[] = [
   },
   {
     title: '総合',
-    description: '分野を混ぜて、知識が定着しているか確認。',
-    status: 'coming-soon',
+    description: '前置詞・格変化・動詞・語彙を混ぜて、苦手を優先しながら総合演習。',
+    to: '/mixed',
+    status: 'available',
+    progressKey: 'mixed',
   },
 ]
 
@@ -202,6 +205,10 @@ const trainingProgress = computed(() => {
     vocabulary: {
       counts: getQuestionStatusCounts(vocabularyItems.map((item) => item.id)),
       total: vocabularyItems.length,
+    },
+    mixed: {
+      counts: getQuestionStatusCounts(mixedTrainingQuestions.map((question) => question.id)),
+      total: mixedTrainingQuestions.length,
     },
   }
 })
