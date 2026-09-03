@@ -14,6 +14,7 @@ export type MixedTrainingQuestion = {
   correctAnswer: string
   choices: string[]
   answerSentence: string
+  answerTranslation?: string
   explanation: string
 }
 
@@ -26,6 +27,7 @@ const prepositionQuestions: MixedTrainingQuestion[] = questions.map((question) =
   correctAnswer: question.answer,
   choices: question.choices.map((choice) => choice.value),
   answerSentence: question.fullSentence,
+  answerTranslation: question.translation,
   explanation: question.correctExplanation,
 }))
 
@@ -38,6 +40,7 @@ const caseQuestions: MixedTrainingQuestion[] = caseTrainingQuestions.map((questi
   correctAnswer: question.correctPhrase,
   choices: question.choices,
   answerSentence: `${question.before} ${question.correctPhrase}${question.after}`,
+  answerTranslation: question.answerTranslation,
   explanation: `${question.caseLabel}: ${question.explanation}`,
 }))
 
@@ -50,6 +53,7 @@ const verbQuestions: MixedTrainingQuestion[] = verbTrainingQuestions.map((questi
   correctAnswer: question.correctAnswer,
   choices: question.choices,
   answerSentence: question.answerSentence,
+  answerTranslation: question.answerTranslation ?? question.meaning,
   explanation: question.explanation,
 }))
 
@@ -80,6 +84,7 @@ const vocabularyQuestions: MixedTrainingQuestion[] = vocabularyItems.map((item, 
   correctAnswer: item.meaning,
   choices: getVocabularyChoices(index),
   answerSentence: item.example?.sentence ?? `${item.stressedWord} — ${item.meaning}`,
+  answerTranslation: item.example?.translation ?? item.meaning,
   explanation: item.example
     ? `${item.stressedWord} は「${item.meaning}」。例: ${item.example.sentence}（${item.example.translation}）`
     : `${item.stressedWord} は「${item.meaning}」。`,
