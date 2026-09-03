@@ -1,6 +1,7 @@
+import { extraPrepositionQuestions } from './prepositionPool'
 import type { MultipleChoiceQuestion } from '../types/question'
 
-export const questions: MultipleChoiceQuestion[] = [
+const coreQuestions: MultipleChoiceQuestion[] = [
   {
     id: 'prep-001',
     category: 'preposition',
@@ -82,3 +83,12 @@ export const questions: MultipleChoiceQuestion[] = [
     ],
   },
 ]
+
+export const questions: MultipleChoiceQuestion[] = [
+  ...coreQuestions,
+  ...extraPrepositionQuestions,
+]
+
+if (questions.length !== 100) {
+  throw new Error(`Preposition question pool must contain 100 items, got ${questions.length}`)
+}
