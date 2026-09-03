@@ -8,6 +8,7 @@ import { section3Questions } from '~/data/section3'
 import { section4Questions } from '~/data/section4'
 import { section5Questions } from '~/data/section5'
 import { section6Questions } from '~/data/section6'
+import { section7Questions } from '~/data/section7'
 import { vocabularyItems } from '~/data/vocabulary'
 import {
   getQuestionStatusCounts,
@@ -16,7 +17,7 @@ import {
 } from '~/utils/questionProgress'
 
 type TrainingProgressKey = 'prepositions' | 'vocabulary'
-type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6'
+type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7'
 
 type TrainingItem = {
   title: string
@@ -125,7 +126,9 @@ const examItems: ExamItem[] = [
     roman: 'VII',
     title: '動詞の人称変化',
     description: '主語に合わせて指定された動詞を正しく人称変化させる。',
-    status: 'coming-soon',
+    status: 'available',
+    to: '/sections/7',
+    progressKey: 'section7',
   },
   {
     roman: 'VIII',
@@ -202,6 +205,10 @@ const examProgress = computed(() => {
     section6: {
       counts: getQuestionStatusCounts(section6Questions.map((question) => question.id)),
       total: section6Questions.length,
+    },
+    section7: {
+      counts: getQuestionStatusCounts(section7Questions.map((question) => question.id)),
+      total: section7Questions.length,
     },
   }
 })
@@ -300,7 +307,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
               >
                 <div class="mb-3 flex items-center justify-between gap-3">
                   <span class="rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</span>
-                  <span class="text-xs font-black text-sky-800">100問</span>
+                  <span class="text-xs font-black text-sky-800">{{ examProgress[item.progressKey].total }}問</span>
                 </div>
                 <h3 class="mb-2 text-xl font-black text-slate-900">第{{ item.roman }}問・{{ item.title }}</h3>
                 <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
