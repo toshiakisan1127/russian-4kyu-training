@@ -8,7 +8,7 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
   app: {
-    baseURL: '/toshiaki_Russia_language/',
+    baseURL: '/russian-4kyu-training/',
     head: {
       htmlAttrs: { lang: 'ja' },
       title: 'ロシア語4級トレーニング',
