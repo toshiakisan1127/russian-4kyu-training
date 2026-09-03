@@ -8,6 +8,12 @@ import {
   type RussianCase,
   type VocabularyPartOfSpeech,
 } from '~/data/vocabulary'
+import {
+  stressAdjectiveForm,
+  stressNounForm,
+  stressNounPluralBase,
+  stressVerbForm,
+} from '~/utils/russianStress'
 import { shuffle } from '~/utils/shuffle'
 import {
   getQuestionProgress,
@@ -63,25 +69,62 @@ const nounGender = {
 const indeclinableNouns = new Set(['метро', 'кафе', 'кофе', 'радио', 'меню', 'пальто'])
 const pluralOnlyNouns = new Set(['деньги', 'брюки'])
 
+const getNounLemma = (noun: NounVocabularyItem) => {
+  const pluralOnly = noun.plural === '複数形のみ' || pluralOnlyNouns.has(noun.word)
+  return RussianNouns.Lemma.create(pluralOnly
+    ? { text: noun.word, pluraleTantum: true, animate: noun.animate ?? false }
+    : {
+        text: noun.word,
+        gender: nounGender[noun.gender],
+        animate: noun.animate ?? false,
+        indeclinable: indeclinableNouns.has(noun.word),
+      })
+}
+
+const getCaseValue = (caseKey: RussianCase) => {
+  const index = caseItems.findIndex((item) => item.key === caseKey)
+  return RussianNouns.CASES[index]
+}
+
+const nounEndingStress = (noun: NounVocabularyItem, caseKey: RussianCase, plural: boolean) => {
+  try {
+    const lemma = getNounLemma(noun)
+    const caseValue = getCaseValue(caseKey)
+    const results = plural
+      ? nounEngine.sd.hasStressedEndingPlural(lemma, caseValue)
+      : nounEngine.sd.hasStressedEndingSingular(lemma, caseValue)
+    return results?.[0] as boolean | undefined
+  } catch {
+    return undefined
+  }
+}
+
+const getStressedPluralBase = (noun: NounVocabularyItem) => {
+  if (noun.plural === '複数形のみ') return noun.stressedWord
+  if (noun.plural === '通常複数形なし') return noun.plural
+  return stressNounPluralBase(
+    noun.word,
+    noun.plural,
+    noun.stressedWord,
+    nounEndingStress(noun, 'nominative', true),
+  )
+}
+
 const getPluralDeclension = (noun: NounVocabularyItem): Record<RussianCase, string> | null => {
-  if (noun.word.includes(' ')) return null
+  if (noun.word.includes(' ') || noun.plural === '通常複数形なし') return null
 
   try {
     const pluralOnly = noun.plural === '複数形のみ' || pluralOnlyNouns.has(noun.word)
-    const lemma = RussianNouns.Lemma.create(pluralOnly
-      ? { text: noun.word, pluraleTantum: true, animate: noun.animate ?? false }
-      : {
-          text: noun.word,
-          gender: nounGender[noun.gender],
-          animate: noun.animate ?? false,
-          indeclinable: indeclinableNouns.has(noun.word),
-        })
+    const lemma = getNounLemma(noun)
     const pluralForm = pluralOnly ? noun.word : noun.plural
-    const forms = RussianNouns.CASES.slice(0, 6).map((caseValue: unknown) => {
+    const stressedPluralBase = getStressedPluralBase(noun)
+    const forms = caseItems.map(({ key }) => {
+      const caseValue = getCaseValue(key)
       const candidates = pluralOnly
         ? nounEngine.decline(lemma, caseValue)
         : nounEngine.decline(lemma, caseValue, pluralForm)
-      return candidates[0] ?? pluralForm
+      const form = candidates[0] ?? pluralForm
+      return stressNounForm(form, stressedPluralBase, nounEndingStress(noun, key, true))
     })
 
     return {
@@ -182,17 +225,33 @@ const currentStatusClasses = computed(() => ({
 }[currentStatus.value]))
 const currentWordHasExplicitStress = computed(() => /[ёЁ\u0301]/u.test(currentQuestion.value.stressedWord))
 
-const displayNounCase = (caseKey: RussianCase, value: string) =>
-  caseKey === 'nominative' ? currentQuestion.value.stressedWord : value
+const displayNounPlural = () => {
+  const question = currentQuestion.value
+  return question.partOfSpeech === 'noun' ? getStressedPluralBase(question) : ''
+}
 
-const displayAdjectiveForm = (key: 'masculine' | 'feminine' | 'neuter' | 'plural', value: string) =>
-  key === 'masculine' ? currentQuestion.value.stressedWord : value
+const displayNounCase = (caseKey: RussianCase, value: string) => {
+  const question = currentQuestion.value
+  if (question.partOfSpeech !== 'noun') return value
+  if (caseKey === 'nominative') return question.stressedWord
+  return stressNounForm(value, question.stressedWord, nounEndingStress(question, caseKey, false))
+}
 
-const displayAdjectiveCase = (
-  caseKey: RussianCase,
-  key: 'masculine' | 'feminine' | 'neuter' | 'plural',
-  value: string,
-) => caseKey === 'nominative' && key === 'masculine' ? currentQuestion.value.stressedWord : value
+const displayVerbForm = (form: string, index: number) => {
+  const question = currentQuestion.value
+  if (question.partOfSpeech !== 'verb') return form
+  return stressVerbForm(form, question.word, question.stressedWord, index)
+}
+
+const displayAdjectiveForm = (value: string) => {
+  const question = currentQuestion.value
+  return question.partOfSpeech === 'adjective' ? stressAdjectiveForm(value, question.stressedWord) : value
+}
+
+const displayAdjectiveCase = (value: string) => {
+  const question = currentQuestion.value
+  return question.partOfSpeech === 'adjective' ? stressAdjectiveForm(value, question.stressedWord) : value
+}
 
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
@@ -393,13 +452,13 @@ const choiceClasses = (value: string) => {
             <div v-if="currentQuestion.partOfSpeech === 'noun'" class="mb-5 overflow-hidden rounded-2xl border border-slate-200">
               <div class="border-b border-slate-200 bg-slate-100 px-4 py-3">
                 <p class="m-0 text-sm font-black">名詞の形</p>
-                <p class="mt-1 mb-0 text-xs text-slate-500">強勢移動を誤って自動付与しないため、確認済みの語形だけアクセント記号を表示します。</p>
+                <p class="mt-1 mb-0 text-xs text-slate-500">単数・複数とも、格ごとの強勢位置を表示しています。</p>
               </div>
               <div class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3">
                 <span class="text-sm font-black text-slate-500">複数形</span>
                 <div class="flex items-center justify-between gap-2">
-                  <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.plural }}</strong>
-                  <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported || currentQuestion.plural === '通常複数形なし'" aria-label="複数形を読み上げ" @click="speakForm(currentQuestion.plural === '複数形のみ' ? currentQuestion.stressedWord : currentQuestion.plural)">🔊</button>
+                  <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ displayNounPlural() }}</strong>
+                  <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported || currentQuestion.plural === '通常複数形なし'" aria-label="複数形を読み上げ" @click="speakForm(displayNounPlural())">🔊</button>
                 </div>
               </div>
               <template v-if="currentQuestion.declension">
@@ -434,12 +493,12 @@ const choiceClasses = (value: string) => {
             <div v-if="currentQuestion.partOfSpeech === 'verb' && currentQuestion.presentConjugation" class="mb-5 overflow-hidden rounded-2xl border border-slate-200">
               <div class="border-b border-slate-200 bg-slate-100 px-4 py-3">
                 <p class="m-0 text-sm font-black">現在形の活用</p>
-                <p class="mt-1 mb-0 text-xs text-slate-500">活用形の強勢は移動する語があるため、未確認の自動アクセントは付けません。</p>
+                <p class="mt-1 mb-0 text-xs text-slate-500">活用形ごとの強勢位置を表示しています。</p>
               </div>
               <div class="grid gap-px bg-slate-200 sm:grid-cols-2">
-                <div v-for="form in Object.values(currentQuestion.presentConjugation)" :key="form" class="flex items-center justify-between gap-2 bg-white px-4 py-3">
-                  <strong>{{ form }}</strong>
-                  <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="活用形を読み上げ" @click="speakForm(form)">🔊</button>
+                <div v-for="(form, index) in Object.values(currentQuestion.presentConjugation)" :key="form" class="flex items-center justify-between gap-2 bg-white px-4 py-3">
+                  <strong>{{ displayVerbForm(form, index) }}</strong>
+                  <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-sm transition hover:bg-slate-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="活用形を読み上げ" @click="speakForm(displayVerbForm(form, index))">🔊</button>
                 </div>
               </div>
             </div>
@@ -447,13 +506,13 @@ const choiceClasses = (value: string) => {
             <template v-if="currentQuestion.partOfSpeech === 'adjective' && currentQuestion.forms && currentQuestion.declension">
               <div class="mb-5 rounded-2xl border border-slate-200 px-4 py-4">
                 <p class="mb-1 text-sm font-black">基本形</p>
-                <p class="mb-3 text-xs text-slate-500">男性単数の見出し語はアクセント付き。ほかの語形は確認済みデータのみ記号を表示します。</p>
+                <p class="mb-3 text-xs text-slate-500">男女・中性・複数と、各格の強勢位置も表示しています。</p>
                 <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   <div v-for="formItem in adjectiveFormItems" :key="formItem.key" class="rounded-xl bg-slate-100 px-3 py-2">
                     <span class="block text-xs font-black text-slate-500">{{ formItem.label }}</span>
                     <div class="mt-1 flex items-center justify-between gap-1">
-                      <strong style="font-family: 'PT Serif', Georgia, serif">{{ displayAdjectiveForm(formItem.key, currentQuestion.forms[formItem.key]) }}</strong>
-                      <button type="button" class="grid size-7 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs transition hover:bg-slate-50 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`${formItem.label}形を読み上げ`" @click="speakForm(displayAdjectiveForm(formItem.key, currentQuestion.forms[formItem.key]))">🔊</button>
+                      <strong style="font-family: 'PT Serif', Georgia, serif">{{ displayAdjectiveForm(currentQuestion.forms[formItem.key]) }}</strong>
+                      <button type="button" class="grid size-7 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs transition hover:bg-slate-50 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`${formItem.label}形を読み上げ`" @click="speakForm(displayAdjectiveForm(currentQuestion.forms[formItem.key]))">🔊</button>
                     </div>
                   </div>
                 </div>
@@ -469,8 +528,8 @@ const choiceClasses = (value: string) => {
                       <th class="px-3 py-3 font-black text-slate-500">{{ caseItem.label }}</th>
                       <td v-for="formItem in adjectiveFormItems" :key="`${caseItem.key}-${formItem.key}`" class="px-3 py-3 font-bold">
                         <div class="flex items-center justify-between gap-2">
-                          <span>{{ displayAdjectiveCase(caseItem.key, formItem.key, currentQuestion.declension[caseItem.key][formItem.key]) }}</span>
-                          <button type="button" class="grid size-7 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs transition hover:bg-slate-50 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`${caseItem.label}${formItem.label}形を読み上げ`" @click="speakForm(displayAdjectiveCase(caseItem.key, formItem.key, currentQuestion.declension[caseItem.key][formItem.key]))">🔊</button>
+                          <span>{{ displayAdjectiveCase(currentQuestion.declension[caseItem.key][formItem.key]) }}</span>
+                          <button type="button" class="grid size-7 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs transition hover:bg-slate-50 disabled:opacity-40" :disabled="!speechSupported" :aria-label="`${caseItem.label}${formItem.label}形を読み上げ`" @click="speakForm(displayAdjectiveCase(currentQuestion.declension[caseItem.key][formItem.key]))">🔊</button>
                         </div>
                       </td>
                     </tr>
