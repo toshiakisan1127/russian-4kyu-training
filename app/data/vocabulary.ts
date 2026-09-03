@@ -142,3 +142,28 @@ export const vocabularyItems: VocabularyItem[] = [
 if (vocabularyItems.length !== 550) {
   throw new Error(`Vocabulary pool must contain 550 items, got ${vocabularyItems.length}`)
 }
+
+const stripStress = (text: string) => text
+  .normalize('NFD')
+  .replace(/\u0301/g, '')
+  .normalize('NFC')
+
+const tokenNeedsStressMark = (token: string) => {
+  const vowelCount = token.match(/[аеёиоуыэюя]/giu)?.length ?? 0
+  return vowelCount > 1
+}
+
+const tokenHasStressMark = (token: string) => /[ёЁ\u0301]/u.test(token)
+
+const invalidStressItems = vocabularyItems.filter((item) => {
+  if (stripStress(item.stressedWord) !== item.word) return true
+
+  return item.stressedWord
+    .split(/[\s-]+/u)
+    .filter(Boolean)
+    .some((token) => tokenNeedsStressMark(token) && !tokenHasStressMark(token))
+})
+
+if (invalidStressItems.length > 0) {
+  throw new Error(`Vocabulary stress metadata is invalid: ${invalidStressItems.map((item) => `${item.id}:${item.stressedWord}`).join(', ')}`)
+}

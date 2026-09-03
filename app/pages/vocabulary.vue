@@ -180,6 +180,19 @@ const currentStatusClasses = computed(() => ({
   learning: 'border-violet-200 bg-violet-50 text-violet-700',
   mastered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
 }[currentStatus.value]))
+const currentWordHasExplicitStress = computed(() => /[ёЁ\u0301]/u.test(currentQuestion.value.stressedWord))
+
+const displayNounCase = (caseKey: RussianCase, value: string) =>
+  caseKey === 'nominative' ? currentQuestion.value.stressedWord : value
+
+const displayAdjectiveForm = (key: 'masculine' | 'feminine' | 'neuter' | 'plural', value: string) =>
+  key === 'masculine' ? currentQuestion.value.stressedWord : value
+
+const displayAdjectiveCase = (
+  caseKey: RussianCase,
+  key: 'masculine' | 'feminine' | 'neuter' | 'plural',
+  value: string,
+) => caseKey === 'nominative' && key === 'masculine' ? currentQuestion.value.stressedWord : value
 
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
@@ -348,7 +361,9 @@ const choiceClasses = (value: string) => {
               </div>
               <div class="flex items-center justify-between gap-3">
                 <div>
-                  <p class="m-0 text-xl font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.stressedWord }}</p>
+                  <p class="mb-1 text-xs font-black tracking-[0.12em] text-indigo-600 uppercase">強勢（アクセント）</p>
+                  <p class="m-0 text-2xl font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.stressedWord }}</p>
+                  <p v-if="!currentWordHasExplicitStress" class="mt-1 mb-0 text-xs font-bold text-slate-500">各語が1音節のため、アクセント記号は省略</p>
                   <p v-if="currentQuestion.ipa" class="mt-1 mb-0 font-mono text-sm text-slate-600">{{ currentQuestion.ipa }}</p>
                 </div>
                 <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full border border-indigo-200 bg-white text-lg transition hover:bg-indigo-100 disabled:opacity-40" :disabled="!speechSupported" @click="speak(currentQuestion.stressedWord)">🔊</button>
@@ -370,6 +385,7 @@ const choiceClasses = (value: string) => {
             <div v-if="currentQuestion.partOfSpeech === 'noun'" class="mb-5 overflow-hidden rounded-2xl border border-slate-200">
               <div class="border-b border-slate-200 bg-slate-100 px-4 py-3">
                 <p class="m-0 text-sm font-black">名詞の形</p>
+                <p class="mt-1 mb-0 text-xs text-slate-500">強勢移動を誤って自動付与しないため、確認済みの語形だけアクセント記号を表示します。</p>
               </div>
               <div class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3">
                 <span class="text-sm font-black text-slate-500">複数形</span>
@@ -380,7 +396,7 @@ const choiceClasses = (value: string) => {
                 <div class="divide-y divide-slate-200">
                   <div v-for="caseItem in caseItems" :key="caseItem.key" class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3">
                     <span class="text-sm font-black text-slate-500">{{ caseItem.label }}</span>
-                    <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.declension[caseItem.key] }}</strong>
+                    <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ displayNounCase(caseItem.key, currentQuestion.declension[caseItem.key]) }}</strong>
                   </div>
                 </div>
               </template>
@@ -399,7 +415,10 @@ const choiceClasses = (value: string) => {
             </div>
 
             <div v-if="currentQuestion.partOfSpeech === 'verb' && currentQuestion.presentConjugation" class="mb-5 overflow-hidden rounded-2xl border border-slate-200">
-              <div class="border-b border-slate-200 bg-slate-100 px-4 py-3"><p class="m-0 text-sm font-black">現在形の活用</p></div>
+              <div class="border-b border-slate-200 bg-slate-100 px-4 py-3">
+                <p class="m-0 text-sm font-black">現在形の活用</p>
+                <p class="mt-1 mb-0 text-xs text-slate-500">活用形の強勢は移動する語があるため、未確認の自動アクセントは付けません。</p>
+              </div>
               <div class="grid gap-px bg-slate-200 sm:grid-cols-2">
                 <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.firstSingular }}</strong></div>
                 <div class="bg-white px-4 py-3"><strong>{{ currentQuestion.presentConjugation.secondSingular }}</strong></div>
@@ -412,11 +431,12 @@ const choiceClasses = (value: string) => {
 
             <template v-if="currentQuestion.partOfSpeech === 'adjective' && currentQuestion.forms && currentQuestion.declension">
               <div class="mb-5 rounded-2xl border border-slate-200 px-4 py-4">
-                <p class="mb-3 text-sm font-black">基本形</p>
+                <p class="mb-1 text-sm font-black">基本形</p>
+                <p class="mb-3 text-xs text-slate-500">男性単数の見出し語はアクセント付き。ほかの語形は確認済みデータのみ記号を表示します。</p>
                 <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   <div v-for="formItem in adjectiveFormItems" :key="formItem.key" class="rounded-xl bg-slate-100 px-3 py-2">
                     <span class="block text-xs font-black text-slate-500">{{ formItem.label }}</span>
-                    <strong class="mt-1 block" style="font-family: 'PT Serif', Georgia, serif">{{ currentQuestion.forms[formItem.key] }}</strong>
+                    <strong class="mt-1 block" style="font-family: 'PT Serif', Georgia, serif">{{ displayAdjectiveForm(formItem.key, currentQuestion.forms[formItem.key]) }}</strong>
                   </div>
                 </div>
               </div>
@@ -429,10 +449,10 @@ const choiceClasses = (value: string) => {
                   <tbody class="divide-y divide-slate-200">
                     <tr v-for="caseItem in caseItems" :key="`adjective-${caseItem.key}`">
                       <th class="px-3 py-3 font-black text-slate-500">{{ caseItem.label }}</th>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].masculine }}</td>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].feminine }}</td>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].neuter }}</td>
-                      <td class="px-3 py-3 font-bold">{{ currentQuestion.declension[caseItem.key].plural }}</td>
+                      <td class="px-3 py-3 font-bold">{{ displayAdjectiveCase(caseItem.key, 'masculine', currentQuestion.declension[caseItem.key].masculine) }}</td>
+                      <td class="px-3 py-3 font-bold">{{ displayAdjectiveCase(caseItem.key, 'feminine', currentQuestion.declension[caseItem.key].feminine) }}</td>
+                      <td class="px-3 py-3 font-bold">{{ displayAdjectiveCase(caseItem.key, 'neuter', currentQuestion.declension[caseItem.key].neuter) }}</td>
+                      <td class="px-3 py-3 font-bold">{{ displayAdjectiveCase(caseItem.key, 'plural', currentQuestion.declension[caseItem.key].plural) }}</td>
                     </tr>
                   </tbody>
                 </table>
