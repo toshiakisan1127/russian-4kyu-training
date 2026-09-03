@@ -5,6 +5,7 @@ export type Section6Question = {
   question: string
   correctAnswer: string
   choices: string[]
+  choiceExplanations: Record<string, string>
   explanation: string
 }
 
@@ -400,11 +401,24 @@ export const section6Questions: Section6Question[] = groups.flatMap((group, grou
     const distractorAIndex = ((groupIndex + 1) % groups.length) * 10 + rowIndex
     const distractorBIndex = ((groupIndex + 3) % groups.length) * 10 + ((rowIndex + 1) % 10)
     const answer = naturalResponseAnswers[responseIndex]!
-    const choices = [answer, naturalResponseAnswers[distractorAIndex]!, naturalResponseAnswers[distractorBIndex]!]
+    const choiceIndexes = [responseIndex, distractorAIndex, distractorBIndex]
+    const choices = choiceIndexes.map((index) => naturalResponseAnswers[index]!)
 
     if (new Set(choices).size !== 3) {
       throw new Error(`Section VI needs 3 distinct choices: ${group.keyword}/${rowIndex}`)
     }
+
+    const choiceExplanations = Object.fromEntries(choiceIndexes.map((choiceIndex, index) => {
+      const sourceGroup = groups[Math.floor(choiceIndex / 10)]!
+      const sourceTranslation = naturalResponseTranslations[choiceIndex]!
+      const isCurrentQuestion = sourceGroup.keyword === group.keyword
+      return [
+        choices[index]!,
+        isCurrentQuestion
+          ? `${sourceTranslation}。今回の${group.keyword}（${group.keywordMeaning}）への自然な答え。`
+          : `${sourceTranslation}。これは${sourceGroup.keyword}（${sourceGroup.keywordMeaning}）への答えで、今回の${group.keyword}（${group.keywordMeaning}）には合わない。`,
+      ]
+    }))
 
     return {
       id: `section6-${String(groupIndex * 10 + rowIndex + 1).padStart(3, '0')}`,
@@ -413,6 +427,7 @@ export const section6Questions: Section6Question[] = groups.flatMap((group, grou
       question: row.question,
       correctAnswer: answer,
       choices,
+      choiceExplanations,
       answerTranslation: naturalResponseTranslations[responseIndex]!,
       explanation: group.explanation,
     }
