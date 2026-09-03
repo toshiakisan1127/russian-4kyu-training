@@ -88,6 +88,27 @@ const currentStatusClasses = computed(() => ({
 
 const correctChoice = computed(() => currentQuestion.value.choices[currentQuestion.value.answer]!)
 
+const pronounDetails = {
+  он: '男性名詞',
+  она: '女性名詞',
+  оно: '中性名詞',
+  они: '複数名詞',
+} as const
+
+const pronounChoiceDetails = computed(() => {
+  const target = currentQuestion.value.number === 'plural'
+    ? '複数名詞'
+    : genderLabel[currentQuestion.value.gender]
+
+  return currentQuestion.value.choices.map((choice) => ({
+    value: choice.stressed,
+    isCorrect: choice.value === currentQuestion.value.correctPronoun,
+    explanation: choice.value === currentQuestion.value.correctPronoun
+      ? `${choice.stressed} は${pronounDetails[choice.value]}を受ける代名詞。対象の${currentQuestion.value.stressedLemma}は${target}なので正解。`
+      : `${choice.stressed} は${pronounDetails[choice.value]}を受ける代名詞。対象の${currentQuestion.value.stressedLemma}は${target}なので、この形は選ばない。`,
+  }))
+})
+
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
   progressVersion.value += 1
@@ -269,6 +290,8 @@ const selectedPronoun = computed<Section3Pronoun | null>(() => {
               <p class="mb-1 text-xs font-black tracking-[0.12em] text-sky-700 uppercase">ポイント</p>
               <p class="m-0 font-bold leading-7 text-slate-800">{{ pronounExplanation }}</p>
             </div>
+
+            <ChoiceExplanationList :choices="pronounChoiceDetails" title="代名詞の選択肢を確認" />
 
             <div class="mb-7 rounded-2xl border border-slate-200 bg-white p-4">
               <div class="mb-3 flex items-center justify-between gap-3">
