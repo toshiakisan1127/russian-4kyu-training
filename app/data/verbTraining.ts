@@ -12,6 +12,7 @@ export type VerbTrainingQuestion = {
   correctAnswer: string
   choices: string[]
   answerSentence: string
+  answerTranslation?: string
   explanation: string
 }
 
@@ -24,6 +25,7 @@ const presentQuestions: VerbTrainingQuestion[] = section7Questions.map((question
   correctAnswer: question.correctAnswer,
   choices: question.choices,
   answerSentence: question.question.replace('___', question.correctAnswer),
+  answerTranslation: question.translation,
   explanation: `${question.infinitive}（${question.meaning}）は ${question.conjugation}。主語 ${question.subject} に合う形は「${question.correctAnswer}」。`,
 }))
 
@@ -36,6 +38,7 @@ const tenseQuestions: VerbTrainingQuestion[] = section8Questions.map((question) 
   correctAnswer: question.correctAnswer,
   choices: question.choices,
   answerSentence: question.fullAnswer,
+  answerTranslation: question.translation,
   explanation: question.explanation,
 }))
 
