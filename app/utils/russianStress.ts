@@ -11,15 +11,12 @@ const vowelIndexes = (text: string) => Array.from(text)
   .filter((index) => index >= 0)
 
 const explicitStressVowelOrdinal = (stressedText: string) => {
-  const chars = Array.from(stressedText.normalize('NFD'))
+  const chars = Array.from(stressedText.normalize('NFC'))
   let vowelOrdinal = 0
 
-  for (let i = 0; i < chars.length; i += 1) {
-    const char = chars[i]!
-    const normalizedChar = char.normalize('NFC')
-    if (VOWEL_RE.test(normalizedChar)) vowelOrdinal += 1
-    if (char === ACUTE) return Math.max(1, vowelOrdinal)
-    if (normalizedChar.toLowerCase() === 'ё') return Math.max(1, vowelOrdinal)
+  for (const char of chars) {
+    if (VOWEL_RE.test(char)) vowelOrdinal += 1
+    if (char === ACUTE || char.toLowerCase() === 'ё') return Math.max(1, vowelOrdinal)
   }
 
   return null
@@ -157,7 +154,7 @@ export const stressVerbForm = (
   const baseOverride = verbStressOverrides[baseLemma]?.[formIndex]
   const accentedToken = direct
     ?? (baseOverride ? addReflexiveSuffix(baseOverride, token) : null)
-    ?? stressLikeLemma(baseVerbToken(token), stressedLemma)
+    ?? addReflexiveSuffix(stressLikeLemma(baseVerbToken(token), stressedLemma), token)
 
   parts[parts.length - 1] = accentedToken
   return parts.join(' ')
