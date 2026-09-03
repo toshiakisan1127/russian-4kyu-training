@@ -173,50 +173,6 @@ const months = [
   { word: 'дека́брь', inMonth: 'в декабре́', translation: '12月' },
 ]
 
-const contrastPairs = [
-  {
-    left: 'У меня́ есть кни́га.',
-    leftTranslation: '私は本を持っています。',
-    right: 'У меня́ нет кни́ги.',
-    rightTranslation: '私は本を持っていません。',
-    note: 'естьの否定は нет。нет の後ろは生格になる。',
-  },
-  {
-    left: 'Мне нра́вится кни́га.',
-    leftTranslation: '私は本が好きです。',
-    right: 'Мне нра́вятся кни́ги.',
-    rightTranslation: '私は本々が好きです。',
-    note: '単数なら нра́вится、複数なら нра́вятся。',
-  },
-  {
-    left: 'Мне ну́жна кни́га.',
-    leftTranslation: '私は本が必要です。',
-    right: 'Мне ну́жны кни́ги.',
-    rightTranslation: '私は本々が必要です。',
-    note: 'ну́жен / ну́жна / ну́жно / ну́жны は後ろの名詞に一致する。',
-  },
-  {
-    left: 'Мне мо́жно войти́?',
-    leftTranslation: '入ってもいいですか。',
-    right: 'Мне нельзя́ входи́ть.',
-    rightTranslation: '入ってはいけません。',
-    note: 'мо́жно は許可、нельзя́ は禁止を表す。',
-  },
-  {
-    left: 'Я иду́ в шко́лу.',
-    leftTranslation: '私は学校へ行きます。',
-    right: 'Я иду́ из шко́лы.',
-    rightTranslation: '私は学校から出ます。',
-    note: 'в + 対格は到達先、из + 生格は起点を表す。',
-  },
-  {
-    left: 'Я хочу́ чита́ть.',
-    leftTranslation: '私は読みたいです。',
-    right: 'Я не хочу́ чита́ть.',
-    rightTranslation: '私は読みたくありません。',
-    note: 'не は否定する動詞の前に置く。',
-  },
-]
 </script>
 
 <template>
@@ -444,6 +400,23 @@ const contrastPairs = [
           <h2 class="mb-4 text-2xl font-black">重要構文</h2>
           <div class="grid gap-3 md:grid-cols-2">
             <div class="rounded-2xl border border-rose-100 bg-white p-4">
+              <div class="flex items-start gap-2">
+                <div class="flex-1">
+                  <p class="m-0 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">Оди́н …, друго́й …</p>
+                  <p class="mt-1 mb-1 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">Оди́н студе́нт чита́ет, друго́й пи́шет.</p>
+                </div>
+                <button
+                  type="button"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
+                  :disabled="!speechSupported"
+                  aria-label="例文を読み上げ"
+                  @click="speak('Оди́н студе́нт чита́ет, друго́й пи́шет.')"
+                >🔊</button>
+              </div>
+              <p class="mt-1 mb-1 text-sm font-bold text-slate-600">一方の学生は読んでいて、もう一人は書いています。</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">один …, другой … は、二つの人・物を対比して「一方は〜、他方は〜」と表す。女性なら одна́ …, друга́я …。</p>
+            </div>
+            <div class="rounded-2xl border border-rose-100 bg-white p-4">
               <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">У меня́ есть кни́га.</p>
               <p class="mt-1 mb-1 text-sm font-bold text-slate-600">私は本を持っています。</p>
               <p class="m-0 text-xs font-bold leading-5 text-slate-500">所有・存在。「У + 生格」で「〜のところに」を表す。</p>
@@ -485,45 +458,6 @@ const contrastPairs = [
             </div>
           </div>
 
-          <div class="mt-6 border-t border-rose-200 pt-6">
-            <h3 class="mb-3 text-xl font-black">使い分けのペア</h3>
-            <p class="mb-4 text-sm font-bold leading-6 text-slate-600">似た構文を左右に並べています。「一方ではどう言うか、他方ではどう変わるか」を確認しよう。</p>
-            <div class="grid gap-3 lg:grid-cols-2">
-              <div v-for="pair in contrastPairs" :key="pair.left + pair.right" class="rounded-2xl border border-rose-100 bg-white p-4">
-                <div class="grid gap-3 sm:grid-cols-2">
-                  <div class="rounded-xl bg-rose-50 p-3">
-                    <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-rose-700 uppercase">一方</p>
-                    <div class="flex items-start gap-2">
-                      <p class="m-0 flex-1 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.left }}</p>
-                      <button
-                        type="button"
-                        class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
-                        :disabled="!speechSupported"
-                        :aria-label="pair.left + 'を読み上げ'"
-                        @click="speak(pair.left)"
-                      >🔊</button>
-                    </div>
-                    <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-600">{{ pair.leftTranslation }}</p>
-                  </div>
-                  <div class="rounded-xl bg-slate-50 p-3">
-                    <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-slate-600 uppercase">他方</p>
-                    <div class="flex items-start gap-2">
-                      <p class="m-0 flex-1 text-base font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ pair.right }}</p>
-                      <button
-                        type="button"
-                        class="grid size-8 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-sm transition hover:bg-rose-100 disabled:opacity-40"
-                        :disabled="!speechSupported"
-                        :aria-label="pair.right + 'を読み上げ'"
-                        @click="speak(pair.right)"
-                      >🔊</button>
-                    </div>
-                    <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-600">{{ pair.rightTranslation }}</p>
-                  </div>
-                </div>
-                <p class="mt-3 mb-0 text-xs font-bold leading-5 text-slate-500">{{ pair.note }}</p>
-              </div>
-            </div>
-          </div>
         </article>
       </div>
     </section>
