@@ -70,7 +70,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Куда',
     keywordMeaning: 'どこへ',
-    explanation: 'куда は移動の行き先・方向をたずねる。「〜へ行く」に対応する答えを選ぶ。',
+    explanation: 'куда́ は移動の行き先・方向をたずねる。「〜へ行く」に対応する答えを選ぶ。',
     rows: [
       { question: 'Куда ты идёшь?', answer: 'Я иду в школу.' },
       { question: 'Куда едет Анна?', answer: 'Она едет в Москву.' },
@@ -87,7 +87,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Откуда',
     keywordMeaning: 'どこから',
-    explanation: 'откуда は出発点・出身地・由来を「どこから」とたずねる。',
+    explanation: 'отку́да は出発点・出身地・由来を「どこから」とたずねる。',
     rows: [
       { question: 'Откуда вы?', answer: 'Я из Японии.' },
       { question: 'Откуда он приехал?', answer: 'Он приехал из России.' },
@@ -104,7 +104,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Когда',
     keywordMeaning: 'いつ',
-    explanation: 'когда は時・曜日・月・時間帯などを「いつ」とたずねる。',
+    explanation: 'когда́ は時・曜日・月・時間帯などを「いつ」とたずねる。',
     rows: [
       { question: 'Когда начинается урок?', answer: 'В девять часов.' },
       { question: 'Когда ты работаешь?', answer: 'С понедельника по пятницу.' },
@@ -121,7 +121,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Почему',
     keywordMeaning: 'なぜ',
-    explanation: 'почему は理由をたずねる。потому что ...「なぜなら〜だから」で答える形が基本。',
+    explanation: 'почему́ は理由をたずねる。потому́ что ...「なぜなら〜だから」で答える形が基本。',
     rows: [
       { question: 'Почему ты учишь русский?', answer: 'Потому что мне нравится русский язык.' },
       { question: 'Почему он дома?', answer: 'Потому что он сегодня не работает.' },
@@ -155,7 +155,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Сколько',
     keywordMeaning: 'いくつ・どれくらい',
-    explanation: 'сколько は数・量・年齢・値段などをたずねる疑問詞。数字や数量で答える。',
+    explanation: 'ско́лько は数・量・年齢・値段などをたずねる疑問詞。数字や数量で答える。',
     rows: [
       { question: 'Сколько тебе лет?', answer: 'Мне тридцать лет.' },
       { question: 'Сколько стоит билет?', answer: 'Он стоит пятьсот рублей.' },
@@ -172,7 +172,7 @@ const groups: QuestionGroup[] = [
   {
     keyword: 'Какой',
     keywordMeaning: 'どんな・どの',
-    explanation: 'какой / какая / какое は名詞の性に合わせて「どんな・どの」と性質や種類をたずねる。',
+    explanation: 'како́й / кака́я / како́е は名詞の性に合わせて「どんな・どの」と性質や種類をたずねる。',
     rows: [
       { question: 'Какой это город?', answer: 'Это большой город.' },
       { question: 'Какая сегодня погода?', answer: 'Сегодня хорошая погода.' },
