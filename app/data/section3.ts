@@ -87,7 +87,7 @@ const singularQuestions = (['masculine', 'feminine', 'neuter'] as const).flatMap
 
 const pluralForms: { lemma: string; stressedForm: string }[] = [
   { lemma: 'книга', stressedForm: 'кни́ги' },
-  { lemma: 'семья', stressedForm: 'се́мьи' },
+  { lemma: 'семья', stressedForm: 'семьи́' },
   { lemma: 'дом', stressedForm: 'дома́' },
   { lemma: 'город', stressedForm: 'города́' },
   { lemma: 'человек', stressedForm: 'лю́ди' },
