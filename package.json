@@ -11,6 +11,7 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "test:smoke": "playwright test",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "vue-router": "^5.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.55.0",
     "@tailwindcss/vite": "4.3.3",
     "tailwindcss": "4.3.3"
   }
