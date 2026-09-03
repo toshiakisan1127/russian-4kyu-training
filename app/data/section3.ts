@@ -79,7 +79,7 @@ const pluralForms: { lemma: string; stressedForm: string }[] = [
   { lemma: 'автобус', stressedForm: 'авто́бусы' },
   { lemma: 'поезд', stressedForm: 'поезда́' },
   { lemma: 'билет', stressedForm: 'биле́ты' },
-  { lemma: 'магазин', stressedForm: 'магазины́' },
+  { lemma: 'магазин', stressedForm: 'магази́ны' },
   { lemma: 'ресторан', stressedForm: 'рестора́ны' },
   { lemma: 'квартира', stressedForm: 'кварти́ры' },
   { lemma: 'комната', stressedForm: 'ко́мнаты' },
