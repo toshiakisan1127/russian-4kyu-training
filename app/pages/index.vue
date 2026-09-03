@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { japaneseToRussianQuestions } from '~/data/japaneseToRussian'
 import { questions } from '~/data/questions'
 import { russianToJapaneseQuestions } from '~/data/russianToJapanese'
 import { section1Questions } from '~/data/section1'
@@ -20,7 +21,7 @@ import {
 
 type TrainingProgressKey = 'prepositions' | 'vocabulary'
 type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7' | 'section8'
-type TranslationProgressKey = 'ruJa'
+type TranslationProgressKey = 'ruJa' | 'jaRu'
 
 type TrainingItem = {
   title: string
@@ -157,7 +158,9 @@ const translationItems: TranslationItem[] = [
   {
     title: '和文露訳',
     description: '4級の基本語彙・文法を使って、日本語文をロシア語に訳す。',
-    status: 'coming-soon',
+    status: 'available',
+    to: '/translations/ja-ru',
+    progressKey: 'jaRu',
   },
 ]
 
@@ -233,6 +236,10 @@ const translationProgress = computed(() => {
     ruJa: {
       counts: getQuestionStatusCounts(russianToJapaneseQuestions.map((question) => question.id)),
       total: russianToJapaneseQuestions.length,
+    },
+    jaRu: {
+      counts: getQuestionStatusCounts(japaneseToRussianQuestions.map((question) => question.id)),
+      total: japaneseToRussianQuestions.length,
     },
   }
 })
