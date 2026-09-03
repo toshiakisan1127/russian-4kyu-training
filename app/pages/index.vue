@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { caseTrainingQuestions } from '~/data/caseTraining'
 import { japaneseToRussianQuestions } from '~/data/japaneseToRussian'
 import { questions } from '~/data/questions'
 import { russianToJapaneseQuestions } from '~/data/russianToJapanese'
@@ -19,7 +20,7 @@ import {
   type QuestionStatus,
 } from '~/utils/questionProgress'
 
-type TrainingProgressKey = 'prepositions' | 'vocabulary'
+type TrainingProgressKey = 'prepositions' | 'cases' | 'vocabulary'
 type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7' | 'section8'
 type TranslationProgressKey = 'ruJa' | 'jaRu'
 
@@ -58,8 +59,10 @@ const trainingItems: TrainingItem[] = [
   },
   {
     title: '格変化',
-    description: '生格・与格・対格・前置格など、語尾変化を重点的に練習。',
-    status: 'coming-soon',
+    description: '生格・与格・対格・造格・前置格を選んで、名詞句の変化を集中練習。',
+    to: '/cases',
+    status: 'available',
+    progressKey: 'cases',
   },
   {
     title: '動詞',
@@ -184,6 +187,10 @@ const trainingProgress = computed(() => {
     prepositions: {
       counts: getQuestionStatusCounts(questions.map((question) => question.id)),
       total: questions.length,
+    },
+    cases: {
+      counts: getQuestionStatusCounts(caseTrainingQuestions.map((question) => question.id)),
+      total: caseTrainingQuestions.length,
     },
     vocabulary: {
       counts: getQuestionStatusCounts(vocabularyItems.map((item) => item.id)),
