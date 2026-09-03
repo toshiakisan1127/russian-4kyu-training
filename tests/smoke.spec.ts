@@ -5,6 +5,7 @@ const routes = [
   '/',
   '/prepositions',
   '/cases',
+  '/verbs',
   '/vocabulary',
   '/sections/1',
   '/sections/2',
