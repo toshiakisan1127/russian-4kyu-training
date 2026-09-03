@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { vocabularyItems, type RussianCase, type VocabularyPartOfSpeech } from '~/data/vocabulary'
+// @ts-expect-error russian-nouns-js ships without TypeScript declarations.
+import RussianNouns from 'russian-nouns-js'
+import {
+  vocabularyItems,
+  type NounVocabularyItem,
+  type RussianCase,
+  type VocabularyPartOfSpeech,
+} from '~/data/vocabulary'
 import { shuffle } from '~/utils/shuffle'
 import {
   getQuestionProgress,
@@ -46,6 +53,49 @@ const adjectiveFormItems = [
   { key: 'neuter', label: '中性' },
   { key: 'plural', label: '複数' },
 ] as const
+
+const nounEngine = new RussianNouns.Engine()
+const nounGender = {
+  masculine: RussianNouns.Gender.MASCULINE,
+  feminine: RussianNouns.Gender.FEMININE,
+  neuter: RussianNouns.Gender.NEUTER,
+} as const
+const indeclinableNouns = new Set(['метро', 'кафе', 'кофе', 'радио', 'меню', 'пальто'])
+const pluralOnlyNouns = new Set(['деньги', 'брюки'])
+
+const getPluralDeclension = (noun: NounVocabularyItem): Record<RussianCase, string> | null => {
+  if (noun.word.includes(' ')) return null
+
+  try {
+    const pluralOnly = noun.plural === '複数形のみ' || pluralOnlyNouns.has(noun.word)
+    const lemma = RussianNouns.Lemma.create(pluralOnly
+      ? { text: noun.word, pluraleTantum: true, animate: noun.animate ?? false }
+      : {
+          text: noun.word,
+          gender: nounGender[noun.gender],
+          animate: noun.animate ?? false,
+          indeclinable: indeclinableNouns.has(noun.word),
+        })
+    const pluralForm = pluralOnly ? noun.word : noun.plural
+    const forms = RussianNouns.CASES.slice(0, 6).map((caseValue: unknown) => {
+      const candidates = pluralOnly
+        ? nounEngine.decline(lemma, caseValue)
+        : nounEngine.decline(lemma, caseValue, pluralForm)
+      return candidates[0] ?? pluralForm
+    })
+
+    return {
+      nominative: forms[0]!,
+      genitive: forms[1]!,
+      dative: forms[2]!,
+      accusative: forms[3]!,
+      instrumental: forms[4]!,
+      prepositional: forms[5]!,
+    }
+  } catch {
+    return null
+  }
+}
 
 const createQuestionSet = () => {
   const statuses = getQuestionStatuses(vocabularyItems.map((item) => item.id))
@@ -115,6 +165,10 @@ const progressVersion = ref(0)
 
 const currentQuestion = computed(() => questionSet.value[currentIndex.value]!)
 const isCorrect = computed(() => selectedAnswer.value === currentQuestion.value.meaning)
+const currentPluralDeclension = computed(() => {
+  const question = currentQuestion.value
+  return question.partOfSpeech === 'noun' ? getPluralDeclension(question) : null
+})
 const currentStatus = computed(() => {
   progressVersion.value
   return getQuestionStatus(getQuestionProgress(currentQuestion.value.id))
@@ -330,6 +384,18 @@ const choiceClasses = (value: string) => {
                   </div>
                 </div>
               </template>
+              <details v-if="currentPluralDeclension" class="group border-t border-slate-200">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-3 bg-indigo-50 px-4 py-3 text-sm font-black text-indigo-800 [&::-webkit-details-marker]:hidden">
+                  <span>複数形の格変化を見る</span>
+                  <span class="transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+                </summary>
+                <div class="divide-y divide-slate-200 border-t border-indigo-100">
+                  <div v-for="caseItem in caseItems" :key="`plural-${caseItem.key}`" class="grid grid-cols-[5rem_1fr] items-center gap-3 px-4 py-3">
+                    <span class="text-sm font-black text-slate-500">{{ caseItem.label }}</span>
+                    <strong class="text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ currentPluralDeclension[caseItem.key] }}</strong>
+                  </div>
+                </div>
+              </details>
             </div>
 
             <div v-if="currentQuestion.partOfSpeech === 'verb' && currentQuestion.presentConjugation" class="mb-5 overflow-hidden rounded-2xl border border-slate-200">
