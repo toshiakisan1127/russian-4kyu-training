@@ -32,3 +32,9 @@ jobs:
 
       - name: Generate static site
         run: pnpm generate
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Browser smoke tests
+        run: pnpm test:smoke
