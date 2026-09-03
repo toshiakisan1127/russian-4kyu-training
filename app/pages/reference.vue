@@ -379,15 +379,24 @@ const months = [
           </p>
           <div class="space-y-3">
             <div class="rounded-2xl border border-indigo-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Ско́лько тебе́ лет?</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Ско́лько тебе́ лет?</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-indigo-200 bg-white text-sm transition hover:bg-indigo-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="年齢表現を読み上げ" @click="speak('Ско́лько тебе́ лет?')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">あなたは何歳ですか。</p>
             </div>
             <div class="rounded-2xl border border-indigo-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне два́дцать лет.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Мне два́дцать лет.</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-indigo-200 bg-white text-sm transition hover:bg-indigo-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="年齢表現を読み上げ" @click="speak('Мне два́дцать лет.')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">私は20歳です。</p>
             </div>
             <div class="rounded-2xl border border-indigo-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Ему́ два́дцать оди́н год. Ей два́дцать два́ го́да.</p>
+              <div class="flex items-start gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">Ему́ два́дцать оди́н год. Ей два́дцать два́ го́да.</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-indigo-200 bg-white text-sm transition hover:bg-indigo-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="年齢表現を読み上げ" @click="speak('Ему́ два́дцать оди́н год. Ей два́дцать два́ го́да.')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">彼は21歳です。彼女は22歳です。</p>
             </div>
           </div>
@@ -482,33 +491,57 @@ const months = [
           <h2 class="mb-3 text-2xl font-black">頻度を表すことば</h2>
           <div class="grid gap-3 sm:grid-cols-2">
             <div class="rounded-2xl border border-amber-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">всегда́</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">всегда́</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('всегда́')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">いつも・常に</p>
             </div>
             <div class="rounded-2xl border border-amber-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">обы́чно</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">обы́чно</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('обы́чно')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">ふつう・たいてい</p>
             </div>
             <div class="rounded-2xl border border-amber-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">ча́сто</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">ча́сто</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('ча́сто')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">よく・頻繁に</p>
             </div>
             <div class="rounded-2xl border border-amber-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">иногда́</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">иногда́</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('иногда́')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">ときどき</p>
             </div>
             <div class="rounded-2xl border border-amber-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">ре́дко</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">ре́дко</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('ре́дко')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">めったに〜ない・まれに</p>
             </div>
             <div class="rounded-2xl border border-amber-100 bg-white p-4">
-              <p class="m-0 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">никогда́</p>
+              <div class="flex items-center gap-2">
+                <p class="m-0 flex-1 text-lg font-bold" style="font-family: 'PT Serif', Georgia, serif">никогда́</p>
+                <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('никогда́')">🔊</button>
+              </div>
               <p class="mt-1 mb-0 text-sm font-bold text-slate-600">決して〜ない</p>
             </div>
           </div>
           <div class="mt-4 space-y-2 text-sm font-bold leading-6 text-slate-700">
-            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">ка́ждый де́нь</span>：毎日 ／ <span style="font-family: 'PT Serif', Georgia, serif">раз в неде́лю</span>：週に1回</p>
-            <p class="m-0"><span style="font-family: 'PT Serif', Georgia, serif">два́ ра́за в ме́сяц</span>：月に2回 ／ <span style="font-family: 'PT Serif', Georgia, serif">по выходны́м</span>：週末に</p>
+            <div class="flex items-center gap-2">
+              <p class="m-0 flex-1"><span style="font-family: 'PT Serif', Georgia, serif">ка́ждый де́нь</span>：毎日 ／ <span style="font-family: 'PT Serif', Georgia, serif">раз в неде́лю</span>：週に1回</p>
+              <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('ка́ждый де́нь. раз в неде́лю')">🔊</button>
+            </div>
+            <div class="flex items-center gap-2">
+              <p class="m-0 flex-1"><span style="font-family: 'PT Serif', Georgia, serif">два́ ра́за в ме́сяц</span>：月に2回 ／ <span style="font-family: 'PT Serif', Georgia, serif">по выходны́м</span>：週末に</p>
+              <button type="button" class="grid size-8 shrink-0 place-items-center rounded-full border border-amber-200 bg-white text-sm transition hover:bg-amber-100 disabled:opacity-40" :disabled="!speechSupported" aria-label="頻度表現を読み上げ" @click="speak('два́ ра́за в ме́сяц. по выходны́м')">🔊</button>
+            </div>
           </div>
         </article>
 
