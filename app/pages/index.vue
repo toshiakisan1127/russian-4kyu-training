@@ -40,6 +40,9 @@ type ExamItem = {
 type TranslationItem = {
   title: string
   description: string
+  status: 'available' | 'coming-soon'
+  to?: string
+  total?: number
 }
 
 const trainingItems: TrainingItem[] = [
@@ -144,11 +147,15 @@ const examItems: ExamItem[] = [
 const translationItems: TranslationItem[] = [
   {
     title: '露文和訳',
-    description: '4級レベルの短いロシア語文を読み、日本語に訳す。',
+    description: '4級レベルの短いロシア語文を読み、日本語に訳す。模範訳を見て自己採点。',
+    status: 'available',
+    to: '/translations/ru-ja',
+    total: 60,
   },
   {
     title: '和文露訳',
     description: '4級の基本語彙・文法を使って、日本語文をロシア語に訳す。',
+    status: 'coming-soon',
   },
 ]
 
@@ -229,9 +236,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
       <header class="mb-8 sm:mb-10">
         <p class="mb-2 text-xs font-black tracking-[0.16em] text-indigo-600 uppercase">Russian 4th Grade Training</p>
         <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-5xl">ロシア語4級トレーニング</h1>
-        <p class="m-0 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-          苦手分野をピンポイントで練習して、最後は本番形式へ。習熟度を見ながら少しずつ定着させよう。
-        </p>
+        <p class="m-0 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">苦手分野をピンポイントで練習して、最後は本番形式へ。習熟度を見ながら少しずつ定着させよう。</p>
       </header>
 
       <details class="group mb-8 rounded-3xl border border-indigo-200 bg-white shadow-sm shadow-indigo-100 sm:mb-10">
@@ -247,11 +252,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         <div class="border-t border-indigo-100 px-5 pt-5 pb-6 sm:px-6">
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <template v-for="item in trainingItems" :key="item.title">
-              <NuxtLink
-                v-if="item.status === 'available'"
-                :to="item.to"
-                class="group/item flex min-h-40 flex-col justify-between rounded-3xl border border-indigo-200 bg-white p-5 transition hover:-translate-y-1 hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-100"
-              >
+              <NuxtLink v-if="item.status === 'available'" :to="item.to" class="group/item flex min-h-40 flex-col justify-between rounded-3xl border border-indigo-200 bg-white p-5 transition hover:-translate-y-1 hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-100">
                 <div>
                   <div class="mb-4 inline-flex rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-700">学習可能</div>
                   <h3 class="mb-2 text-xl font-black">{{ item.title }}</h3>
@@ -263,12 +264,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                       <span>{{ trainingProgress[item.progressKey].total }}問</span>
                     </div>
                     <div class="flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        v-for="statusItem in statusItems"
-                        :key="statusItem.status"
-                        :class="statusItem.barClass"
-                        :style="{ width: statusWidth(trainingProgress[item.progressKey].counts[statusItem.status], trainingProgress[item.progressKey].total) }"
-                      />
+                      <div v-for="statusItem in statusItems" :key="statusItem.status" :class="statusItem.barClass" :style="{ width: statusWidth(trainingProgress[item.progressKey].counts[statusItem.status], trainingProgress[item.progressKey].total) }" />
                     </div>
                     <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs font-bold text-slate-600">
                       <div v-for="statusItem in statusItems" :key="`${item.progressKey}-${statusItem.status}`" class="flex items-center gap-2">
@@ -307,11 +303,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
         <div class="border-t border-sky-100 px-5 pt-5 pb-6 sm:px-6">
           <div class="grid gap-4 sm:grid-cols-2">
             <template v-for="item in examItems" :key="item.roman">
-              <NuxtLink
-                v-if="item.status === 'available' && item.progressKey"
-                :to="item.to"
-                class="group/item flex flex-col rounded-3xl border border-sky-200 bg-sky-50 p-5 transition hover:-translate-y-1 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-100"
-              >
+              <NuxtLink v-if="item.status === 'available' && item.progressKey" :to="item.to" class="group/item flex flex-col rounded-3xl border border-sky-200 bg-sky-50 p-5 transition hover:-translate-y-1 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-100">
                 <div class="mb-3 flex items-center justify-between gap-3">
                   <span class="rounded-full bg-sky-700 px-2.5 py-1 text-xs font-black text-white">学習可能</span>
                   <span class="text-xs font-black text-sky-800">{{ examProgress[item.progressKey].total }}問</span>
@@ -325,12 +317,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
                     <span>{{ examProgress[item.progressKey].total }}問</span>
                   </div>
                   <div class="flex h-3 w-full overflow-hidden rounded-full bg-white">
-                    <div
-                      v-for="statusItem in statusItems"
-                      :key="statusItem.status"
-                      :class="statusItem.barClass"
-                      :style="{ width: statusWidth(examProgress[item.progressKey].counts[statusItem.status], examProgress[item.progressKey].total) }"
-                    />
+                    <div v-for="statusItem in statusItems" :key="statusItem.status" :class="statusItem.barClass" :style="{ width: statusWidth(examProgress[item.progressKey].counts[statusItem.status], examProgress[item.progressKey].total) }" />
                   </div>
                   <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs font-bold text-slate-600">
                     <div v-for="statusItem in statusItems" :key="`${item.roman}-${statusItem.status}`" class="flex items-center gap-2">
@@ -351,15 +338,23 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
               </article>
             </template>
 
-            <article
-              v-for="item in translationItems"
-              :key="item.title"
-              class="rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500"
-            >
-              <div class="mb-3 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">COMING SOON</div>
-              <h3 class="mb-2 text-xl font-black text-slate-700">{{ item.title }}</h3>
-              <p class="m-0 leading-6">{{ item.description }}</p>
-            </article>
+            <template v-for="item in translationItems" :key="item.title">
+              <NuxtLink v-if="item.status === 'available'" :to="item.to" class="group/item flex flex-col rounded-3xl border border-emerald-200 bg-emerald-50 p-5 transition hover:-translate-y-1 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-100">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <span class="rounded-full bg-emerald-700 px-2.5 py-1 text-xs font-black text-white">学習可能</span>
+                  <span v-if="item.total" class="text-xs font-black text-emerald-800">{{ item.total }}文</span>
+                </div>
+                <h3 class="mb-2 text-xl font-black text-slate-900">{{ item.title }}</h3>
+                <p class="m-0 leading-6 text-slate-600">{{ item.description }}</p>
+                <div class="mt-5 text-sm font-black text-emerald-800">10問 はじめる →</div>
+              </NuxtLink>
+
+              <article v-else class="rounded-3xl border border-slate-200 bg-slate-100/70 p-5 text-slate-500">
+                <div class="mb-3 inline-flex rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-black text-slate-500">COMING SOON</div>
+                <h3 class="mb-2 text-xl font-black text-slate-700">{{ item.title }}</h3>
+                <p class="m-0 leading-6">{{ item.description }}</p>
+              </article>
+            </template>
           </div>
         </div>
       </details>
