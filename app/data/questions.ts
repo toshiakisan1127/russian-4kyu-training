@@ -1,4 +1,4 @@
-import { extraPrepositionQuestions } from './prepositionPool'
+import { extraPrepositionQuestions } from './prepositionPoolV2'
 import type { MultipleChoiceQuestion } from '../types/question'
 
 const coreQuestions: MultipleChoiceQuestion[] = [
