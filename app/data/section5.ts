@@ -13,6 +13,7 @@ export type Section5Question = {
   correctPhrase: string
   choices: string[]
   meaning: string
+  answerTranslation: string
   explanation: string
 }
 
@@ -93,6 +94,46 @@ const adjectiveMap = new Map(
     .map((item) => [item.word, item]),
 )
 
+const determinerMeanings: Record<Determiner, string> = {
+  этот: 'この',
+  мой: '私の',
+  наш: '私たちの',
+}
+
+const adjectiveMeanings: Record<string, string> = {
+  новый: '新しい',
+  хороший: 'よい',
+  молодой: '若い',
+  большой: '大きい',
+  старый: '古い',
+  красивый: '美しい',
+  русский: 'ロシアの',
+  маленький: '小さい',
+  добрый: '優しい',
+}
+
+const phraseTranslation = (seed: PhraseSeed, noun: NounVocabularyItem) =>
+  `${determinerMeanings[seed.determiner]}${adjectiveMeanings[seed.adjective]}${noun.meaning}`
+
+const answerTranslation = (
+  targetCase: Section5TargetCase,
+  phrase: string,
+  animate: boolean,
+) => {
+  switch (targetCase) {
+    case 'genitive':
+      return `ここには${phrase}が${animate ? 'いません' : 'ありません'}。`
+    case 'dative':
+      return `私は${phrase}に近づきました。`
+    case 'accusative':
+      return `私は${phrase}を見ます。`
+    case 'instrumental':
+      return `私は${phrase}の前に立っています。`
+    case 'prepositional':
+      return `私たちは${phrase}について話しています。`
+  }
+}
+
 const allCases: RussianCase[] = ['nominative', 'genitive', 'dative', 'accusative', 'instrumental', 'prepositional']
 
 const determinerForms: Record<Determiner, Record<NounVocabularyItem['gender'], Record<RussianCase, string>>> = {
@@ -167,6 +208,7 @@ export const section5Questions: Section5Question[] = seeds.flatMap((seed, seedIn
       correctPhrase,
       choices: [correctPhrase, distractorCandidates[0]!, distractorCandidates[1]!],
       meaning: noun.meaning,
+      answerTranslation: answerTranslation(targetCase, phraseTranslation(seed, noun), noun.animate === true),
       explanation: context.explanation,
     }
   }),
