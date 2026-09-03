@@ -6,6 +6,7 @@ export type Section8Question = {
   sourceSentence: string
   prompt: string
   correctAnswer: string
+  choiceExplanations: Record<string, string>
   fullAnswer: string
   choices: string[]
   explanation: string
@@ -79,7 +80,16 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
     { subject: 'они', presentIndex: 5, pastIndex: 3, label: '複数' },
   ] as const
 
-  const pastQuestions = pastSubjects.map((item, index): Section8Question => ({
+  const pastQuestions = pastSubjects.map((item, index): Section8Question => {
+    const pastGenderLabels = ['男性単数', '女性単数', '中性単数', '複数']
+    const choiceExplanations = Object.fromEntries(verb.past.map((form, formIndex) => [
+      form,
+      formIndex === item.pastIndex
+        ? `${pastGenderLabels[formIndex]}の過去形。この文の主語に一致している。`
+        : `${pastGenderLabels[formIndex]}の過去形。この文は${item.label}なので、この形は選ばない。`,
+    ]))
+
+    return {
     id: `s8-p-${String(verbIndex + 1).padStart(2, '0')}-${index + 1}`,
     tense: 'past',
     infinitive: verb.infinitive,
@@ -90,12 +100,24 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
     fullAnswer: `Вчера́ ${item.subject} ${verb.past[item.pastIndex]} ${verb.complement}`,
     choices: [...verb.past],
     explanation: `過去形は主語の性・数に一致する。この文は${item.label}なので「${verb.past[item.pastIndex]}」。`,
+    choiceExplanations,
     translation: translateTense('past', item.subject, verb.infinitive, '昨日'),
-  }))
+    }
+  })
 
   const futureQuestions = subjects.map((subject, personIndex): Section8Question => {
     const correct = `${futureAux[personIndex]} ${verb.infinitive}`
     const candidateIndexes = [personIndex, (personIndex + 1) % 6, (personIndex + 2) % 6, (personIndex + 3) % 6]
+
+    const choiceExplanations = Object.fromEntries(candidateIndexes.map((index, choiceIndex) => {
+      const choice = `${futureAux[index]} ${verb.infinitive}`
+      return [
+        choice,
+        index === personIndex
+          ? `${subjects[index]} に対応する「быть の未来形 + 不定形」。この文の主語に合っている。`
+          : `${subjects[index]} に対応する「быть の未来形 + 不定形」。この文の主語は ${subject} なので、この形は選ばない。`,
+      ]
+    }))
 
     return {
       id: `s8-f-${String(verbIndex + 1).padStart(2, '0')}-${personIndex + 1}`,
@@ -105,6 +127,7 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
       sourceSentence: `${capitalize(subject)} ${verb.present[personIndex]} ${verb.complement}`,
       prompt: `За́втра ${subject} ___ ${verb.complement}`,
       correctAnswer: correct,
+      choiceExplanations,
       fullAnswer: `За́втра ${subject} ${correct} ${verb.complement}`,
       choices: candidateIndexes.map((index) => `${futureAux[index]} ${verb.infinitive}`),
       explanation: `不完了体の未来は「быть の未来形 + 不定形」。主語 ${subject} には「${futureAux[personIndex]}」を使う。`,
@@ -115,7 +138,7 @@ const generatedQuestions: Section8Question[] = verbs.flatMap((verb, verbIndex) =
   return [...pastQuestions, ...futureQuestions]
 })
 
-const neuterPast: readonly Omit<Section8Question, 'id' | 'tense' | 'translation'>[] = [
+const neuterPast: readonly Omit<Section8Question, 'id' | 'tense' | 'translation' | 'choiceExplanations'>[] = [
   { infinitive: 'рабо́тать', meaning: '働く・作動する', sourceSentence: 'Ра́дио хорошо́ рабо́тает.', prompt: 'Вчера́ ра́дио хорошо́ ___.', correctAnswer: 'рабо́тало', fullAnswer: 'Вчера́ ра́дио хорошо́ рабо́тало.', choices: ['рабо́тал', 'рабо́тала', 'рабо́тало', 'рабо́тали'], explanation: 'ра́дио は中性名詞として扱うので、過去形は中性単数「рабо́тало」。' },
   { infinitive: 'лежа́ть', meaning: '横たわる・置かれている', sourceSentence: 'Письмо́ лежи́т на столе́.', prompt: 'Вчера́ письмо́ ___ на столе́.', correctAnswer: 'лежа́ло', fullAnswer: 'Вчера́ письмо́ лежа́ло на столе́.', choices: ['лежа́л', 'лежа́ла', 'лежа́ло', 'лежа́ли'], explanation: 'письмо́ は中性名詞なので「лежа́ло」。' },
   { infinitive: 'стоя́ть', meaning: '立っている・置かれている', sourceSentence: 'Окно́ стои́т откры́тым.', prompt: 'Вчера́ окно́ ___ откры́тым.', correctAnswer: 'стоя́ло', fullAnswer: 'Вчера́ окно́ стоя́ло откры́тым.', choices: ['стоя́л', 'стоя́ла', 'стоя́ло', 'стоя́ли'], explanation: 'окно́ は中性名詞なので「стоя́ло」。' },
@@ -151,6 +174,15 @@ export const section8Questions: Section8Question[] = [
     ...question,
     id: `s8-n-${String(index + 1).padStart(2, '0')}`,
     tense: 'past' as const,
+    choiceExplanations: Object.fromEntries(question.choices.map((choice, choiceIndex) => {
+      const label = ['男性単数', '女性単数', '中性単数', '複数'][choiceIndex]
+      return [
+        choice,
+        choiceIndex === 2
+          ? `${label}の過去形。この文の中性名詞の主語に一致している。`
+          : `${label}の過去形。この文の主語は中性単数なので、この形は選ばない。`,
+      ]
+    })),
     translation: neuterTranslations[index]!,
   })),
 ]

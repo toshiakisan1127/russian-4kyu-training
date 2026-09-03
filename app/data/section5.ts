@@ -12,6 +12,7 @@ export type Section5Question = {
   basePhrase: string
   correctPhrase: string
   choices: string[]
+  choiceExplanations: Record<string, string>
   meaning: string
   answerTranslation: string
   explanation: string
@@ -198,6 +199,21 @@ export const section5Questions: Section5Question[] = seeds.flatMap((seed, seedIn
     }
 
     const context = contexts[targetCase]
+    const choices = [correctPhrase, distractorCandidates[0]!, distractorCandidates[1]!]
+    const choiceExplanations = Object.fromEntries(choices.map((phrase) => {
+      const choiceCase = allCases.find((caseKey) => buildPhrase(seed, caseKey) === phrase)
+      const choiceCaseLabel = choiceCase === 'nominative'
+        ? '主格'
+        : choiceCase
+          ? caseLabels[choiceCase]
+          : '別の格'
+      return [
+        phrase,
+        choiceCase === targetCase
+          ? `${choiceCaseLabel}の形。この文で必要な${caseLabels[targetCase]}に合っている。`
+          : `${choiceCaseLabel}の形。この文では${caseLabels[targetCase]}が必要なので、この形は選ばない。`,
+      ]
+    }))
     return {
       id: `section5-${String(seedIndex * targetCases.length + caseIndex + 1).padStart(3, '0')}`,
       targetCase,
@@ -206,7 +222,8 @@ export const section5Questions: Section5Question[] = seeds.flatMap((seed, seedIn
       after: context.after,
       basePhrase: buildPhrase(seed, 'nominative'),
       correctPhrase,
-      choices: [correctPhrase, distractorCandidates[0]!, distractorCandidates[1]!],
+      choices,
+      choiceExplanations,
       meaning: noun.meaning,
       answerTranslation: answerTranslation(targetCase, phraseTranslation(seed, noun), noun.animate === true),
       explanation: context.explanation,

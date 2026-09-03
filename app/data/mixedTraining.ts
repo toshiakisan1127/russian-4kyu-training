@@ -13,6 +13,7 @@ export type MixedTrainingQuestion = {
   subtext?: string
   correctAnswer: string
   choices: string[]
+  choiceExplanations?: Record<string, string>
   answerSentence: string
   answerTranslation?: string
   explanation: string
@@ -26,6 +27,7 @@ const prepositionQuestions: MixedTrainingQuestion[] = questions.map((question) =
   subtext: question.translation,
   correctAnswer: question.answer,
   choices: question.choices.map((choice) => choice.value),
+  choiceExplanations: Object.fromEntries(question.choices.map((choice) => [choice.value, choice.explanation])),
   answerSentence: question.fullSentence,
   answerTranslation: question.translation,
   explanation: question.correctExplanation,
@@ -39,6 +41,7 @@ const caseQuestions: MixedTrainingQuestion[] = caseTrainingQuestions.map((questi
   subtext: `基本形: ${question.basePhrase}`,
   correctAnswer: question.correctPhrase,
   choices: question.choices,
+  choiceExplanations: question.choiceExplanations,
   answerSentence: `${question.before} ${question.correctPhrase}${question.after}`,
   answerTranslation: question.answerTranslation,
   explanation: `${question.caseLabel}: ${question.explanation}`,
@@ -52,6 +55,7 @@ const verbQuestions: MixedTrainingQuestion[] = verbTrainingQuestions.map((questi
   subtext: `${question.infinitive} — ${question.meaning}`,
   correctAnswer: question.correctAnswer,
   choices: question.choices,
+  choiceExplanations: question.choiceExplanations,
   answerSentence: question.answerSentence,
   answerTranslation: question.answerTranslation ?? question.meaning,
   explanation: question.explanation,
@@ -75,21 +79,31 @@ const getVocabularyChoices = (index: number) => {
   return choices
 }
 
-const vocabularyQuestions: MixedTrainingQuestion[] = vocabularyItems.map((item, index) => ({
+const vocabularyQuestions: MixedTrainingQuestion[] = vocabularyItems.map((item, index) => {
+  const choices = getVocabularyChoices(index)
+  const choiceExplanations = Object.fromEntries(choices.map((choice) => [
+    choice,
+    choice === item.meaning
+      ? `${item.stressedWord}の意味は「${item.meaning}」。この問題の正解。`
+      : `「${choice}」という意味の選択肢。この単語「${item.stressedWord}」の意味ではない。`,
+  ]))
+
+  return {
   id: `mixed-vocab-${item.id}`,
   source: 'vocabulary',
   sourceLabel: '語彙',
   prompt: item.stressedWord,
   subtext: 'この単語の意味を選びなさい。',
   correctAnswer: item.meaning,
-  choices: getVocabularyChoices(index),
+  choices,
+  choiceExplanations,
   answerSentence: item.example?.sentence ?? `${item.stressedWord} — ${item.meaning}`,
   answerTranslation: item.example?.translation ?? item.meaning,
   explanation: item.example
     ? `${item.stressedWord} は「${item.meaning}」。例: ${item.example.sentence}（${item.example.translation}）`
     : `${item.stressedWord} は「${item.meaning}」。`,
-}))
-
+  }
+})
 export const mixedTrainingQuestions: MixedTrainingQuestion[] = [
   ...prepositionQuestions,
   ...caseQuestions,

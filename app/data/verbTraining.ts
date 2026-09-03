@@ -11,6 +11,7 @@ export type VerbTrainingQuestion = {
   prompt: string
   correctAnswer: string
   choices: string[]
+  choiceExplanations?: Record<string, string>
   answerSentence: string
   answerTranslation?: string
   explanation: string
@@ -24,6 +25,7 @@ const presentQuestions: VerbTrainingQuestion[] = section7Questions.map((question
   prompt: question.question,
   correctAnswer: question.correctAnswer,
   choices: question.choices,
+  choiceExplanations: question.choiceExplanations,
   answerSentence: question.question.replace('___', question.correctAnswer),
   answerTranslation: question.translation,
   explanation: `${question.infinitive}（${question.meaning}）は ${question.conjugation}。主語 ${question.subject} に合う形は「${question.correctAnswer}」。`,
@@ -37,6 +39,7 @@ const tenseQuestions: VerbTrainingQuestion[] = section8Questions.map((question) 
   prompt: question.prompt,
   correctAnswer: question.correctAnswer,
   choices: question.choices,
+  choiceExplanations: question.choiceExplanations,
   answerSentence: question.fullAnswer,
   answerTranslation: question.translation,
   explanation: question.explanation,
@@ -90,16 +93,30 @@ const aspectSeeds: ExtraQuestion[] = [
   { infinitive: 'реша́ть / реши́ть', meaning: '解く', prompt: 'Он сейча́с ___ зада́чу.', correctAnswer: 'реша́ет', choices: ['реша́ет', 'реши́т', 'реши́л', 'реши́ть'], answerSentence: 'Он сейча́с реша́ет зада́чу.', explanation: '今進行中なので不完了体 реша́ть。' },
 ]
 
+const motionChoiceLabels = ['徒歩・一方向', '徒歩・反復', '乗り物・一方向', '乗り物・反復']
+
 const motionQuestions: VerbTrainingQuestion[] = motionSeeds.map((question, index) => ({
   ...question,
   id: `verb-motion-${String(index + 1).padStart(2, '0')}`,
   category: 'motion',
+  choiceExplanations: Object.fromEntries(question.choices.map((choice, choiceIndex) => [
+    choice,
+    choice === question.correctAnswer
+      ? `${motionChoiceLabels[choiceIndex]}の現在形。この文の条件に合っている。`
+      : `${motionChoiceLabels[choiceIndex]}の現在形。今回の文では${motionChoiceLabels[question.choices.indexOf(question.correctAnswer)]}が必要なので、この形は選ばない。`,
+  ])),
 }))
 
 const aspectQuestions: VerbTrainingQuestion[] = aspectSeeds.map((question, index) => ({
   ...question,
   id: `verb-aspect-${String(index + 1).padStart(2, '0')}`,
   category: 'aspect',
+  choiceExplanations: Object.fromEntries(question.choices.map((choice) => [
+    choice,
+    choice === question.correctAnswer
+      ? `「${choice}」は、この文の時制・体・主語に合う形。`
+      : `「${choice}」は別の時制・体・主語で使う活用形で、この文の条件には合わない。`,
+  ])),
 }))
 
 export const verbTrainingQuestions: VerbTrainingQuestion[] = [

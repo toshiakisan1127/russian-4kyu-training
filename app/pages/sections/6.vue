@@ -75,6 +75,11 @@ const currentStatusClasses = computed(() => ({
   learning: 'border-violet-200 bg-violet-50 text-violet-700',
   mastered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
 }[currentStatus.value]))
+const responseChoiceDetails = computed(() => currentQuestion.value.choices.map((choice) => ({
+  value: choice,
+  isCorrect: choice === currentQuestion.value.correctAnswer,
+  explanation: currentQuestion.value.choiceExplanations[choice] ?? 'この選択肢の詳しい説明はありません。',
+})))
 
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
@@ -250,6 +255,8 @@ const choiceClasses = (choice: string) => {
                   @click="speak(`${currentQuestion.question} ${currentQuestion.correctAnswer}`)"
                 >🔊</button>
               </div>
+            <ChoiceExplanationList :choices="responseChoiceDetails" title="答えの選択肢を確認" />
+
             </div>
 
             <button type="button" class="min-h-13 w-full rounded-2xl bg-sky-700 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-800" @click="goNext">
