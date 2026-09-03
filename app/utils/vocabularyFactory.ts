@@ -280,10 +280,13 @@ const learningVerbs = new Set([
 
 const verbExampleOverrides: Record<string, VocabularyExample> = {
   быть: { sentence: 'Я хочу́ быть до́ма до семи́, потому́ что ве́чером к нам придут го́сти.', translation: '夕方にお客さんが来るので、7時までには家にいたいです。' },
-  мочь: { sentence: 'Я хочу́ мочь свобо́дно говори́ть по-ру́сски, когда́ пое́ду в Росси́ю.', translation: 'ロシアへ行くときには、ロシア語を自由に話せるようになりたいです。' },
+  мочь: { sentence: 'Сейча́с я могу́ говори́ть по-ру́сски то́лько немно́го, но ка́ждый день занима́юсь.', translation: '今はロシア語を少ししか話せませんが、毎日勉強しています。' },
   хотеть: { sentence: 'Я хочу́ лу́чше говори́ть по-ру́сски, поэ́тому занима́юсь ка́ждый день.', translation: 'ロシア語をもっと上手に話したいので、毎日勉強しています。' },
   есть: { sentence: 'Я люблю́ есть до́ма, потому́ что там ти́хо и мо́жно не спеши́ть.', translation: '家は静かで急がなくてよいので、家で食べるのが好きです。' },
   спать: { sentence: 'Я стара́юсь спать не ме́ньше семи́ часо́в, потому́ что у́тром ра́но встаю́.', translation: '朝早く起きるので、7時間以上寝るようにしています。' },
+  идти: { sentence: 'Сего́дня я хочу́ идти́ домо́й пешко́м, потому́ что пого́да хоро́шая.', translation: '今日は天気がよいので、歩いて家へ帰りたいです。' },
+  ехать: { sentence: 'За́втра мы бу́дем е́хать в Москву́ на по́езде с друзья́ми.', translation: '明日は友人たちと列車でモスクワへ行きます。' },
+  бежать: { sentence: 'Мне на́до бежа́ть на авто́бус, потому́ что я уже́ опа́здываю.', translation: 'もう遅れそうなので、バスへ走らなければなりません。' },
 }
 
 const makeVerbExample = (word: string, stressedWord: string, meaning: string): VocabularyExample => {
@@ -299,8 +302,8 @@ const makeVerbExample = (word: string, stressedWord: string, meaning: string): V
 
   if (learningVerbs.has(word)) {
     return {
-      sentence: `На уро́ке я стара́юсь ча́ще ${stressedWord}, потому́ что хочу́ лу́чше понима́ть ру́сский язы́к.`,
-      translation: `ロシア語をもっと理解したいので、授業では「${meaning}」ことを増やすようにしています。`,
+      sentence: `Мне ва́жно ${stressedWord}, потому́ что я хочу́ лу́чше понима́ть ру́сский язы́к.`,
+      translation: `ロシア語をもっと理解したいので、「${meaning}」ことが大切です。`,
     }
   }
 
@@ -377,7 +380,13 @@ const makeAdjectiveGrammar = (word: string): { forms: AdjectiveForms; declension
 }
 
 const colorAdjectives = new Set(['белый', 'чёрный', 'красный', 'синий', 'зелёный', 'жёлтый', 'серый', 'коричневый'])
-const languageAdjectives = new Set(['русский', 'японский', 'английский', 'французский', 'немецкий'])
+const languageAdjectives: Record<string, string> = {
+  русский: 'ロシア語',
+  японский: '日本語',
+  английский: '英語',
+  французский: 'フランス語',
+  немецкий: 'ドイツ語',
+}
 const humanAdjectives = new Set(['старый', 'молодой', 'добрый', 'злой', 'умный', 'глупый', 'сильный', 'слабый', 'свободный', 'занятый'])
 
 const makeAdjectiveExample = (word: string, stressedWord: string, meaning: string): VocabularyExample => {
@@ -388,10 +397,11 @@ const makeAdjectiveExample = (word: string, stressedWord: string, meaning: strin
     }
   }
 
-  if (languageAdjectives.has(word)) {
+  const languageName = languageAdjectives[word]
+  if (languageName) {
     return {
       sentence: `${capitalize(stressedWord)} язы́к мне интере́сен, поэ́тому я хочу́ занима́ться им ка́ждый день.`,
-      translation: `${meaning}言語に興味があるので、毎日勉強したいです。`,
+      translation: `${languageName}に興味があるので、毎日勉強したいです。`,
     }
   }
 
@@ -422,13 +432,9 @@ export const makeAdjective = (id: string, seed: WordSeed): AdjectiveVocabularyIt
   }
 }
 
-const makeSimpleExample = (
-  stressedWord: string,
-  meaning: string,
-  partOfSpeech: Exclude<VocabularyPartOfSpeech, 'noun' | 'verb' | 'adjective'>,
-): VocabularyExample => ({
-  sentence: `В э́том предложе́нии сло́во «${stressedWord}» помога́ет пра́вильно поня́ть смысл, поэ́тому обрати́те на него́ внима́ние.`,
-  translation: `この文では「${meaning}」という語が意味を正しく理解する助けになるので、注意して見てください。`,
+const makeSimpleExample = (stressedWord: string, meaning: string): VocabularyExample => ({
+  sentence: `В э́том предложе́нии сло́во «${stressedWord}» помога́ет пра́вильно поня́ть смысл, поэ́тому я чита́ю его́ внима́тельно.`,
+  translation: `この文では「${meaning}」という語が意味を正しく理解する助けになるので、注意して読んでいます。`,
 })
 
 export const makeSimple = (
@@ -441,5 +447,5 @@ export const makeSimple = (
   stressedWord: seed[1],
   meaning: seed[2],
   partOfSpeech,
-  example: makeSimpleExample(seed[1], seed[2], partOfSpeech),
+  example: makeSimpleExample(seed[1], seed[2]),
 })
