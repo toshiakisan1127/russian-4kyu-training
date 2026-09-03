@@ -7,6 +7,7 @@ import { section2Questions } from '~/data/section2'
 import { section3Questions } from '~/data/section3'
 import { section4Questions } from '~/data/section4'
 import { section5Questions } from '~/data/section5'
+import { section6Questions } from '~/data/section6'
 import { vocabularyItems } from '~/data/vocabulary'
 import {
   getQuestionStatusCounts,
@@ -15,7 +16,7 @@ import {
 } from '~/utils/questionProgress'
 
 type TrainingProgressKey = 'prepositions' | 'vocabulary'
-type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5'
+type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6'
 
 type TrainingItem = {
   title: string
@@ -116,7 +117,9 @@ const examItems: ExamItem[] = [
     roman: 'VI',
     title: '疑問文への応答',
     description: '疑問詞と文意に合う自然な応答を選ぶ。',
-    status: 'coming-soon',
+    status: 'available',
+    to: '/sections/6',
+    progressKey: 'section6',
   },
   {
     roman: 'VII',
@@ -195,6 +198,10 @@ const examProgress = computed(() => {
     section5: {
       counts: getQuestionStatusCounts(section5Questions.map((question) => question.id)),
       total: section5Questions.length,
+    },
+    section6: {
+      counts: getQuestionStatusCounts(section6Questions.map((question) => question.id)),
+      total: section6Questions.length,
     },
   }
 })
