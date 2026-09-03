@@ -243,6 +243,11 @@ const choiceClasses = (choice: string) => {
               </div>
             </div>
 
+            <div class="mb-7 rounded-2xl border border-indigo-100 bg-indigo-50 p-4">
+              <p class="mb-1 text-xs font-black tracking-[0.12em] text-indigo-700 uppercase">日本語訳</p>
+              <p class="m-0 font-bold leading-7 text-slate-800">{{ currentQuestion.translation }}</p>
+            </div>
+
             <button type="button" class="min-h-13 w-full rounded-2xl bg-sky-700 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-sky-800" @click="goNext">
               {{ currentIndex === questionSet.length - 1 ? '結果を見る' : '次の問題へ' }}
             </button>
