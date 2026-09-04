@@ -62,12 +62,26 @@ const toggleTheme = () => {
   window.localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light')
   updateThemeButton(isDark)
 }
+
+const reloadPage = () => {
+  window.location.reload()
+}
 </script>
 
 <template>
   <NuxtPage />
 
   <div class="fixed top-3 right-3 z-50 flex items-start gap-2">
+    <button
+      type="button"
+      class="grid size-10 place-items-center rounded-full border border-slate-200 bg-white/95 text-lg shadow-lg shadow-slate-900/10 backdrop-blur transition hover:scale-105 hover:bg-indigo-50"
+      aria-label="ページを再読み込み"
+      title="ページを再読み込み"
+      @click="reloadPage"
+    >
+      ↻
+    </button>
+
     <button
       id="theme-toggle"
       type="button"
