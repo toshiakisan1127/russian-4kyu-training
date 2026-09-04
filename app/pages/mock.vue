@@ -280,21 +280,25 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-else-if="phase === 'exam'">
-        <header class="sticky top-0 z-10 mb-5 rounded-3xl border border-amber-200 bg-white/95 p-4 shadow-lg shadow-amber-100/60 backdrop-blur sm:p-5">
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="mb-1 text-xs font-black tracking-[0.14em] text-amber-700 uppercase">模擬試験 第1回</p>
-              <h1 class="m-0 text-xl font-black sm:text-2xl">文法問題</h1>
+        <details class="sticky top-0 z-10 mb-5 rounded-3xl border border-amber-200 bg-white/95 shadow-lg shadow-amber-100/60 backdrop-blur">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-3xl p-3 font-black outline-none transition hover:bg-amber-50 focus-visible:ring-2 focus-visible:ring-amber-500 sm:p-4 [&::-webkit-details-marker]:hidden">
+            <div class="min-w-0">
+              <p class="mb-1 text-xs tracking-[0.14em] text-amber-700 uppercase">模擬試験 第1回</p>
+              <p class="m-0 truncate text-sm text-slate-800 sm:text-base">第{{ currentSection.roman }}問・{{ currentSection.title }}</p>
             </div>
-            <div
-              class="rounded-2xl border-2 px-4 py-2 text-center font-mono text-2xl font-black tabular-nums"
-              :class="timeLeft <= 300 ? 'border-rose-400 bg-rose-50 text-rose-800' : 'border-amber-300 bg-amber-50 text-amber-900'"
-              aria-live="polite"
-            >
-              {{ formatTime(timeLeft) }}
+            <div class="flex shrink-0 items-center gap-2">
+              <div
+                class="rounded-xl border-2 px-3 py-1.5 text-center font-mono text-xl tabular-nums sm:px-4 sm:py-2 sm:text-2xl"
+                :class="timeLeft <= 300 ? 'border-rose-400 bg-rose-50 text-rose-800' : 'border-amber-300 bg-amber-50 text-amber-900'"
+                aria-live="polite"
+              >
+                {{ formatTime(timeLeft) }}
+              </div>
+              <span class="text-xs font-black text-slate-500">展開</span>
             </div>
-          </div>
+          </summary>
 
+          <div class="border-t border-amber-100 p-4 sm:p-5">
           <div class="mt-4 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
             <span>解答済み {{ answeredCount }} / {{ mockExam1.totalAnswerFields }}</span>
             <span>{{ Math.round((answeredCount / mockExam1.totalAnswerFields) * 100) }}%</span>
@@ -319,7 +323,9 @@ onBeforeUnmount(() => {
               <span class="block text-xs font-bold">{{ sectionAnsweredCount(section) }}/{{ sectionTotalAnswerFields(section) }}欄</span>
             </button>
           </nav>
-        </header>
+
+          </div>
+        </details>
 
         <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/50 sm:p-8">
           <header class="mb-7 border-b border-slate-200 pb-6">
