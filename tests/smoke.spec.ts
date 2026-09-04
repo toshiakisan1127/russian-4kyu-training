@@ -159,7 +159,7 @@ test('mock section IV matches the stress-tap input UI', async ({ page }) => {
   await expect(question).toContainText('回答: города́')
 })
 
-test('mock present tense answers accept plain spelling with separate stress positions', async ({ page }) => {
+test('mock present tense answers accept plain spelling only', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
   await page.reload({ waitUntil: 'networkidle' })
@@ -170,16 +170,14 @@ test('mock present tense answers accept plain spelling with separate stress posi
   await status.locator('nav button').nth(6).click()
 
   const firstQuestionInputs = page.locator('article').first().locator('input')
-  await expect(firstQuestionInputs).toHaveCount(4)
+  await expect(firstQuestionInputs).toHaveCount(2)
   await firstQuestionInputs.nth(0).fill('читаю')
-  await firstQuestionInputs.nth(1).fill('2')
-  await firstQuestionInputs.nth(2).fill('читают')
-  await firstQuestionInputs.nth(3).fill('2')
+  await firstQuestionInputs.nth(1).fill('читают')
 
   await status.locator('nav button').nth(7).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
   await expect(page.locator('body')).toContainText('бу́дем чита́ть')
   await expect(page.locator('body')).toContainText('бу́дете идти́')
   await expect(page.locator('body')).toContainText('бу́дут учи́ться')
-  await expect(page.getByText('4 / 87', { exact: true })).toBeVisible()
+  await expect(page.getByText('2 / 71', { exact: true })).toBeVisible()
 })
