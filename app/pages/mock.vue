@@ -581,7 +581,19 @@ onBeforeUnmount(() => {
                   class="rounded-xl border border-slate-200 bg-white p-3"
                 >
                   <span class="mb-2 block text-xs font-black text-slate-600">{{ field.label }}</span>
+                  <textarea
+                    v-if="field.multiline"
+                    rows="4"
+                    autocomplete="off"
+                    autocapitalize="none"
+                    spellcheck="false"
+                    :value="inputValue(question, field)"
+                    class="w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg font-bold leading-8 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    placeholder="入力"
+                    @input="onTextInput(question, field, $event)"
+                  />
                   <input
+                    v-else
                     :type="field.inputMode ?? 'text'"
                     autocomplete="off"
                     autocapitalize="none"
