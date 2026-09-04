@@ -121,3 +121,25 @@ test('mock section navigation returns to the top', async ({ page }) => {
   await page.getByRole('button', { name: '← 前の大問' }).click()
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
 })
+
+test('mock present tense answers accept plain spelling with separate stress positions', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(6).click()
+
+  const firstQuestionInputs = page.locator('article').first().locator('input')
+  await expect(firstQuestionInputs).toHaveCount(4)
+  await firstQuestionInputs.nth(0).fill('читаю')
+  await firstQuestionInputs.nth(1).fill('2')
+  await firstQuestionInputs.nth(2).fill('читают')
+  await firstQuestionInputs.nth(3).fill('2')
+
+  await status.locator('nav button').nth(7).click()
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+  await expect(page.getByText('4 / 82', { exact: true })).toBeVisible()
+})
