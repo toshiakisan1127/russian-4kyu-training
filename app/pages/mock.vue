@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { mockExam1, type MockInputField, type MockQuestion, type MockSection } from '~/data/mockExam1'
+import { stripStress } from '~/utils/russianStress'
 
 type Phase = 'intro' | 'exam' | 'result'
 
@@ -82,6 +83,40 @@ const sectionCorrectCount = (section: MockSection) =>
   answerEntries.value.filter((entry) =>
     section.questions.includes(entry.question) && isEntryCorrect(entry),
   ).length
+
+const MOCK_VOWEL_RE = /[аеёиоуыэюя]/iu
+const MOCK_ACUTE = String.fromCodePoint(0x0301)
+
+const section4Field = (question: MockQuestion, id: string) => {
+  if (question.kind !== 'input') throw new Error('Section IV field requested for a choice question')
+  return question.fields.find((field) => field.id === id)!
+}
+const section4SpellingField = (question: MockQuestion) => section4Field(question, 'spelling')
+const section4StressField = (question: MockQuestion) => section4Field(question, 'stress')
+const section4AnswerInput = (question: MockQuestion) => inputValue(question, section4SpellingField(question))
+const section4AnswerChars = (question: MockQuestion) => Array.from(stripStress(section4AnswerInput(question)))
+const section4VowelIndexes = (question: MockQuestion) => section4AnswerChars(question)
+  .map((char, index) => MOCK_VOWEL_RE.test(char) ? index : -1)
+  .filter((index) => index >= 0)
+const section4StressPosition = (question: MockQuestion) => {
+  const value = answers.value[answerKey(question, section4StressField(question).id)]
+  return typeof value === 'string' && /^[0-9]+$/u.test(value) ? Number(value) : null
+}
+const section4HasYo = (question: MockQuestion) => /ё/iu.test(section4AnswerInput(question))
+const section4AccentedAnswer = (question: MockQuestion) => {
+  const chars = section4AnswerChars(question)
+  const position = section4StressPosition(question)
+  const targetIndex = position === null ? -1 : section4VowelIndexes(question)[position - 1] ?? -1
+  if (targetIndex >= 0) chars[targetIndex] = chars[targetIndex] + MOCK_ACUTE
+  return chars.join('')
+}
+const chooseSection4Stress = (question: MockQuestion, charIndex: number) => {
+  const chars = section4AnswerChars(question)
+  if (!MOCK_VOWEL_RE.test(chars[charIndex] ?? '')) return
+  const position = section4VowelIndexes(question).indexOf(charIndex) + 1
+  answers.value[answerKey(question, section4StressField(question).id)] = String(position)
+  saveProgress()
+}
 
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60).toString().padStart(2, '0')
@@ -217,6 +252,9 @@ const onTextInput = (question: MockQuestion, field: MockInputField, event: Event
   if (phase.value !== 'exam') return
   const target = event.target as HTMLInputElement
   answers.value[answerKey(question, field.id)] = target.value
+  if (currentSection.value.roman === 'IV' && field.id === 'spelling') {
+    delete answers.value[answerKey(question, section4StressField(question).id)]
+  }
   saveProgress()
 }
 
@@ -469,6 +507,46 @@ onBeforeUnmount(() => {
                 </button>
               </div>
 
+              <div v-else-if="currentSection.roman === 'IV'" class="space-y-4">
+                <label class="block rounded-xl border border-slate-200 bg-white p-3">
+                  <span class="mb-2 block text-xs font-black text-slate-600">複数形</span>
+                  <input
+                    :value="section4AnswerInput(question)"
+                    type="text"
+                    lang="ru"
+                    autocomplete="off"
+                    autocapitalize="none"
+                    spellcheck="false"
+                    placeholder="例: студенты"
+                    class="min-h-14 w-full rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 text-2xl font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+                    style="font-family: 'PT Serif', Georgia, serif"
+                    @input="onTextInput(question, section4SpellingField(question), $event)"
+                  >
+                </label>
+                <div v-if="section4AnswerInput(question)" class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p class="mb-3 text-xs font-black tracking-[0.1em] text-slate-500 uppercase">Stress</p>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <button
+                      v-for="(char, index) in section4AnswerChars(question)"
+                      :key="`${question.id}-${index}`"
+                      type="button"
+                      class="grid min-h-11 min-w-9 place-items-center rounded-xl px-2 text-2xl font-bold transition"
+                      :class="MOCK_VOWEL_RE.test(char)
+                        ? section4StressPosition(question) === section4VowelIndexes(question).indexOf(index) + 1
+                          ? 'bg-sky-700 text-white shadow-md'
+                          : 'border border-sky-200 bg-white text-sky-900 hover:bg-sky-100'
+                        : 'cursor-default text-slate-700'"
+                      :disabled="!MOCK_VOWEL_RE.test(char)"
+                      @click="chooseSection4Stress(question, index)"
+                    >{{ char }}</button>
+                  </div>
+                  <p class="mt-3 mb-0 text-sm font-bold text-slate-600">
+                    <template v-if="section4HasYo(question)">ё はそれ自体が強勢を表します。</template>
+                    <template v-else-if="section4StressPosition(question) === null">強勢のある母音を1つ選んでください。</template>
+                    <template v-else>回答: <span class="text-lg text-slate-950" style="font-family: 'PT Serif', Georgia, serif">{{ section4AccentedAnswer(question) }}</span></template>
+                  </p>
+                </div>
+              </div>
               <div v-else class="grid gap-3 sm:grid-cols-2">
                 <label
                   v-for="field in question.fields"

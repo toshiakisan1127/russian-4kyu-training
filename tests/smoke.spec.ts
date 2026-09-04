@@ -141,7 +141,7 @@ test('mock section II question 3 has a distinct stress position answer', async (
   await expect(page.getByText('1 / 87', { exact: true })).toBeVisible()
 })
 
-test('mock section IV provides spelling and stress-position inputs', async ({ page }) => {
+test('mock section IV matches the stress-tap input UI', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
   await page.reload({ waitUntil: 'networkidle' })
@@ -149,10 +149,14 @@ test('mock section IV provides spelling and stress-position inputs', async ({ pa
   const status = page.locator('[data-testid="mock-exam-status"]')
   await status.locator('summary').click()
   await status.locator('nav button').nth(3).click()
-  const inputs = page.locator('article').first().locator('input')
-  await expect(inputs).toHaveCount(2)
-  await expect(inputs.nth(0)).toHaveAttribute('type', 'text')
-  await expect(inputs.nth(1)).toHaveAttribute('type', 'number')
+
+  const question = page.locator('article').first()
+  const input = question.locator('input[type="text"]')
+  await expect(input).toHaveCount(1)
+  await input.fill('города')
+  await expect(question).toContainText('Stress')
+  await question.getByRole('button', { name: 'а', exact: true }).click()
+  await expect(question).toContainText('回答: города́')
 })
 
 test('mock present tense answers accept plain spelling with separate stress positions', async ({ page }) => {
