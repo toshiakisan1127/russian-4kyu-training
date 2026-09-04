@@ -39,6 +39,10 @@ test('mock status card scrolls away and avoids fixed utility controls', async ({
   const status = page.locator('[data-testid="mock-exam-status"]')
   await expect(status).toBeVisible()
 
+  const questionFive = page.locator('article').nth(4)
+  await expect(questionFive).toContainText('до̲м')
+  await expect(questionFive).not.toContainText('д̲ом')
+
   const assertNoUtilityOverlap = async () => {
     const overlaps = await page.evaluate(() => {
       const status = document.querySelector('[data-testid="mock-exam-status"]')?.getBoundingClientRect()
@@ -67,6 +71,7 @@ test('mock status card scrolls away and avoids fixed utility controls', async ({
   for (let index = 0; index < 8; index += 1) {
     await status.locator('nav button').nth(index).click()
     await expect(examContent).not.toContainText('\u0301')
+    if (index === 1) await expect(examContent).not.toContainText('\u0332')
   }
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
