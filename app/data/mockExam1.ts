@@ -134,9 +134,9 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s2-02',
           prompt: 'アクセントの位置が異なる単語はどれか。',
-          choices: ['работа', 'г̲азета', 'к̲нига'],
+          choices: ['работа', 'газета', 'книга'],
           answer: 2,
-          answerText: 'к̲нига',
+          answerText: 'книга',
           explanation: 'работа と газета は第2音節、книга は第1音節にアクセントがある。',
         },
         {
