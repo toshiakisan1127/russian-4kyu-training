@@ -103,3 +103,20 @@ test('mock exam progress resumes and resets after submission', async ({ page }) 
   await expect(page.getByRole('button', { name: '続きから再開' })).not.toBeVisible()
   await expect(page.getByRole('button', { name: '模試を開始する' })).toBeVisible()
 })
+
+test('mock section navigation returns to the top', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  await page.getByRole('button', { name: '次の大問 →' }).click()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  await page.getByRole('button', { name: '← 前の大問' }).click()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+})
