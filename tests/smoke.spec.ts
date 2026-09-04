@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-const appBasePath = '/toshiaki_Russia_language'
+const appBasePath = '/russian-4kyu-training'
 const routes = [
   '/',
   '/prepositions',
