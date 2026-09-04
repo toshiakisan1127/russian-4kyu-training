@@ -31,3 +31,37 @@ for (const route of routes) {
     await expect(page.locator('h1')).toBeVisible()
   })
 }
+
+test('mock status card avoids fixed utility controls while scrolling', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await expect(status).toBeVisible()
+
+  const assertNoUtilityOverlap = async () => {
+    const overlaps = await page.evaluate(() => {
+      const status = document.querySelector('[data-testid="mock-exam-status"]')?.getBoundingClientRect()
+      const controls = [
+        document.querySelector('#theme-toggle')?.getBoundingClientRect(),
+        document.querySelector('#theme-toggle + details > summary')?.getBoundingClientRect(),
+      ].filter((rect): rect is DOMRect => Boolean(rect))
+
+      if (!status) return ['mock status card is missing']
+
+      return controls
+        .filter((rect) => Math.max(status.left, rect.left) < Math.min(status.right, rect.right)
+          && Math.max(status.top, rect.top) < Math.min(status.bottom, rect.bottom))
+        .map((rect) => `status overlaps utility control at ${Math.round(rect.left)},${Math.round(rect.top)}`)
+    })
+
+    expect(overlaps).toEqual([])
+  }
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await assertNoUtilityOverlap()
+
+  await status.locator('summary').click()
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await assertNoUtilityOverlap()
+})
