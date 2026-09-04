@@ -64,6 +64,9 @@ const sectionAnsweredCount = (section: MockSection) =>
       : typeof value === 'number'
   }).length
 
+const sectionTotalAnswerFields = (section: MockSection) =>
+  answerEntries.value.filter((entry) => section.questions.includes(entry.question)).length
+
 const sectionCorrectCount = (section: MockSection) =>
   answerEntries.value.filter((entry) =>
     section.questions.includes(entry.question) && isEntryCorrect(entry),
@@ -313,7 +316,7 @@ onBeforeUnmount(() => {
               @click="goToSection(index)"
             >
               <span class="block text-xs font-black">第{{ section.roman }}問</span>
-              <span class="block text-xs font-bold">{{ sectionAnsweredCount(section) }}/{{ section.questions.length }}問</span>
+              <span class="block text-xs font-bold">{{ sectionAnsweredCount(section) }}/{{ sectionTotalAnswerFields(section) }}欄</span>
             </button>
           </nav>
         </header>
@@ -428,7 +431,7 @@ onBeforeUnmount(() => {
             >
               <div class="flex items-center justify-between gap-3">
                 <span class="font-black">第{{ section.roman }}問・{{ section.title }}</span>
-                <strong class="text-emerald-700">{{ sectionCorrectCount(section) }} / {{ section === mockExam1.sections[6] ? 16 : section === mockExam1.sections[7] ? 8 : section.questions.length }}</strong>
+                <strong class="text-emerald-700">{{ sectionCorrectCount(section) }} / {{ sectionTotalAnswerFields(section) }}</strong>
               </div>
               <p class="mt-2 mb-0 text-xs font-bold text-slate-500">解答済み {{ sectionAnsweredCount(section) }}欄</p>
             </div>
