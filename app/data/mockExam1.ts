@@ -15,6 +15,8 @@ export type MockInputField = {
   label: string
   answer: string
   explanation: string
+  displayAnswer?: string
+  inputMode?: 'text' | 'number'
 }
 
 export type MockInputQuestion = {
@@ -42,7 +44,7 @@ export const mockExam1 = {
   title: '模擬試験 第1回',
   durationMinutes: 45,
   totalQuestionCards: 54,
-  totalAnswerFields: 66,
+  totalAnswerFields: 82,
   sections: [
     {
       id: 'mock-1-section-1',
@@ -522,8 +524,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-01',
           prompt: 'читать（読む）：Я ___ книгу, а они ___ газету.',
           fields: [
-            { id: 'first', label: '①', answer: 'чита́ю', explanation: 'я に対応する читать の現在形は чита́ю。' },
-            { id: 'second', label: '②', answer: 'чита́ют', explanation: 'они́ に対応する читать の現在形は чита́ют。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'читаю', displayAnswer: 'чита́ю', explanation: 'я に対応する читать の現在形は чита́ю。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'читают', displayAnswer: 'чита́ют', explanation: 'они́ に対応する читать の現在形は чита́ют。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
           ],
           completedSentence: 'Я чита́ю кни́гу, а они́ чита́ют газе́ту.',
           translation: '私は本を読み、彼らは新聞を読みます。',
@@ -534,8 +538,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-02',
           prompt: 'писать（書く）：Ты ___ письмо, а мы ___ упражнение.',
           fields: [
-            { id: 'first', label: '①', answer: 'пи́шешь', explanation: 'ты に対応する писать は語幹が変化し、пи́шешь になる。' },
-            { id: 'second', label: '②', answer: 'пи́шем', explanation: 'мы に対応する писать の現在形は пи́шем。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'пишешь', displayAnswer: 'пи́шешь', explanation: 'ты に対応する писать は語幹が変化し、пи́шешь になる。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'пишем', displayAnswer: 'пи́шем', explanation: 'мы に対応する писать の現在形は пи́шем。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Ты пи́шешь письмо́, а мы пи́шем упражне́ние.',
           translation: 'あなたは手紙を書き、私たちは練習問題を書きます。',
@@ -546,8 +552,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-03',
           prompt: 'жить（住む）：Он ___ в Москве, а вы ___ в Токио.',
           fields: [
-            { id: 'first', label: '①', answer: 'живёт', explanation: 'он に対応する жить は живёт。語幹が жив- になる。' },
-            { id: 'second', label: '②', answer: 'живёте', explanation: 'вы に対応する жить は живёте。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'живёт', displayAnswer: 'живёт', explanation: 'он に対応する жить は живёт。語幹が жив- になる。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'живёте', displayAnswer: 'живёте', explanation: 'вы に対応する жить は живёте。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Он живёт в Москве́, а вы живёте в То́кио.',
           translation: '彼はモスクワに住み、あなたたちは東京に住みます。',
@@ -558,8 +566,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-04',
           prompt: 'говорить（話す）：Она ___ по-русски, а они ___ по-японски.',
           fields: [
-            { id: 'first', label: '①', answer: 'говори́т', explanation: 'она́ に対応する говорить の現在形は говори́т。' },
-            { id: 'second', label: '②', answer: 'говоря́т', explanation: 'они́ に対応する говорить の現在形は говоря́т。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'говорит', displayAnswer: 'говори́т', explanation: 'она́ に対応する говорить の現在形は говори́т。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '3', inputMode: 'number', explanation: 'アクセントは第3音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'говорят', displayAnswer: 'говоря́т', explanation: 'они́ に対応する говорить の現在形は говоря́т。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '3', inputMode: 'number', explanation: 'アクセントは第3音節。' },
           ],
           completedSentence: 'Она́ говори́т по-ру́сски, а они́ говоря́т по-япо́нски.',
           translation: '彼女はロシア語で話し、彼らは日本語で話します。',
@@ -570,8 +580,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-05',
           prompt: 'любить（好きである）：Я ___ музыку, а он ___ кино.',
           fields: [
-            { id: 'first', label: '①', answer: 'люблю́', explanation: 'я に対応する любить は люблю́。' },
-            { id: 'second', label: '②', answer: 'лю́бит', explanation: 'он に対応する любить は лю́бит。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'люблю', displayAnswer: 'люблю́', explanation: 'я に対応する любить は люблю́。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'любит', displayAnswer: 'лю́бит', explanation: 'он に対応する любить は лю́бит。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Я люблю́ му́зыку, а он лю́бит кино́.',
           translation: '私は音楽が好きで、彼は映画が好きです。',
@@ -582,8 +594,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-06',
           prompt: 'хотеть（〜したい）：Мы ___ пить чай, а ты ___ есть.',
           fields: [
-            { id: 'first', label: '①', answer: 'хоти́м', explanation: 'мы に対応する хотеть は хоти́м。' },
-            { id: 'second', label: '②', answer: 'хо́чешь', explanation: 'ты に対応する хотеть は хо́чешь。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'хотим', displayAnswer: 'хоти́м', explanation: 'мы に対応する хотеть は хоти́м。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'хочешь', displayAnswer: 'хо́чешь', explanation: 'ты に対応する хотеть は хо́чешь。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Мы хоти́м пить чай, а ты хо́чешь есть.',
           translation: '私たちはお茶を飲みたくて、あなたは食べたいと思っています。',
@@ -594,8 +608,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-07',
           prompt: 'мочь（〜できる）：Вы ___ помочь, а она ___ подождать.',
           fields: [
-            { id: 'first', label: '①', answer: 'мо́жете', explanation: 'вы に対応する мочь は мо́жете。' },
-            { id: 'second', label: '②', answer: 'мо́жет', explanation: 'она́ に対応する мочь は мо́жет。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'можете', displayAnswer: 'мо́жете', explanation: 'вы に対応する мочь は мо́жете。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'может', displayAnswer: 'мо́жет', explanation: 'она́ に対応する мочь は мо́жет。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Вы мо́жете помо́чь, а она́ мо́жет подожда́ть.',
           translation: 'あなたたちは助けることができ、彼女は待つことができます。',
@@ -606,8 +622,10 @@ export const mockExam1 = {
           id: 'mock-1-s7-08',
           prompt: 'идти（歩いて行く）：Я ___ в школу, а дети ___ в парк.',
           fields: [
-            { id: 'first', label: '①', answer: 'иду́', explanation: 'я に対応する идти́ は不規則形の иду́。' },
-            { id: 'second', label: '②', answer: 'иду́т', explanation: 'они́ に対応する идти́ は иду́т。' },
+            { id: 'first-spelling', label: '① 綴り', answer: 'иду', displayAnswer: 'иду́', explanation: 'я に対応する идти́ は不規則形の иду́。' },
+            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
+            { id: 'second-spelling', label: '② 綴り', answer: 'идут', displayAnswer: 'иду́т', explanation: 'они́ に対応する идти́ は иду́т。' },
+            { id: 'second-stress', label: '② アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
           ],
           completedSentence: 'Я иду́ в шко́лу, а де́ти иду́т в па́рк.',
           translation: '私は学校へ歩いて行き、子どもたちは公園へ歩いて行きます。',
@@ -624,7 +642,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s8-01',
-          prompt: 'работать（働く）\\n［過去］Вчера Анна ___ дома.\\n［未来］Завтра Анна ___ дома.',
+          prompt: 'работать（働く）\n［過去］Вчера Анна ___ дома.\n［未来］Завтра Анна ___ дома.',
           fields: [
             { id: 'past', label: '過去形', answer: 'рабо́тала', explanation: 'А́нна は女性単数なので、過去形は рабо́тала。' },
             { id: 'future', label: '未来形', answer: 'бу́дет рабо́тать', explanation: '不完了体の未来は быть の未来形 + 不定形。А́нна には бу́дет рабо́тать。' },
@@ -636,38 +654,38 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s8-02',
-          prompt: 'читать（読む）\\n［過去］Вчера студент ___ книгу.\\n［未来］Завтра студент ___ книгу.',
+          prompt: 'читать（読む）\n［過去］Вчера мы ___ книгу.\n［未来］Завтра мы ___ книгу.',
           fields: [
-            { id: 'past', label: '過去形', answer: 'чита́л', explanation: 'студе́нт は男性単数なので、過去形は чита́л。' },
-            { id: 'future', label: '未来形', answer: 'бу́дет чита́ть', explanation: 'студе́нт は3人称単数なので、быть の未来形は бу́дет。' },
+            { id: 'past', label: '過去形', answer: 'чита́ли', explanation: 'мы は複数なので、過去形は чита́ли。' },
+            { id: 'future', label: '未来形', answer: 'бу́дем чита́ть', explanation: 'мы に対応する быть の未来形は бу́дем。' },
           ],
-          completedSentence: 'Вчера́ студе́нт чита́л кни́гу. За́втра студе́нт бу́дет чита́ть кни́гу.',
-          translation: '昨日学生は本を読みました。明日学生は本を読むでしょう。',
-          speechText: 'Вчера́ студе́нт чита́л кни́гу. За́втра студе́нт бу́дет чита́ть кни́гу.',
+          completedSentence: 'Вчера́ мы чита́ли кни́гу. За́втра мы бу́дем чита́ть кни́гу.',
+          translation: '昨日私たちは本を読みました。明日私たちは本を読むでしょう。',
+          speechText: 'Вчера́ мы чита́ли кни́гу. За́втра мы бу́дем чита́ть кни́гу.',
         },
         {
           kind: 'input',
           id: 'mock-1-s8-03',
-          prompt: 'идти（歩いて行く）\\n［過去］Вчера Иван ___ в школу.\\n［未来］Завтра Иван ___ в школу.',
+          prompt: 'идти（歩いて行く）\n［過去］Вчера вы ___ в школу.\n［未来］Завтра вы ___ в школу.',
           fields: [
-            { id: 'past', label: '過去形', answer: 'шёл', explanation: 'идти́ の過去形は不規則。Ива́н は男性単数なので шёл。' },
-            { id: 'future', label: '未来形', answer: 'бу́дет идти́', explanation: 'идти́ の不完了体未来は бу́дет идти́。' },
+            { id: 'past', label: '過去形', answer: 'шли́', explanation: 'вы は複数なので、идти́ の過去形は шли́。' },
+            { id: 'future', label: '未来形', answer: 'бу́дете идти́', explanation: 'вы に対応する быть の未来形は бу́дете。' },
           ],
-          completedSentence: 'Вчера́ Ива́н шёл в шко́лу. За́втра Ива́н бу́дет идти́ в шко́лу.',
-          translation: '昨日イワンは学校へ歩いて行きました。明日イワンは学校へ歩いて行くでしょう。',
-          speechText: 'Вчера́ Ива́н шёл в шко́лу. За́втра Ива́н бу́дет идти́ в шко́лу.',
+          completedSentence: 'Вчера́ вы шли́ в шко́лу. За́втра вы бу́дете идти́ в шко́лу.',
+          translation: '昨日あなたたちは学校へ歩いて行きました。明日あなたたちは学校へ歩いて行くでしょう。',
+          speechText: 'Вчера́ вы шли́ в шко́лу. За́втра вы бу́дете идти́ в шко́лу.',
         },
         {
           kind: 'input',
           id: 'mock-1-s8-04',
-          prompt: 'учиться（学ぶ）\\n［過去］Вчера девочка ___ в университете.\\n［未来］Завтра девочка ___ в университете.',
+          prompt: 'учиться（学ぶ）\n［過去］Вчера они ___ в университете.\n［未来］Завтра они ___ в университете.',
           fields: [
-            { id: 'past', label: '過去形', answer: 'учи́лась', explanation: 'де́вочка は女性単数で、-ся 動詞の過去形は учи́лась。' },
-            { id: 'future', label: '未来形', answer: 'бу́дет учи́ться', explanation: '不完了体の未来は бу́дет + 不定形 учи́ться。' },
+            { id: 'past', label: '過去形', answer: 'учи́лись', explanation: 'они́ は複数なので、-ся 動詞の過去形は учи́лись。' },
+            { id: 'future', label: '未来形', answer: 'бу́дут учи́ться', explanation: 'они́ に対応する быть の未来形は бу́дут。' },
           ],
-          completedSentence: 'Вчера́ де́вочка учи́лась в университе́те. За́втра де́вочка бу́дет учи́ться в университе́те.',
-          translation: '昨日女の子は大学で学びました。明日女の子は大学で学ぶでしょう。',
-          speechText: 'Вчера́ де́вочка учи́лась в университе́те. За́втра де́вочка бу́дет учи́ться в университе́те.',
+          completedSentence: 'Вчера́ они́ учи́лись в университе́те. За́втра они́ бу́дут учи́ться в университе́те.',
+          translation: '昨日彼らは大学で学びました。明日彼らは大学で学ぶでしょう。',
+          speechText: 'Вчера́ они́ учи́лись в университе́те. За́втра они́ бу́дут учи́ться в университе́те.',
         },
       ],
     },

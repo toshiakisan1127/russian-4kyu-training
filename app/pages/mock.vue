@@ -10,10 +10,21 @@ type AnswerEntry = {
   field?: MockInputField
 }
 
+type SavedExamProgress = {
+  version: 1
+  phase: 'exam'
+  currentSectionIndex: number
+  answers: Record<string, string | number>
+  timeLeft: number
+}
+
+const progressStorageKey = `russian-mock-exam-progress-v1:${mockExam1.id}`
+
 const phase = ref<Phase>('intro')
 const currentSectionIndex = ref(0)
 const answers = ref<Record<string, string | number>>({})
 const timeLeft = ref(mockExam1.durationMinutes * 60)
+const hasSavedProgress = ref(false)
 const speechSupported = ref(false)
 let timer: ReturnType<typeof setInterval> | undefined
 
@@ -78,6 +89,63 @@ const formatTime = (seconds: number) => {
   return minutes + ':' + remaining
 }
 
+const clearSavedProgress = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(progressStorageKey)
+  }
+  hasSavedProgress.value = false
+}
+
+const saveProgress = () => {
+  if (phase.value !== 'exam' || typeof window === 'undefined') return
+
+  window.localStorage.setItem(progressStorageKey, JSON.stringify({
+    version: 1,
+    phase: 'exam',
+    currentSectionIndex: currentSectionIndex.value,
+    answers: answers.value,
+    timeLeft: timeLeft.value,
+  } satisfies SavedExamProgress))
+  hasSavedProgress.value = true
+}
+
+const loadSavedProgress = () => {
+  if (typeof window === 'undefined') return
+
+  const raw = window.localStorage.getItem(progressStorageKey)
+  if (!raw) {
+    hasSavedProgress.value = false
+    return
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as SavedExamProgress
+    const sectionIndex = Number(parsed.currentSectionIndex)
+    const savedTimeLeft = Number(parsed.timeLeft)
+    const isValid = parsed.version === 1
+      && parsed.phase === 'exam'
+      && Number.isInteger(sectionIndex)
+      && sectionIndex >= 0
+      && sectionIndex < mockExam1.sections.length
+      && Number.isFinite(savedTimeLeft)
+      && savedTimeLeft > 0
+      && parsed.answers
+      && typeof parsed.answers === 'object'
+
+    if (!isValid) {
+      clearSavedProgress()
+      return
+    }
+
+    currentSectionIndex.value = sectionIndex
+    answers.value = parsed.answers
+    timeLeft.value = Math.min(mockExam1.durationMinutes * 60, savedTimeLeft)
+    hasSavedProgress.value = true
+  } catch {
+    clearSavedProgress()
+  }
+}
+
 const stopTimer = () => {
   if (timer) {
     clearInterval(timer)
@@ -94,25 +162,41 @@ const startTimer = () => {
     }
 
     timeLeft.value -= 1
+    saveProgress()
   }, 1000)
 }
 
 const startExam = () => {
+  clearSavedProgress()
   phase.value = 'exam'
   currentSectionIndex.value = 0
   answers.value = {}
   timeLeft.value = mockExam1.durationMinutes * 60
+  saveProgress()
+  startTimer()
+}
+
+const resumeExam = () => {
+  loadSavedProgress()
+  if (!hasSavedProgress.value) {
+    startExam()
+    return
+  }
+
+  phase.value = 'exam'
   startTimer()
 }
 
 const submitExam = () => {
   stopTimer()
+  clearSavedProgress()
   phase.value = 'result'
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({ top: 0, behavior: 'auto' })
 }
 
 const restart = () => {
   stopTimer()
+  clearSavedProgress()
   phase.value = 'intro'
   currentSectionIndex.value = 0
   answers.value = {}
@@ -123,6 +207,7 @@ const restart = () => {
 const setChoice = (question: MockQuestion, choiceIndex: number) => {
   if (question.kind !== 'choice' || phase.value !== 'exam') return
   answers.value[answerKey(question)] = choiceIndex
+  saveProgress()
 }
 
 const inputValue = (question: MockQuestion, field: MockInputField) =>
@@ -132,6 +217,7 @@ const onTextInput = (question: MockQuestion, field: MockInputField, event: Event
   if (phase.value !== 'exam') return
   const target = event.target as HTMLInputElement
   answers.value[answerKey(question, field.id)] = target.value
+  saveProgress()
 }
 
 const normalizeAnswer = (value: string) =>
@@ -185,6 +271,7 @@ const speak = (text: string) => {
 
 const goToSection = (index: number) => {
   currentSectionIndex.value = index
+  saveProgress()
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -204,9 +291,11 @@ const goPrevious = () => {
 
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+  loadSavedProgress()
 })
 
 onBeforeUnmount(() => {
+  saveProgress()
   stopTimer()
   window.speechSynthesis?.cancel()
 })
@@ -259,7 +348,7 @@ onBeforeUnmount(() => {
               <p class="mb-1 font-black">{{ section.title }}</p>
               <p class="m-0 text-sm font-bold text-slate-600">
                 {{ section.questions.length }}問
-                <span v-if="section.roman === 'VII'">・16欄</span>
+                <span v-if="section.roman === 'VII'">・32欄</span>
                 <span v-else-if="section.roman === 'VIII'">・8欄</span>
               </p>
             </div>
@@ -267,7 +356,25 @@ onBeforeUnmount(() => {
         </section>
 
         <div class="mb-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-bold leading-7 text-amber-950">
-          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。アクセント記号は、表示された単語の母音にアキュートアクセントを付けて入力してください。
+          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問はアクセント記号、第Ⅶ問は綴りとアクセント位置、第Ⅷ問は指定された時制の動詞を入力してください。
+        </div>
+
+        <div v-if="hasSavedProgress" class="mb-8 rounded-2xl border border-sky-200 bg-sky-50 p-4">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="mb-1 text-sm font-black text-sky-900">途中データがあります</p>
+              <p class="m-0 text-sm leading-6 text-sky-800">
+                第{{ mockExam1.sections[currentSectionIndex]?.roman ?? 'I' }}問から再開できます。残り時間 {{ formatTime(timeLeft) }}
+              </p>
+            </div>
+            <button
+              type="button"
+              class="min-h-11 rounded-xl bg-sky-700 px-4 py-2 font-black text-white transition hover:bg-sky-800"
+              @click="resumeExam"
+            >
+              続きから再開
+            </button>
+          </div>
         </div>
 
         <button
@@ -275,7 +382,7 @@ onBeforeUnmount(() => {
           class="min-h-14 w-full rounded-2xl bg-amber-700 px-5 py-3 text-base font-black text-white transition hover:-translate-y-0.5 hover:bg-amber-800"
           @click="startExam"
         >
-          模試を開始する
+          {{ hasSavedProgress ? '最初から模試を始める' : '模試を開始する' }}
         </button>
       </div>
 
@@ -372,13 +479,14 @@ onBeforeUnmount(() => {
                 >
                   <span class="mb-2 block text-xs font-black text-slate-600">{{ field.label }}</span>
                   <input
-                    type="text"
+                    :type="field.inputMode ?? 'text'"
                     autocomplete="off"
                     autocapitalize="none"
                     spellcheck="false"
+                    :inputmode="field.inputMode === 'number' ? 'numeric' : 'text'"
                     :value="inputValue(question, field)"
                     class="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
-                    placeholder="入力"
+                    :placeholder="field.inputMode === 'number' ? '例：2' : '入力'"
                     @input="onTextInput(question, field, $event)"
                   >
                 </label>
@@ -544,7 +652,7 @@ onBeforeUnmount(() => {
                         </span>
                       </div>
                       <p class="mt-2 mb-1 font-bold text-slate-800">回答：{{ fieldAnswerText(question, field) }}</p>
-                      <p class="m-0 font-bold text-emerald-900">正解：{{ field.answer }}</p>
+                      <p class="m-0 font-bold text-emerald-900">正解：{{ field.displayAnswer ?? field.answer }}</p>
                       <p class="mt-2 mb-0 leading-6 text-slate-700">{{ field.explanation }}</p>
                     </div>
                   </div>

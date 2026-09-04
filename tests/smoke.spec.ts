@@ -77,3 +77,72 @@ test('mock status card scrolls away and avoids fixed utility controls', async ({
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
   await expect(status).not.toBeInViewport()
 })
+
+test('mock exam progress resumes and resets after submission', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await page.locator('article').nth(0).getByRole('button').nth(0).click()
+  await status.locator('nav button').nth(1).click()
+
+  await page.reload({ waitUntil: 'networkidle' })
+  await expect(page.getByRole('button', { name: '続きから再開' })).toBeVisible()
+  await page.getByRole('button', { name: '続きから再開' }).click()
+  await expect(status).toContainText('第II問')
+
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(7).click()
+  await expect(page.locator('article').first()).not.toContainText('\\n')
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+  await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
+
+  await page.reload({ waitUntil: 'networkidle' })
+  await expect(page.getByRole('button', { name: '続きから再開' })).not.toBeVisible()
+  await expect(page.getByRole('button', { name: '模試を開始する' })).toBeVisible()
+})
+
+test('mock section navigation returns to the top', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  await page.getByRole('button', { name: '次の大問 →' }).click()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  await page.getByRole('button', { name: '← 前の大問' }).click()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+})
+
+test('mock present tense answers accept plain spelling with separate stress positions', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(6).click()
+
+  const firstQuestionInputs = page.locator('article').first().locator('input')
+  await expect(firstQuestionInputs).toHaveCount(4)
+  await firstQuestionInputs.nth(0).fill('читаю')
+  await firstQuestionInputs.nth(1).fill('2')
+  await firstQuestionInputs.nth(2).fill('читают')
+  await firstQuestionInputs.nth(3).fill('2')
+
+  await status.locator('nav button').nth(7).click()
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+  await expect(page.locator('body')).toContainText('бу́дем чита́ть')
+  await expect(page.locator('body')).toContainText('бу́дете идти́')
+  await expect(page.locator('body')).toContainText('бу́дут учи́ться')
+  await expect(page.getByText('4 / 82', { exact: true })).toBeVisible()
+})
