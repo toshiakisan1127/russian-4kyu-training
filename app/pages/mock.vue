@@ -24,6 +24,7 @@ const progressStorageKey = `russian-mock-exam-progress-v1:${mockExam1.id}`
 const phase = ref<Phase>('intro')
 const currentSectionIndex = ref(0)
 const answers = ref<Record<string, string | number>>({})
+const selfGrades = ref<Record<string, boolean>>({})
 const timeLeft = ref(mockExam1.durationMinutes * 60)
 const hasSavedProgress = ref(false)
 const speechSupported = ref(false)
@@ -50,6 +51,18 @@ const answerEntries = computed<AnswerEntry[]>(() =>
   ),
 )
 
+const isSelfGradeQuestion = (question: MockQuestion) =>
+  question.kind === 'input' && question.selfGrade === true
+
+const selfGradeQuestions = computed(() =>
+  mockExam1.sections.flatMap((section) => section.questions).filter(isSelfGradeQuestion),
+)
+const totalExamAnswerFields = computed(() => answerEntries.value.length)
+const scoredEntries = computed(() => answerEntries.value.filter((entry) => !isSelfGradeQuestion(entry.question)))
+const selfGradedCorrectCount = computed(() =>
+  selfGradeQuestions.value.filter((question) => selfGrades.value[question.id] === true).length,
+)
+
 const answeredCount = computed(() =>
   answerEntries.value.filter((entry) => {
     const value = answers.value[entry.key]
@@ -60,7 +73,7 @@ const answeredCount = computed(() =>
 )
 
 const totalCorrect = computed(() =>
-  answerEntries.value.filter((entry) => isEntryCorrect(entry)).length,
+  scoredEntries.value.filter((entry) => isEntryCorrect(entry)).length,
 )
 
 const scorePercentage = computed(() =>
@@ -81,7 +94,7 @@ const sectionTotalAnswerFields = (section: MockSection) =>
 
 const sectionCorrectCount = (section: MockSection) =>
   answerEntries.value.filter((entry) =>
-    section.questions.includes(entry.question) && isEntryCorrect(entry),
+    section.questions.includes(entry.question) && !isSelfGradeQuestion(entry.question) && isEntryCorrect(entry),
   ).length
 
 const MOCK_VOWEL_RE = /[аеёиоуыэюя]/iu
@@ -206,6 +219,7 @@ const startExam = () => {
   phase.value = 'exam'
   currentSectionIndex.value = 0
   answers.value = {}
+  selfGrades.value = {}
   timeLeft.value = mockExam1.durationMinutes * 60
   saveProgress()
   startTimer()
@@ -219,6 +233,7 @@ const resumeExam = () => {
   }
 
   phase.value = 'exam'
+  selfGrades.value = {}
   startTimer()
 }
 
@@ -273,6 +288,18 @@ const isEntryCorrect = (entry: AnswerEntry) => {
     typeof value === 'string' &&
     normalizeAnswer(value) === normalizeAnswer(entry.field.answer),
   )
+}
+
+const selfGradeStatus = (question: MockQuestion) => {
+  if (!isSelfGradeQuestion(question)) return ''
+  return selfGrades.value[question.id] === undefined
+    ? '未採点'
+    : selfGrades.value[question.id] ? 'できた' : '要復習'
+}
+
+const setSelfGrade = (question: MockQuestion, correct: boolean) => {
+  if (!isSelfGradeQuestion(question)) return
+  selfGrades.value[question.id] = correct
 }
 
 const selectedChoiceText = (question: MockQuestion) => {
@@ -362,7 +389,7 @@ onBeforeUnmount(() => {
         <div class="mb-8 grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl bg-amber-50 p-4">
             <p class="mb-1 text-xs font-black text-amber-800">問題カード</p>
-            <p class="m-0 text-2xl font-black">54問</p>
+            <p class="m-0 text-2xl font-black">60問</p>
           </div>
           <div class="rounded-2xl bg-sky-50 p-4">
             <p class="mb-1 text-xs font-black text-sky-800">解答欄</p>
@@ -370,7 +397,7 @@ onBeforeUnmount(() => {
           </div>
           <div class="rounded-2xl bg-emerald-50 p-4">
             <p class="mb-1 text-xs font-black text-emerald-800">目安時間</p>
-            <p class="m-0 text-2xl font-black">45分</p>
+            <p class="m-0 text-2xl font-black">60分</p>
           </div>
         </div>
 
@@ -392,7 +419,7 @@ onBeforeUnmount(() => {
         </section>
 
         <div class="mb-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-bold leading-7 text-amber-950">
-          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問は複数形の綴りとアクセント位置、第Ⅶ問は現在形の綴り、第Ⅷ問は指定された時制の動詞を入力してください。
+          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問は複数形の綴りとアクセント位置、第Ⅶ問は現在形の綴り、第Ⅷ問は指定された時制の動詞、第Ⅸ・Ⅹ問は翻訳を入力してください。
         </div>
 
         <div v-if="hasSavedProgress" class="mb-8 rounded-2xl border border-sky-200 bg-sky-50 p-4">
@@ -443,13 +470,13 @@ onBeforeUnmount(() => {
 
           <div class="border-t border-amber-100 p-4 sm:p-5">
           <div class="mt-4 flex items-center justify-between gap-3 text-xs font-black text-slate-600">
-            <span>解答済み {{ answeredCount }} / {{ mockExam1.totalAnswerFields }}</span>
-            <span>{{ Math.round((answeredCount / mockExam1.totalAnswerFields) * 100) }}%</span>
+            <span>解答済み {{ answeredCount }} / {{ totalExamAnswerFields }}</span>
+            <span>{{ Math.round((answeredCount / totalExamAnswerFields) * 100) }}%</span>
           </div>
           <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
             <div
               class="h-full rounded-full bg-amber-500 transition-all"
-              :style="{ width: ((answeredCount / mockExam1.totalAnswerFields) * 100) + '%' }"
+              :style="{ width: ((answeredCount / totalExamAnswerFields) * 100) + '%' }"
             />
           </div>
 
@@ -605,6 +632,7 @@ onBeforeUnmount(() => {
           <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Result · Mock Exam 1</p>
           <h1 class="mb-3 text-2xl font-black sm:text-3xl">採点結果</h1>
           <p class="m-0 text-5xl font-black text-emerald-700">{{ totalCorrect }} / {{ mockExam1.totalAnswerFields }}</p>
+          <p class="mt-3 mb-0 text-lg font-black text-sky-700">翻訳・自己採点 {{ selfGradedCorrectCount }} / {{ selfGradeQuestions.length }}</p>
           <p class="mt-3 mb-0 font-bold text-slate-600">解答欄ベースの正答率 {{ scorePercentage }}%</p>
           <p class="mt-3 mb-0 text-sm leading-6 text-slate-500">
             記述式の設問は、各入力欄をそれぞれ採点しています。
@@ -651,6 +679,9 @@ onBeforeUnmount(() => {
                 >
                   {{ isEntryCorrect({ key: answerKey(question), question }) ? '正解' : '要復習' }}
                 </span>
+                <span v-else-if="question.selfGrade" class="shrink-0 rounded-full bg-sky-100 px-2 py-1 text-xs font-black text-sky-800">
+                  {{ selfGradeStatus(question) }}
+                </span>
                 <span v-else class="shrink-0 rounded-full bg-slate-200 px-2 py-1 text-xs font-black text-slate-700">
                   {{ question.fields.filter((field) => isEntryCorrect({ key: answerKey(question, field.id), question, field })).length }}/{{ question.fields.length }}
                 </span>
@@ -693,6 +724,47 @@ onBeforeUnmount(() => {
                   </div>
                 </template>
 
+                <template v-else-if="question.selfGrade">
+                  <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <p class="mb-1 text-xs font-black text-emerald-800">模範解答</p>
+                        <p class="m-0 whitespace-pre-line font-bold leading-7 text-slate-800">{{ question.fields[0]?.answer }}</p>
+                      </div>
+                      <button
+                        v-if="question.speechText"
+                        type="button"
+                        class="grid size-10 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-lg transition hover:bg-emerald-100 disabled:opacity-40"
+                        :disabled="!speechSupported"
+                        aria-label="模範解答を読み上げる"
+                        @click="speak(question.speechText)"
+                      >🔊</button>
+                    </div>
+                  </div>
+                  <div v-if="fieldAnswerText(question, question.fields[0]!) !== '未回答'" class="mt-3 rounded-xl border border-slate-200 bg-white p-4">
+                    <p class="mb-1 text-xs font-black text-slate-500">あなたの回答</p>
+                    <p class="m-0 whitespace-pre-line font-bold leading-7 text-slate-800">{{ fieldAnswerText(question, question.fields[0]!) }}</p>
+                  </div>
+                  <div class="mt-3 rounded-xl border border-violet-200 bg-violet-50 p-4">
+                    <p class="mb-1 text-xs font-black text-violet-900">自己採点のポイント</p>
+                    <p class="m-0 leading-7 text-slate-700">{{ question.fields[0]?.explanation }}</p>
+                  </div>
+                  <div v-if="selfGrades[question.id] === undefined" class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      class="min-h-12 rounded-xl border-2 border-amber-400 bg-amber-50 px-4 py-2 font-black text-amber-900 transition hover:bg-amber-100"
+                      @click="setSelfGrade(question, false)"
+                    >要復習</button>
+                    <button
+                      type="button"
+                      class="min-h-12 rounded-xl bg-emerald-600 px-4 py-2 font-black text-white transition hover:bg-emerald-700"
+                      @click="setSelfGrade(question, true)"
+                    >できた</button>
+                  </div>
+                  <p v-else class="mt-4 rounded-xl bg-slate-100 px-4 py-3 text-center text-sm font-bold text-slate-700">
+                    自己採点：{{ selfGradeStatus(question) }}
+                  </p>
+                </template>
                 <template v-else>
                   <div v-if="question.completedSentence || question.translation" class="rounded-xl border border-sky-200 bg-sky-50 p-4">
                     <div class="flex items-start justify-between gap-3">
