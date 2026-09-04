@@ -15,6 +15,8 @@ export type MockInputField = {
   label: string
   answer: string
   explanation: string
+  displayAnswer?: string
+  inputMode?: 'text' | 'number'
 }
 
 export type MockInputQuestion = {
