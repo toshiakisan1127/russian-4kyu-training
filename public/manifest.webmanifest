@@ -1,0 +1,19 @@
+{
+  "name": "ロシア語4級トレーニング",
+  "short_name": "ロシア語4級",
+  "description": "ロシア語能力検定4級向けのミニ問題演習アプリ",
+  "lang": "ja",
+  "start_url": "/russian-4kyu-training/",
+  "scope": "/russian-4kyu-training/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/russian-4kyu-training/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
