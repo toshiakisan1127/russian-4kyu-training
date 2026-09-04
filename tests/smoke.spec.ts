@@ -138,7 +138,7 @@ test('mock section II question 3 has a distinct stress position answer', async (
 
   await status.locator('nav button').nth(7).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
-  await expect(page.getByText('1 / 87', { exact: true })).toBeVisible()
+  await expect(page.getByText('1 / 71', { exact: true })).toBeVisible()
 })
 
 test('mock section IV matches the stress-tap input UI', async ({ page }) => {
