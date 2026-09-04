@@ -38,6 +38,14 @@ const applySavedTheme = () => {
 onMounted(() => {
   applySavedSpeechRate()
   applySavedTheme()
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/russian-4kyu-training/sw.js', {
+      scope: '/russian-4kyu-training/',
+    }).catch(() => {
+      // PWA登録に失敗してもアプリ本体は通常どおり利用できる。
+    })
+  }
 })
 
 const updateSpeechRate = (event: Event) => {
