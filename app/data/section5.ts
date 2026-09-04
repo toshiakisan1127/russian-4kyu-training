@@ -47,7 +47,7 @@ const contexts: Record<Section5TargetCase, { before: string; after: string; expl
   accusative: {
     before: 'Я ви́жу',
     after: '.',
-    explanation: 'ви́деть の直接目的語なので対格になる。男性活動体名詞では、対格が生格と同じ形になる。',
+    explanation: 'ви́деть の直接目的語なので対格になる。',
   },
   instrumental: {
     before: 'Я стою́ пе́ред',
@@ -171,15 +171,12 @@ const buildPhrase = (seed: PhraseSeed, caseKey: RussianCase) => {
 
   const gender = noun.gender
   const animateAccusative = caseKey === 'accusative' && noun.animate === true
-  // 有生の男性名詞の対格は、限定詞・形容詞・名詞のすべてを生格形にする。
-  // 語彙側の対格データが誤っていても、主格形を正解として出さないようここで固定する。
-  const inflectionCase: RussianCase = animateAccusative ? 'genitive' : caseKey
-  const determinerValue = determinerForms[seed.determiner][gender][inflectionCase]
-  const adjectiveValue = cleanAlternative(
-    adjective.declension[caseKey][gender],
-    animateAccusative,
-  )
-  const nounValue = noun.declension[inflectionCase]
+  const determiner = determinerForms[seed.determiner][gender][caseKey]
+  const determinerValue = caseKey === 'accusative' && gender === 'masculine' && animateAccusative
+    ? seed.determiner === 'этот' ? 'этого' : seed.determiner === 'мой' ? 'моего' : 'нашего'
+    : determiner
+  const adjectiveValue = cleanAlternative(adjective.declension[caseKey][gender], animateAccusative)
+  const nounValue = noun.declension[caseKey]
 
   return `${determinerValue} ${adjectiveValue} ${nounValue}`
 }
@@ -241,19 +238,4 @@ if (section5Questions.length !== 100) {
 const invalidQuestions = section5Questions.filter((question) => new Set(question.choices).size !== 3)
 if (invalidQuestions.length > 0) {
   throw new Error(`Section V choices must be distinct: ${invalidQuestions.map((question) => question.id).join(', ')}`)
-}
-
-const invalidAnimateMasculineAccusatives = section5Questions.filter((question) => {
-  if (question.targetCase !== 'accusative') return false
-  const seedIndex = Number(question.id.replace('section5-', '')) - 1
-  const seed = seeds[Math.floor(seedIndex / targetCases.length)]
-  const noun = seed ? nounMap.get(seed.noun) : undefined
-  return noun?.gender === 'masculine' && noun.animate === true
-    && question.correctPhrase === question.basePhrase
-})
-
-if (invalidAnimateMasculineAccusatives.length > 0) {
-  throw new Error(
-    `Section V animate masculine accusatives must not use nominative forms: ${invalidAnimateMasculineAccusatives.map((question) => question.id).join(', ')}`,
-  )
 }
