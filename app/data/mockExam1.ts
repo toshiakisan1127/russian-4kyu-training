@@ -16,6 +16,7 @@ export type MockInputField = {
   answer: string
   explanation: string
   displayAnswer?: string
+  multiline?: boolean
   inputMode?: 'text' | 'number'
 }
 
@@ -27,6 +28,7 @@ export type MockInputQuestion = {
   completedSentence?: string
   translation?: string
   speechText?: string
+  selfGrade?: boolean
 }
 
 export type MockQuestion = MockChoiceQuestion | MockInputQuestion
@@ -42,8 +44,8 @@ export type MockSection = {
 export const mockExam1 = {
   id: 'mock-1',
   title: '模擬試験 第1回',
-  durationMinutes: 45,
-  totalQuestionCards: 54,
+  durationMinutes: 60,
+  totalQuestionCards: 60,
   totalAnswerFields: 71,
   sections: [
     {
@@ -675,6 +677,118 @@ export const mockExam1 = {
           completedSentence: 'Вчера́ они́ учи́лись в университе́те. За́втра они́ бу́дут учи́ться в университе́те.',
           translation: '昨日彼らは大学で学びました。明日彼らは大学で学ぶでしょう。',
           speechText: 'Вчера́ они́ учи́лись в университе́те. За́втра они́ бу́дут учи́ться в университе́те.',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-9',
+      roman: 'IX',
+      title: '露文和訳',
+      instruction: '次のロシア語を日本語に訳しなさい。提出後に模範訳と比べて自己採点してください。',
+      questions: [
+        {
+          kind: 'input',
+          id: 'mock-1-s9-01',
+          selfGrade: true,
+          prompt: 'Вчера у меня болела голова, поэтому я весь день оставался дома.',
+          fields: [
+            {
+              id: 'answer',
+              label: '自分の日本語訳',
+              answer: '昨日は頭が痛かったので、私は一日中家にいました。',
+              explanation: 'болела голова は「頭が痛かった」、поэтому は「だから・そのため」、весь день は「一日中」。',
+              multiline: true,
+            },
+          ],
+          speechText: 'Вчера́ у меня́ боле́ла голова́, поэ́тому я весь день остава́лся до́ма.',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-10',
+      roman: 'X',
+      title: '和文露訳',
+      instruction: '次の日本語をロシア語に訳しなさい。提出後に模範解答と比べて自己採点してください。',
+      questions: [
+        {
+          kind: 'input',
+          id: 'mock-1-s10-01',
+          selfGrade: true,
+          prompt: '私はモスクワに住んでいますが、両親は日本に住んでいます。',
+          fields: [
+            {
+              id: 'answer',
+              label: '自分のロシア語訳',
+              answer: 'Я живу́ в Москве́, но мои́ роди́тели живу́т в Япо́нии.',
+              explanation: 'жить は「住む」。в Москве́ は場所の前置格、в Япо́нии も場所の前置格。но は「〜ですが」。',
+              multiline: true,
+            },
+          ],
+          speechText: 'Я живу́ в Москве́, но мои́ роди́тели живу́т в Япо́нии.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s10-02',
+          selfGrade: true,
+          prompt: '私は毎朝、お茶を飲んで本を読みます。',
+          fields: [
+            {
+              id: 'answer',
+              label: '自分のロシア語訳',
+              answer: 'Ка́ждое у́тро я пью чай и чита́ю кни́гу.',
+              explanation: 'каждое утро は「毎朝」。кни́гу は книга の対格で、пью と чита́ю は一人称単数現在形。',
+              multiline: true,
+            },
+          ],
+          speechText: 'Ка́ждое у́тро я пью чай и чита́ю кни́гу.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s10-03',
+          selfGrade: true,
+          prompt: '仕事の後、父はたいてい店で食料品を買います。',
+          fields: [
+            {
+              id: 'answer',
+              label: '自分のロシア語訳',
+              answer: 'По́сле рабо́ты отец обы́чно покупа́ет проду́кты в магази́не.',
+              explanation: 'по́сле + 生格は「〜の後」。обы́чно は「たいてい」、в магази́не は場所の前置格。',
+              multiline: true,
+            },
+          ],
+          speechText: 'По́сле рабо́ты о́тец обы́чно покупа́ет проду́кты в магази́не.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s10-04',
+          selfGrade: true,
+          prompt: '今日は仕事がたくさんあるので、私は家で仕事をしています。',
+          fields: [
+            {
+              id: 'answer',
+              label: '自分のロシア語訳',
+              answer: 'Сего́дня у меня́ мно́го рабо́ты, поэ́тому я рабо́таю до́ма.',
+              explanation: 'у меня́ は「私には」。мно́го + 生格で「たくさんの〜」、поэ́тому は「だから」。',
+              multiline: true,
+            },
+          ],
+          speechText: 'Сего́дня у меня́ мно́го рабо́ты, поэ́тому я рабо́таю до́ма.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s10-05',
+          selfGrade: true,
+          prompt: '明日、私たちは友人の誕生日に友人のところへ行きます。',
+          fields: [
+            {
+              id: 'answer',
+              label: '自分のロシア語訳',
+              answer: 'За́втра мы пое́дем к дру́гу на день рожде́ния.',
+              explanation: 'к + 与格は人のところへ。поедем は「乗り物で行く」の未来形、на день рождения は「誕生日に」。',
+              multiline: true,
+            },
+          ],
+          speechText: 'За́втра мы пое́дем к дру́гу на день рожде́ния.',
         },
       ],
     },
