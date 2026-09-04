@@ -1,7 +1,6 @@
 import { mockExam1 } from './mockExam1'
 import { mockExam2 } from './mockExam2'
 import { mockExam3 } from './mockExam3'
-import { mockExam2 } from './mockExam2'
 
 export type MockExam = typeof mockExam1
 
