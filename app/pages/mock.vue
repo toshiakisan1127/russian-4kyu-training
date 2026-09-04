@@ -280,7 +280,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-else-if="phase === 'exam'">
-        <details data-testid="mock-exam-status" class="sticky top-16 z-10 mb-5 rounded-3xl border border-amber-200 bg-white/95 shadow-lg shadow-amber-100/60 backdrop-blur">
+        <details data-testid="mock-exam-status" class="mb-5 rounded-3xl border border-amber-200 bg-white/95 shadow-lg shadow-amber-100/60 backdrop-blur">
           <summary class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-3xl p-3 font-black outline-none transition hover:bg-amber-50 focus-visible:ring-2 focus-visible:ring-amber-500 sm:p-4 [&::-webkit-details-marker]:hidden">
             <div class="min-w-0">
               <p class="mb-1 text-xs tracking-[0.14em] text-amber-700 uppercase">模擬試験 第1回</p>
