@@ -1,4 +1,4 @@
-const CACHE_NAME = 'russian-4kyu-training-v2'
+const CACHE_NAME = 'russian-4kyu-training'
 const BASE_PATH = '/russian-4kyu-training/'
 const APP_SHELL = [
   BASE_PATH,
