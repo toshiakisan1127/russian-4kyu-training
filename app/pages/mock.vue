@@ -259,7 +259,7 @@ const onTextInput = (question: MockQuestion, field: MockInputField, event: Event
 }
 
 const normalizeAnswer = (value: string) =>
-  value.normalize('NFC').trim().replace(/\s+/gu, ' ').toLocaleLowerCase('ru-RU')
+  stripStress(value.normalize('NFC').trim().replace(/\s+/gu, ' ')).toLocaleLowerCase('ru-RU')
 
 const isEntryCorrect = (entry: AnswerEntry) => {
   const value = answers.value[entry.key]
