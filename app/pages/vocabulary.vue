@@ -224,13 +224,23 @@ const currentStatusClasses = computed(() => ({
   mastered: 'border-emerald-200 bg-emerald-50 text-emerald-700',
 }[currentStatus.value]))
 const currentWordHasExplicitStress = computed(() => /[ёЁ\u0301]/u.test(currentQuestion.value.stressedWord))
-const vocabularyChoiceDetails = computed(() => currentQuestion.value.choices.map((choice) => ({
-  value: choice,
-  isCorrect: choice === currentQuestion.value.meaning,
-  explanation: choice === currentQuestion.value.meaning
-    ? `${currentQuestion.value.stressedWord}の意味は「${choice}」。この問題の正解。`
-    : `「${choice}」という意味の選択肢。この単語${currentQuestion.value.stressedWord}の意味ではない。`,
-})))
+const vocabularyChoiceDetails = computed(() => currentQuestion.value.choices.map((choice) => {
+  const isCorrect = choice === currentQuestion.value.meaning
+  const choiceWord = vocabularyItems.find((item) => (
+    item.partOfSpeech === currentQuestion.value.partOfSpeech
+    && item.meaning === choice
+  ))
+
+  return {
+    value: choice,
+    isCorrect,
+    explanation: isCorrect
+      ? `${currentQuestion.value.stressedWord}は「${choice}」という意味の${partOfSpeechLabel[currentQuestion.value.partOfSpeech]}です。今回の正解。`
+      : choiceWord
+        ? `「${choice}」は「${choiceWord.stressedWord}」の意味です。問題の「${currentQuestion.value.stressedWord}」は「${currentQuestion.value.meaning}」なので、意味が異なります。`
+        : `「${choice}」はこの問題の「${currentQuestion.value.stressedWord}」の意味「${currentQuestion.value.meaning}」とは異なります。`,
+  }
+}))
 
 const displayNounPlural = () => {
   const question = currentQuestion.value
