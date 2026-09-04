@@ -392,7 +392,7 @@ onBeforeUnmount(() => {
         </section>
 
         <div class="mb-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-bold leading-7 text-amber-950">
-          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問は複数形の綴りとアクセント位置、第Ⅶ問は綴りとアクセント位置、第Ⅷ問は指定された時制の動詞を入力してください。
+          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問は複数形の綴りとアクセント位置、第Ⅶ問は現在形の綴り、第Ⅷ問は指定された時制の動詞を入力してください。
         </div>
 
         <div v-if="hasSavedProgress" class="mb-8 rounded-2xl border border-sky-200 bg-sky-50 p-4">
