@@ -163,7 +163,7 @@ const saveProgress = () => {
 const loadSavedProgress = () => {
   if (typeof window === 'undefined') return
 
-  const raw = window.localStorage.getItem(progressStorageKey)
+  const raw = window.localStorage.getItem(progressStorageKey.value)
   if (!raw) {
     hasSavedProgress.value = false
     return
