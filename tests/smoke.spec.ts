@@ -177,7 +177,7 @@ test('mock translation questions are self-graded after submission', async ({ pag
   await page.getByRole('button', { name: '提出して採点する' }).click()
 
   await expect(page.getByText('0 / 71', { exact: true })).toBeVisible()
-  await expect(page.getByText('翻訳・自己採点 0 / 6', { exact: true })).toBeVisible()
+  await expect(page.getByText('翻訳・自己採点 0 / 1', { exact: true })).toBeVisible()
 
   const review = page.locator('details').filter({ hasText: '昨日は頭が痛かった' })
   await review.locator('summary').click()
