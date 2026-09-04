@@ -172,14 +172,12 @@ test('mock translation questions are self-graded after submission', async ({ pag
   await status.locator('nav button').nth(8).click()
   await page.locator('article').first().locator('textarea').fill('昨日は頭が痛かったので、私は一日中家にいました。')
 
-  await status.locator('nav button').last().click()
-  await page.locator('article').first().locator('textarea').fill('Я живу в Москве, но мои родители живут в Японии.')
   await page.getByRole('button', { name: '提出して採点する' }).click()
 
   await expect(page.getByText('0 / 71', { exact: true })).toBeVisible()
   await expect(page.getByText('翻訳・自己採点 0 / 1', { exact: true })).toBeVisible()
 
-  const review = page.locator('details').filter({ hasText: '昨日は頭が痛かった' })
+  const review = page.locator('details').filter({ hasText: 'Меня зовут Ира.' }).first()
   await review.locator('summary').click()
   await expect(review).toContainText('模範解答')
   await expect(review.getByRole('button', { name: 'できた' })).toBeVisible()
