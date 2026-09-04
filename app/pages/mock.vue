@@ -348,7 +348,7 @@ onBeforeUnmount(() => {
               <p class="mb-1 font-black">{{ section.title }}</p>
               <p class="m-0 text-sm font-bold text-slate-600">
                 {{ section.questions.length }}問
-                <span v-if="section.roman === 'VII'">・16欄</span>
+                <span v-if="section.roman === 'VII'">・32欄</span>
                 <span v-else-if="section.roman === 'VIII'">・8欄</span>
               </p>
             </div>
@@ -356,7 +356,7 @@ onBeforeUnmount(() => {
         </section>
 
         <div class="mb-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-bold leading-7 text-amber-950">
-          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。アクセント記号は、表示された単語の母音にアキュートアクセントを付けて入力してください。
+          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問はアクセント記号、第Ⅶ問は綴りとアクセント位置、第Ⅷ問は指定された時制の動詞を入力してください。
         </div>
 
         <div v-if="hasSavedProgress" class="mb-8 rounded-2xl border border-sky-200 bg-sky-50 p-4">
