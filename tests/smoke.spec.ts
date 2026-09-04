@@ -77,3 +77,29 @@ test('mock status card scrolls away and avoids fixed utility controls', async ({
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
   await expect(status).not.toBeInViewport()
 })
+
+test('mock exam progress resumes and resets after submission', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await page.locator('article').nth(0).getByRole('button').nth(0).click()
+  await status.locator('nav button').nth(1).click()
+
+  await page.reload({ waitUntil: 'networkidle' })
+  await expect(page.getByRole('button', { name: '続きから再開' })).toBeVisible()
+  await page.getByRole('button', { name: '続きから再開' }).click()
+  await expect(status).toContainText('第II問')
+
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(7).click()
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+  await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
+
+  await page.reload({ waitUntil: 'networkidle' })
+  await expect(page.getByRole('button', { name: '続きから再開' })).not.toBeVisible()
+  await expect(page.getByRole('button', { name: '模試を開始する' })).toBeVisible()
+})
