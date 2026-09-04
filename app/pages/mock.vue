@@ -479,13 +479,14 @@ onBeforeUnmount(() => {
                 >
                   <span class="mb-2 block text-xs font-black text-slate-600">{{ field.label }}</span>
                   <input
-                    type="text"
+                    :type="field.inputMode ?? 'text'"
                     autocomplete="off"
                     autocapitalize="none"
                     spellcheck="false"
+                    :inputmode="field.inputMode === 'number' ? 'numeric' : 'text'"
                     :value="inputValue(question, field)"
                     class="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
-                    placeholder="入力"
+                    :placeholder="field.inputMode === 'number' ? '例：2' : '入力'"
                     @input="onTextInput(question, field, $event)"
                   >
                 </label>
@@ -651,7 +652,7 @@ onBeforeUnmount(() => {
                         </span>
                       </div>
                       <p class="mt-2 mb-1 font-bold text-slate-800">回答：{{ fieldAnswerText(question, field) }}</p>
-                      <p class="m-0 font-bold text-emerald-900">正解：{{ field.answer }}</p>
+                      <p class="m-0 font-bold text-emerald-900">正解：{{ field.displayAnswer ?? field.answer }}</p>
                       <p class="mt-2 mb-0 leading-6 text-slate-700">{{ field.explanation }}</p>
                     </div>
                   </div>
