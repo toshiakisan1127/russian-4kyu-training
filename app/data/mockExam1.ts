@@ -8,7 +8,6 @@ export type MockChoiceQuestion = {
   explanation: string
   translation?: string
   speechText?: string
-  selfGrade?: boolean
 }
 
 export type MockInputField = {
@@ -29,6 +28,7 @@ export type MockInputQuestion = {
   completedSentence?: string
   translation?: string
   speechText?: string
+  selfGrade?: boolean
 }
 
 export type MockQuestion = MockChoiceQuestion | MockInputQuestion
