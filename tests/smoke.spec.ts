@@ -122,6 +122,25 @@ test('mock section navigation returns to the top', async ({ page }) => {
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
 })
 
+test('mock section II question 3 has a distinct stress position answer', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(1).click()
+
+  const questionThree = page.locator('article').nth(2)
+  await expect(questionThree.locator('button')).toHaveText(['улица', 'письмо', 'город'])
+  await questionThree.getByRole('button', { name: 'письмо', exact: true }).click()
+
+  await status.locator('nav button').nth(7).click()
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+  await expect(page.getByText('1 / 82', { exact: true })).toBeVisible()
+})
+
 test('mock present tense answers accept plain spelling with separate stress positions', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
