@@ -85,7 +85,7 @@ const sectionCorrectCount = (section: MockSection) =>
   ).length
 
 const MOCK_VOWEL_RE = /[аеёиоуыэюя]/iu
-const MOCK_ACUTE = '\\u0301'
+const MOCK_ACUTE = String.fromCodePoint(0x0301)
 
 const section4Field = (question: MockQuestion, id: string) => {
   if (question.kind !== 'input') throw new Error('Section IV field requested for a choice question')
@@ -100,7 +100,7 @@ const section4VowelIndexes = (question: MockQuestion) => section4AnswerChars(que
   .filter((index) => index >= 0)
 const section4StressPosition = (question: MockQuestion) => {
   const value = answers.value[answerKey(question, section4StressField(question).id)]
-  return typeof value === 'string' && /^\\d+$/u.test(value) ? Number(value) : null
+  return typeof value === 'string' && /^[0-9]+$/u.test(value) ? Number(value) : null
 }
 const section4HasYo = (question: MockQuestion) => /ё/iu.test(section4AnswerInput(question))
 const section4AccentedAnswer = (question: MockQuestion) => {
