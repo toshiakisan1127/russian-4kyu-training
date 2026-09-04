@@ -57,6 +57,38 @@ useHead({
           </ul>
         </article>
       </div>
+
+      <section class="mt-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 sm:p-7">
+        <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Install as an app</p>
+        <h2 class="mb-3 text-xl font-black sm:text-2xl">スマホのホーム画面に追加する</h2>
+        <p class="mb-5 leading-7 text-slate-700">
+          このサイトはPWAに対応しています。ホーム画面に追加すると、アプリのようにすぐ開けます。問題の進捗はブラウザの保存領域に記録されます。
+        </p>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-emerald-200 bg-white p-4">
+            <h3 class="mb-2 text-base font-black">iPhone・iPad（Safari）</h3>
+            <ol class="m-0 space-y-2 pl-5 text-sm font-bold leading-6 text-slate-700">
+              <li>Safariでこのサイトを開く</li>
+              <li>画面下部または上部の共有ボタン（□に↑）をタップ</li>
+              <li>「ホーム画面に追加」を選び、「追加」をタップ</li>
+            </ol>
+          </div>
+
+          <div class="rounded-2xl border border-emerald-200 bg-white p-4">
+            <h3 class="mb-2 text-base font-black">Android（Chrome）</h3>
+            <ol class="m-0 space-y-2 pl-5 text-sm font-bold leading-6 text-slate-700">
+              <li>Chromeでこのサイトを開く</li>
+              <li>右上の「︙」メニューをタップ</li>
+              <li>「ホーム画面に追加」または「アプリをインストール」を選ぶ</li>
+            </ol>
+          </div>
+        </div>
+
+        <p class="mt-4 mb-0 text-xs font-bold leading-5 text-slate-500">
+          「ホーム画面に追加」が表示されない場合は、SafariまたはChromeで公開中のサイトを開いているか確認してください。iPhoneではSafariからの追加に対応しています。
+        </p>
+      </section>
     </section>
   </main>
 </template>
