@@ -1,5 +1,5 @@
+import { mockExam2 } from './mockExam2'
 import {
-  mockExam2,
   type MockChoiceQuestion,
   type MockInputField,
   type MockInputQuestion,
