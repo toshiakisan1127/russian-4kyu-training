@@ -97,6 +97,7 @@ test('mock exam progress resumes and resets after submission', async ({ page }) 
   await status.locator('summary').click()
   await status.locator('nav button').nth(7).click()
   await expect(page.locator('article').first()).not.toContainText('\\n')
+  await status.locator('nav button').nth(9).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
 
@@ -137,6 +138,7 @@ test('mock section II question 3 has a distinct stress position answer', async (
   await questionThree.getByRole('button', { name: '2 письмо', exact: true }).click()
 
   await status.locator('nav button').nth(7).click()
+  await status.locator('nav button').nth(9).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
   await expect(page.getByText('1 / 71', { exact: true })).toBeVisible()
 })
@@ -204,6 +206,7 @@ test('mock written answers accept accentless spelling', async ({ page }) => {
   await futureQuestionInputs.nth(0).fill('работала')
   await futureQuestionInputs.nth(1).fill('будет работать')
 
+  await status.locator('nav button').nth(9).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
   await expect(page.locator('body')).toContainText('бу́дем чита́ть')
   await expect(page.locator('body')).toContainText('бу́дете идти́')
