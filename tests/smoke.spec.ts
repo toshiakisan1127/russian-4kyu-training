@@ -133,8 +133,8 @@ test('mock section II question 3 has a distinct stress position answer', async (
   await status.locator('nav button').nth(1).click()
 
   const questionThree = page.locator('article').nth(2)
-  await expect(questionThree.locator('button')).toHaveText(['улица', 'письмо', 'город'])
-  await questionThree.getByRole('button', { name: 'письмо', exact: true }).click()
+  await expect(questionThree.locator('button')).toHaveText(['1 улица', '2 письмо', '3 город'])
+  await questionThree.getByRole('button', { name: '2 письмо', exact: true }).click()
 
   await status.locator('nav button').nth(7).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
