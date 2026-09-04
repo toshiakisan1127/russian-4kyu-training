@@ -291,7 +291,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s4-01',
-          prompt: 'го́род（町） →',
+          prompt: 'город（町） →',
           fields: [
             { id: 'answer', label: '複数形', answer: 'города́', explanation: 'город → города́。複数形でアクセントが語末へ移る。' },
           ],
@@ -307,7 +307,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s4-03',
-          prompt: 'кни́га（本） →',
+          prompt: 'книга（本） →',
           fields: [
             { id: 'answer', label: '複数形', answer: 'кни́ги', explanation: 'книга は複数形 кни́ги。к / г / х の後では ы ではなく и を使う。' },
           ],
@@ -315,7 +315,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s4-04',
-          prompt: 'окно́（窓） →',
+          prompt: 'окно（窓） →',
           fields: [
             { id: 'answer', label: '複数形', answer: 'о́кна', explanation: 'окно́ → о́кна。中性名詞の -о が -а になる代表的な形。' },
           ],
@@ -323,7 +323,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s4-05',
-          prompt: 'челове́к（人） →',
+          prompt: 'человек（人） →',
           fields: [
             { id: 'answer', label: '複数形', answer: 'лю́ди', explanation: 'челове́к の複数形は лю́ди という不規則形。' },
           ],
@@ -458,7 +458,7 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s6-01',
           prompt: 'Где ты живёшь?',
-          choices: ['Я живу́ в То́кио.', 'Я иду́ в То́кио.', 'Потому́ что я в То́кио.'],
+          choices: ['Я живу в Токио.', 'Я иду в Токио.', 'Потому что я в Токио.'],
           answer: 0,
           answerText: 'Я живу́ в То́кио.',
           explanation: 'Где は場所をたずねる。жить「住む」を使い、в + 前置格で現在地を答える。',
@@ -469,7 +469,7 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s6-02',
           prompt: 'Куда она идёт?',
-          choices: ['Она́ идёт в апте́ку.', 'Она́ живёт в апте́ке.', 'Она́ бы́ла в апте́ке.'],
+          choices: ['Она идёт в аптеку.', 'Она живёт в аптеке.', 'Она была в аптеке.'],
           answer: 0,
           answerText: 'Она́ идёт в апте́ку.',
           explanation: 'Куда は行き先をたずねる。идти́「歩いて行く」と в + 対格で答える。',
@@ -480,7 +480,7 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s6-03',
           prompt: 'Почему ты не работаешь?',
-          choices: ['Потому́ что я бо́лен.', 'Я рабо́таю в о́фисе.', 'В де́вять ча́сов.'],
+          choices: ['Потому что я болен.', 'Я работаю в офисе.', 'В девять часов.'],
           answer: 0,
           answerText: 'Потому́ что я бо́лен.',
           explanation: 'Почему は理由をたずねる。Потому что「なぜなら〜だから」で理由を答える。',
@@ -491,7 +491,7 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s6-04',
           prompt: 'Сколько стоит билет?',
-          choices: ['Он сто́ит ты́сячу рубле́й.', 'Он е́дет в Москву́.', 'Он лежи́т на столе́.'],
+          choices: ['Он стоит тысячу рублей.', 'Он едет в Москву.', 'Он лежит на столе.'],
           answer: 0,
           answerText: 'Он сто́ит ты́сячу рубле́й.',
           explanation: 'Сколько стоит は値段をたずねる表現。стоить「値段がする」を使って金額で答える。',
@@ -502,7 +502,7 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s6-05',
           prompt: 'Когда начинается урок?',
-          choices: ['В де́вять ча́сов.', 'В шко́лу.', 'Пото́му что у́тром.'],
+          choices: ['В девять часов.', 'В школу.', 'Потому что утром.'],
           answer: 0,
           answerText: 'В де́вять ча́сов.',
           explanation: 'Когда は時間をたずねる。時刻を表す в + 数詞句で答える。',
@@ -520,7 +520,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-01',
-          prompt: 'чита́ть（読む）：Я ___ кни́гу, а они́ ___ газе́ту.',
+          prompt: 'читать（読む）：Я ___ книгу, а они ___ газету.',
           fields: [
             { id: 'first', label: '①', answer: 'чита́ю', explanation: 'я に対応する читать の現在形は чита́ю。' },
             { id: 'second', label: '②', answer: 'чита́ют', explanation: 'они́ に対応する читать の現在形は чита́ют。' },
@@ -532,7 +532,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-02',
-          prompt: 'писа́ть（書く）：Ты ___ письмо́, а мы ___ упражне́ние.',
+          prompt: 'писать（書く）：Ты ___ письмо, а мы ___ упражнение.',
           fields: [
             { id: 'first', label: '①', answer: 'пи́шешь', explanation: 'ты に対応する писать は語幹が変化し、пи́шешь になる。' },
             { id: 'second', label: '②', answer: 'пи́шем', explanation: 'мы に対応する писать の現在形は пи́шем。' },
@@ -544,7 +544,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-03',
-          prompt: 'жить（住む）：Он ___ в Москве́, а вы ___ в То́кио.',
+          prompt: 'жить（住む）：Он ___ в Москве, а вы ___ в Токио.',
           fields: [
             { id: 'first', label: '①', answer: 'живёт', explanation: 'он に対応する жить は живёт。語幹が жив- になる。' },
             { id: 'second', label: '②', answer: 'живёте', explanation: 'вы に対応する жить は живёте。' },
@@ -556,7 +556,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-04',
-          prompt: 'говори́ть（話す）：Она́ ___ по-ру́сски, а они́ ___ по-япо́нски.',
+          prompt: 'говорить（話す）：Она ___ по-русски, а они ___ по-японски.',
           fields: [
             { id: 'first', label: '①', answer: 'говори́т', explanation: 'она́ に対応する говорить の現在形は говори́т。' },
             { id: 'second', label: '②', answer: 'говоря́т', explanation: 'они́ に対応する говорить の現在形は говоря́т。' },
@@ -568,7 +568,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-05',
-          prompt: 'люби́ть（好きである）：Я ___ му́зыку, а он ___ кино́.',
+          prompt: 'любить（好きである）：Я ___ музыку, а он ___ кино.',
           fields: [
             { id: 'first', label: '①', answer: 'люблю́', explanation: 'я に対応する любить は люблю́。' },
             { id: 'second', label: '②', answer: 'лю́бит', explanation: 'он に対応する любить は лю́бит。' },
@@ -580,7 +580,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-06',
-          prompt: 'хоте́ть（〜したい）：Мы ___ пить чай, а ты ___ есть.',
+          prompt: 'хотеть（〜したい）：Мы ___ пить чай, а ты ___ есть.',
           fields: [
             { id: 'first', label: '①', answer: 'хоти́м', explanation: 'мы に対応する хотеть は хоти́м。' },
             { id: 'second', label: '②', answer: 'хо́чешь', explanation: 'ты に対応する хотеть は хо́чешь。' },
@@ -592,7 +592,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-07',
-          prompt: 'мочь（〜できる）：Вы ___ помо́чь, а она́ ___ подожда́ть.',
+          prompt: 'мочь（〜できる）：Вы ___ помочь, а она ___ подождать.',
           fields: [
             { id: 'first', label: '①', answer: 'мо́жете', explanation: 'вы に対応する мочь は мо́жете。' },
             { id: 'second', label: '②', answer: 'мо́жет', explanation: 'она́ に対応する мочь は мо́жет。' },
@@ -604,7 +604,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s7-08',
-          prompt: 'идти́（歩いて行く）：Я ___ в шко́лу, а де́ти ___ в па́рк.',
+          prompt: 'идти（歩いて行く）：Я ___ в школу, а дети ___ в парк.',
           fields: [
             { id: 'first', label: '①', answer: 'иду́', explanation: 'я に対応する идти́ は不規則形の иду́。' },
             { id: 'second', label: '②', answer: 'иду́т', explanation: 'они́ に対応する идти́ は иду́т。' },
@@ -624,7 +624,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s8-01',
-          prompt: 'рабо́тать（働く）\\n［過去］Вчера́ А́нна ___ до́ма.\\n［未来］За́втра А́нна ___ до́ма.',
+          prompt: 'работать（働く）\\n［過去］Вчера Анна ___ дома.\\n［未来］Завтра Анна ___ дома.',
           fields: [
             { id: 'past', label: '過去形', answer: 'рабо́тала', explanation: 'А́нна は女性単数なので、過去形は рабо́тала。' },
             { id: 'future', label: '未来形', answer: 'бу́дет рабо́тать', explanation: '不完了体の未来は быть の未来形 + 不定形。А́нна には бу́дет рабо́тать。' },
@@ -636,7 +636,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s8-02',
-          prompt: 'чита́ть（読む）\\n［過去］Вчера́ студе́нт ___ кни́гу.\\n［未来］За́втра студе́нт ___ кни́гу.',
+          prompt: 'читать（読む）\\n［過去］Вчера студент ___ книгу.\\n［未来］Завтра студент ___ книгу.',
           fields: [
             { id: 'past', label: '過去形', answer: 'чита́л', explanation: 'студе́нт は男性単数なので、過去形は чита́л。' },
             { id: 'future', label: '未来形', answer: 'бу́дет чита́ть', explanation: 'студе́нт は3人称単数なので、быть の未来形は бу́дет。' },
@@ -648,7 +648,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s8-03',
-          prompt: 'идти́（歩いて行く）\\n［過去］Вчера́ Ива́н ___ в шко́лу.\\n［未来］За́втра Ива́н ___ в шко́лу.',
+          prompt: 'идти（歩いて行く）\\n［過去］Вчера Иван ___ в школу.\\n［未来］Завтра Иван ___ в школу.',
           fields: [
             { id: 'past', label: '過去形', answer: 'шёл', explanation: 'идти́ の過去形は不規則。Ива́н は男性単数なので шёл。' },
             { id: 'future', label: '未来形', answer: 'бу́дет идти́', explanation: 'идти́ の不完了体未来は бу́дет идти́。' },
@@ -660,7 +660,7 @@ export const mockExam1 = {
         {
           kind: 'input',
           id: 'mock-1-s8-04',
-          prompt: 'учи́ться（学ぶ）\\n［過去］Вчера́ де́вочка ___ в университе́те.\\n［未来］За́втра де́вочка ___ в университе́те.',
+          prompt: 'учиться（学ぶ）\\n［過去］Вчера девочка ___ в университете.\\n［未来］Завтра девочка ___ в университете.',
           fields: [
             { id: 'past', label: '過去形', answer: 'учи́лась', explanation: 'де́вочка は女性単数で、-ся 動詞の過去形は учи́лась。' },
             { id: 'future', label: '未来形', answer: 'бу́дет учи́ться', explanation: '不完了体の未来は бу́дет + 不定形 учи́ться。' },
