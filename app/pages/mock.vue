@@ -191,7 +191,7 @@ const submitExam = () => {
   stopTimer()
   clearSavedProgress()
   phase.value = 'result'
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({ top: 0, behavior: 'auto' })
 }
 
 const restart = () => {
