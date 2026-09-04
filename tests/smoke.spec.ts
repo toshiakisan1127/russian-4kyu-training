@@ -159,6 +159,30 @@ test('mock section IV matches the stress-tap input UI', async ({ page }) => {
   await expect(question).toContainText('回答: города́')
 })
 
+test('mock translation questions are self-graded after submission', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(8).click()
+  await page.locator('article').first().locator('textarea').fill('昨日は頭が痛かったので、私は一日中家にいました。')
+
+  await status.locator('nav button').nth(9).click()
+  await page.locator('article').first().locator('textarea').fill('Я живу в Москве, но мои родители живут в Японии.')
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+
+  await expect(page.getByText('0 / 71', { exact: true })).toBeVisible()
+  await expect(page.getByText('翻訳・自己採点 0 / 6', { exact: true })).toBeVisible()
+
+  const review = page.locator('details').filter({ hasText: '昨日は頭が痛かった' })
+  await review.locator('summary').click()
+  await expect(review).toContainText('模範解答')
+  await expect(review.getByRole('button', { name: 'できた' })).toBeVisible()
+})
+
 test('mock written answers accept accentless spelling', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
