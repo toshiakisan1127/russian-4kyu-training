@@ -32,7 +32,7 @@ for (const route of routes) {
   })
 }
 
-test('mock status card avoids fixed utility controls while scrolling', async ({ page }) => {
+test('mock status card scrolls away and avoids fixed utility controls', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: '模試を開始する' }).click()
 
@@ -58,10 +58,11 @@ test('mock status card avoids fixed utility controls while scrolling', async ({ 
     expect(overlaps).toEqual([])
   }
 
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await assertNoUtilityOverlap()
+  await status.locator('summary').click()
+  await expect(status).toHaveAttribute('open', '')
   await assertNoUtilityOverlap()
 
-  await status.locator('summary').click()
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-  await assertNoUtilityOverlap()
+  await expect(status).not.toBeInViewport()
 })
