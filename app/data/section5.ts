@@ -47,7 +47,7 @@ const contexts: Record<Section5TargetCase, { before: string; after: string; expl
   accusative: {
     before: 'Я ви́жу',
     after: '.',
-    explanation: 'ви́деть の直接目的語なので対格になる。',
+    explanation: 'ви́деть の直接目的語なので対格になる。男性活動体名詞では、対格が生格と同じ形になる。',
   },
   instrumental: {
     before: 'Я стою́ пе́ред',
