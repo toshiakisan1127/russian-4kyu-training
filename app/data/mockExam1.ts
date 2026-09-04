@@ -90,7 +90,7 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s1-05',
           prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
-          choices: ['во̲да', 'д̲ом', 'ко̲т'],
+          choices: ['во̲да', 'до̲м', 'ко̲т'],
           answer: 0,
           answerText: 'во̲да',
           explanation: 'вода の最初の о は無アクセントで弱化する。дом と кот の о にはアクセントがあり、はっきり [о] と発音する。',
