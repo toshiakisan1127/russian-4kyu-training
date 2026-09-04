@@ -86,8 +86,13 @@ useHead({
         </div>
 
         <p class="mt-4 mb-0 text-xs font-bold leading-5 text-slate-500">
-          「ホーム画面に追加」が表示されない場合は、SafariまたはChromeで公開中のサイトを開いているか確認してください。iPhoneではSafariからの追加に対応しています。
+          「ホーム画面に追加」が表示されない場合は、SafariまたはChromeで公開中のサイトを開いているか確認してください。iPhoneではSafariからの追加に対応しています。アプリ版でページを更新するときは、画面右上の「↻」ボタンをタップしてください。
         </p>
+
+        <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+          <strong>保存データについて：</strong>
+          学習進捗や設定は端末内に保存されます。特にiPhone・iPadでは、Safariで開いたサイトとホーム画面に追加したアプリで保存領域が分かれ、進捗が共有されない場合があります。普段使う方を決めて、その方で学習してください。
+        </div>
       </section>
     </section>
   </main>
