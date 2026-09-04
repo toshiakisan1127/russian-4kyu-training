@@ -44,7 +44,7 @@ export const mockExam1 = {
   title: '模擬試験 第1回',
   durationMinutes: 45,
   totalQuestionCards: 54,
-  totalAnswerFields: 87,
+  totalAnswerFields: 71,
   sections: [
     {
       id: 'mock-1-section-1',
@@ -530,9 +530,7 @@ export const mockExam1 = {
           prompt: 'читать（読む）：Я ___ книгу, а они ___ газету.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'читаю', displayAnswer: 'чита́ю', explanation: 'я に対応する читать の現在形は чита́ю。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'читают', displayAnswer: 'чита́ют', explanation: 'они́ に対応する читать の現在形は чита́ют。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
           ],
           completedSentence: 'Я чита́ю кни́гу, а они́ чита́ют газе́ту.',
           translation: '私は本を読み、彼らは新聞を読みます。',
@@ -544,9 +542,7 @@ export const mockExam1 = {
           prompt: 'писать（書く）：Ты ___ письмо, а мы ___ упражнение.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'пишешь', displayAnswer: 'пи́шешь', explanation: 'ты に対応する писать は語幹が変化し、пи́шешь になる。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'пишем', displayAnswer: 'пи́шем', explanation: 'мы に対応する писать の現在形は пи́шем。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Ты пи́шешь письмо́, а мы пи́шем упражне́ние.',
           translation: 'あなたは手紙を書き、私たちは練習問題を書きます。',
@@ -558,9 +554,7 @@ export const mockExam1 = {
           prompt: 'жить（住む）：Он ___ в Москве, а вы ___ в Токио.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'живёт', displayAnswer: 'живёт', explanation: 'он に対応する жить は живёт。語幹が жив- になる。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'живёте', displayAnswer: 'живёте', explanation: 'вы に対応する жить は живёте。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Он живёт в Москве́, а вы живёте в То́кио.',
           translation: '彼はモスクワに住み、あなたたちは東京に住みます。',
@@ -572,9 +566,7 @@ export const mockExam1 = {
           prompt: 'говорить（話す）：Она ___ по-русски, а они ___ по-японски.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'говорит', displayAnswer: 'говори́т', explanation: 'она́ に対応する говорить の現在形は говори́т。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '3', inputMode: 'number', explanation: 'アクセントは第3音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'говорят', displayAnswer: 'говоря́т', explanation: 'они́ に対応する говорить の現在形は говоря́т。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '3', inputMode: 'number', explanation: 'アクセントは第3音節。' },
           ],
           completedSentence: 'Она́ говори́т по-ру́сски, а они́ говоря́т по-япо́нски.',
           translation: '彼女はロシア語で話し、彼らは日本語で話します。',
@@ -586,9 +578,7 @@ export const mockExam1 = {
           prompt: 'любить（好きである）：Я ___ музыку, а он ___ кино.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'люблю', displayAnswer: 'люблю́', explanation: 'я に対応する любить は люблю́。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'любит', displayAnswer: 'лю́бит', explanation: 'он に対応する любить は лю́бит。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Я люблю́ му́зыку, а он лю́бит кино́.',
           translation: '私は音楽が好きで、彼は映画が好きです。',
@@ -600,9 +590,7 @@ export const mockExam1 = {
           prompt: 'хотеть（〜したい）：Мы ___ пить чай, а ты ___ есть.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'хотим', displayAnswer: 'хоти́м', explanation: 'мы に対応する хотеть は хоти́м。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'хочешь', displayAnswer: 'хо́чешь', explanation: 'ты に対応する хотеть は хо́чешь。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Мы хоти́м пить чай, а ты хо́чешь есть.',
           translation: '私たちはお茶を飲みたくて、あなたは食べたいと思っています。',
@@ -614,9 +602,7 @@ export const mockExam1 = {
           prompt: 'мочь（〜できる）：Вы ___ помочь, а она ___ подождать.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'можете', displayAnswer: 'мо́жете', explanation: 'вы に対応する мочь は мо́жете。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'может', displayAnswer: 'мо́жет', explanation: 'она́ に対応する мочь は мо́жет。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
           completedSentence: 'Вы мо́жете помо́чь, а она́ мо́жет подожда́ть.',
           translation: 'あなたたちは助けることができ、彼女は待つことができます。',
@@ -628,9 +614,7 @@ export const mockExam1 = {
           prompt: 'идти（歩いて行く）：Я ___ в школу, а дети ___ в парк.',
           fields: [
             { id: 'first-spelling', label: '① 綴り', answer: 'иду', displayAnswer: 'иду́', explanation: 'я に対応する идти́ は不規則形の иду́。' },
-            { id: 'first-stress', label: '① アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
             { id: 'second-spelling', label: '② 綴り', answer: 'идут', displayAnswer: 'иду́т', explanation: 'они́ に対応する идти́ は иду́т。' },
-            { id: 'second-stress', label: '② アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
           ],
           completedSentence: 'Я иду́ в шко́лу, а де́ти иду́т в па́рк.',
           translation: '私は学校へ歩いて行き、子どもたちは公園へ歩いて行きます。',
