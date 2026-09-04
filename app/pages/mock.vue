@@ -328,7 +328,7 @@ onBeforeUnmount(() => {
           </div>
           <div class="rounded-2xl bg-sky-50 p-4">
             <p class="mb-1 text-xs font-black text-sky-800">解答欄</p>
-            <p class="m-0 text-2xl font-black">66欄</p>
+            <p class="m-0 text-2xl font-black">{{ mockExam1.totalAnswerFields }}欄</p>
           </div>
           <div class="rounded-2xl bg-emerald-50 p-4">
             <p class="mb-1 text-xs font-black text-emerald-800">目安時間</p>
@@ -347,16 +347,14 @@ onBeforeUnmount(() => {
               <p class="mb-1 text-xs font-black text-slate-500">第{{ section.roman }}問</p>
               <p class="mb-1 font-black">{{ section.title }}</p>
               <p class="m-0 text-sm font-bold text-slate-600">
-                {{ section.questions.length }}問
-                <span v-if="section.roman === 'VII'">・32欄</span>
-                <span v-else-if="section.roman === 'VIII'">・8欄</span>
+                {{ section.questions.length }}問・{{ sectionTotalAnswerFields(section) }}欄
               </p>
             </div>
           </div>
         </section>
 
         <div class="mb-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-bold leading-7 text-amber-950">
-          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問はアクセント記号、第Ⅶ問は綴りとアクセント位置、第Ⅷ問は指定された時制の動詞を入力してください。
+          第Ⅳ問・第Ⅶ問・第Ⅷ問は記述式です。第Ⅳ問は複数形の綴りとアクセント位置、第Ⅶ問は綴りとアクセント位置、第Ⅷ問は指定された時制の動詞を入力してください。
         </div>
 
         <div v-if="hasSavedProgress" class="mb-8 rounded-2xl border border-sky-200 bg-sky-50 p-4">
@@ -531,7 +529,7 @@ onBeforeUnmount(() => {
           <p class="m-0 text-5xl font-black text-emerald-700">{{ totalCorrect }} / {{ mockExam1.totalAnswerFields }}</p>
           <p class="mt-3 mb-0 font-bold text-slate-600">解答欄ベースの正答率 {{ scorePercentage }}%</p>
           <p class="mt-3 mb-0 text-sm leading-6 text-slate-500">
-            第Ⅶ問・第Ⅷ問は、2つの記述欄をそれぞれ採点しています。
+            記述式の設問は、各入力欄をそれぞれ採点しています。
           </p>
         </section>
 
