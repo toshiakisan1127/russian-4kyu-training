@@ -17,6 +17,7 @@ const routes = [
   '/sections/6',
   '/sections/7',
   '/sections/8',
+  '/mock',
   '/translations/ru-ja',
   '/translations/ja-ru',
 ] as const

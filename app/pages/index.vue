@@ -4,6 +4,7 @@ import { caseTrainingQuestions } from '~/data/caseTraining'
 import { japaneseToRussianQuestions } from '~/data/japaneseToRussian'
 import { readingPassages } from '~/data/readingPassages'
 import { mixedTrainingQuestions } from '~/data/mixedTraining'
+import { mockExam1 } from '~/data/mockExam1'
 import { questions } from '~/data/questions'
 import { russianToJapaneseQuestions } from '~/data/russianToJapanese'
 import { section1Questions } from '~/data/section1'
@@ -482,16 +483,26 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
           <h2 class="m-0 text-2xl font-black">模擬試験</h2>
         </div>
 
-        <article class="rounded-3xl border border-amber-200 bg-amber-50 p-6 sm:p-7">
+        <NuxtLink
+          to="/mock"
+          class="group block rounded-3xl border border-amber-200 bg-amber-50 p-6 transition hover:-translate-y-1 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-100 sm:p-7"
+        >
           <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div class="mb-3 inline-flex rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-black text-amber-800">COMING SOON</div>
-              <h3 class="mb-2 text-xl font-black text-slate-900">最後は通しで実力チェック</h3>
-              <p class="m-0 max-w-2xl leading-7 text-slate-600">複数分野をまとめて解く本番想定モード。大問別問題集に慣れてから挑戦する仕上げ用。</p>
+              <div class="mb-3 inline-flex rounded-full bg-amber-700 px-2.5 py-1 text-xs font-black text-white">学習可能</div>
+              <h3 class="mb-2 text-xl font-black text-slate-900">模擬試験 第1回</h3>
+              <p class="m-0 max-w-2xl leading-7 text-slate-600">
+                過去問の出題形式を参考にしたオリジナル文法模試。試験中は解説を表示せず、提出後にまとめて復習できます。
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2 text-sm font-black text-amber-900">
+                <span class="rounded-full bg-white px-3 py-1.5">{{ mockExam1.totalQuestionCards }}問</span>
+                <span class="rounded-full bg-white px-3 py-1.5">{{ mockExam1.totalAnswerFields }}解答欄</span>
+                <span class="rounded-full bg-white px-3 py-1.5">目安{{ mockExam1.durationMinutes }}分</span>
+              </div>
             </div>
-            <div class="shrink-0 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-black text-amber-900">COMING SOON</div>
+            <span class="shrink-0 text-sm font-black text-amber-800">模試を始める →</span>
           </div>
-        </article>
+        </NuxtLink>
       </section>
     </div>
   </main>

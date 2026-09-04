@@ -1,0 +1,682 @@
+export type MockChoiceQuestion = {
+  kind: 'choice'
+  id: string
+  prompt: string
+  choices: string[]
+  answer: number
+  answerText: string
+  explanation: string
+  translation?: string
+  speechText?: string
+}
+
+export type MockInputField = {
+  id: string
+  label: string
+  answer: string
+  explanation: string
+}
+
+export type MockInputQuestion = {
+  kind: 'input'
+  id: string
+  prompt: string
+  fields: MockInputField[]
+  completedSentence?: string
+  translation?: string
+  speechText?: string
+}
+
+export type MockQuestion = MockChoiceQuestion | MockInputQuestion
+
+export type MockSection = {
+  id: string
+  roman: string
+  title: string
+  instruction: string
+  questions: MockQuestion[]
+}
+
+export const mockExam1 = {
+  id: 'mock-1',
+  title: '模擬試験 第1回',
+  durationMinutes: 45,
+  totalQuestionCards: 54,
+  totalAnswerFields: 66,
+  sections: [
+    {
+      id: 'mock-1-section-1',
+      roman: 'I',
+      title: '発音',
+      instruction: '下線部の発音が他の2つと異なる単語を1つ選びなさい。',
+      questions: [
+        {
+          kind: 'choice',
+          id: 'mock-1-s1-01',
+          prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
+          choices: ['го́д（年）', 'са́д（庭）', 'до́м（家）'],
+          answer: 2,
+          answerText: 'до́м',
+          explanation: 'го́д と са́д の語末の д は無声化して [т] に近く発音する。до́м の д は語頭なので [д] の音になる。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s1-02',
+          prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
+          choices: ['хле́б（パン）', 'ду́б（樫）', 'бра́т（兄弟）'],
+          answer: 2,
+          answerText: 'бра́т',
+          explanation: 'хле́б と ду́б の語末の б は無声化して [п] に近くなる。бра́т の б は語頭なので [б] で発音する。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s1-03',
+          prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
+          choices: ['что́（何）', 'ча́й（お茶）', 'вра́ч（医者）'],
+          answer: 0,
+          answerText: 'что́',
+          explanation: 'что́ の ч は重要な例外で [ш] に近く発音する。ча́й と вра́ч の ч は通常の [ч]。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s1-04',
+          prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
+          choices: ['его́（彼の・彼を）', 'го́ра（山）', 'газе́та（新聞）'],
+          answer: 0,
+          answerText: 'его́',
+          explanation: 'его́ の г は綴りどおりの [г] ではなく、[в] に近く発音する。го́ра と газе́та の г は通常の [г]。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s1-05',
+          prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
+          choices: ['вода́（水）', 'до́м（家）', 'ко́т（猫）'],
+          answer: 0,
+          answerText: 'вода́',
+          explanation: 'вода́ の最初の о は無アクセントで弱化する。до́м と ко́т の о にはアクセントがあり、はっきり [о] と発音する。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s1-06',
+          prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
+          choices: ['вокза́л（駅）', 'ко́шка（猫）', 'кни́га（本）'],
+          answer: 0,
+          answerText: 'вокза́л',
+          explanation: 'вокза́л では к が後ろの有声子音 з の影響で有声化し、[г] に近くなる。ко́шка と кни́га の к は [к]。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s1-07',
+          prompt: '次の3語のうち、下線部の発音が異なるものはどれか。',
+          choices: ['гла́з（目）', 'ра́з（一度）', 'зима́（冬）'],
+          answer: 2,
+          answerText: 'зима́',
+          explanation: 'гла́з と ра́з の語末の з は無声化して [с] に近くなる。зима́ の з は語頭なので [з]。',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-2',
+      roman: 'II',
+      title: 'アクセント',
+      instruction: 'アクセントの位置が他の2つと異なる単語を1つ選びなさい。',
+      questions: [
+        {
+          kind: 'choice',
+          id: 'mock-1-s2-01',
+          prompt: 'アクセントの位置が異なる単語はどれか。',
+          choices: ['до́ма（家で）', 'ру́чка（ペン）', 'маши́на（車）'],
+          answer: 2,
+          answerText: 'маши́на',
+          explanation: 'до́ма と ру́чка は第1音節、маши́на は第2音節にアクセントがある。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s2-02',
+          prompt: 'アクセントの位置が異なる単語はどれか。',
+          choices: ['рабо́та（仕事）', 'газе́та（新聞）', 'кни́га（本）'],
+          answer: 2,
+          answerText: 'кни́га',
+          explanation: 'рабо́та と газе́та は第2音節、кни́га は第1音節にアクセントがある。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s2-03',
+          prompt: 'アクセントの位置が異なる単語はどれか。',
+          choices: ['у́лица（通り）', 'комна́та（部屋）', 'го́род（町）'],
+          answer: 1,
+          answerText: 'комна́та',
+          explanation: 'у́лица と го́род は第1音節、комна́та は第2音節にアクセントがある。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s2-04',
+          prompt: 'アクセントの位置が異なる単語はどれか。',
+          choices: ['о́зеро（湖）', 'теа́тр（劇場）', 'ра́дио（ラジオ）'],
+          answer: 1,
+          answerText: 'теа́тр',
+          explanation: 'о́зеро と ра́дио は第1音節、теа́тр は第2音節にアクセントがある。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s2-05',
+          prompt: 'アクセントの位置が異なる単語はどれか。',
+          choices: ['соба́ка（犬）', 'мину́та（分）', 'по́езд（列車）'],
+          answer: 2,
+          answerText: 'по́езд',
+          explanation: 'соба́ка と мину́та は第2音節、по́езд は第1音節にアクセントがある。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s2-06',
+          prompt: 'アクセントの位置が異なる単語はどれか。',
+          choices: ['молоко́（牛乳）', 'хорошо́（よく・良く）', 'моро́з（寒さ）'],
+          answer: 2,
+          answerText: 'моро́з',
+          explanation: 'молоко́ と хорошо́ は最後の音節、моро́з は第2音節にアクセントがある。',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s2-07',
+          prompt: 'アクセントの位置が異なる単語はどれか。',
+          choices: ['ма́ма（母）', 'па́па（父）', 'семья́（家族）'],
+          answer: 2,
+          answerText: 'семья́',
+          explanation: 'ма́ма と па́па は第1音節、семья́ は第2音節にアクセントがある。',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-3',
+      roman: 'III',
+      title: '名詞の性・数',
+      instruction: '文の内容に合う он / она / оно / они を選びなさい。',
+      questions: [
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-01',
+          prompt: 'Вот дом. ___ большой.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 0,
+          answerText: 'он',
+          explanation: 'дом は男性名詞なので、代名詞は он。「彼」だけでなく男性名詞を受ける「それ」にも使う。',
+          translation: 'これは家です。それは大きいです。',
+          speechText: 'Э́то дом. Он большо́й.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-02',
+          prompt: 'Вот машина. ___ новая.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 1,
+          answerText: 'она',
+          explanation: 'машина は -а で終わる女性名詞なので、代名詞は она。',
+          translation: 'これは車です。それは新しいです。',
+          speechText: 'Э́то маши́на. Она́ но́вая.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-03',
+          prompt: 'Вот окно. ___ большое.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 2,
+          answerText: 'оно',
+          explanation: 'окно は -о で終わる中性名詞なので、代名詞は оно。',
+          translation: 'これは窓です。それは大きいです。',
+          speechText: 'Э́то окно́. Оно́ большо́е.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-04',
+          prompt: 'Вот книги. ___ новые.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 3,
+          answerText: 'они',
+          explanation: 'книги は複数形なので、代名詞は они。',
+          translation: 'これは本です。それらは新しいです。',
+          speechText: 'Э́то кни́ги. Они́ но́вые.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-05',
+          prompt: 'Вот тетрадь. ___ лежит на столе.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 1,
+          answerText: 'она',
+          explanation: 'тетрадь は -ь で終わる女性名詞。語尾だけでなく性を覚える必要がある。',
+          translation: 'これはノートです。それは机の上にあります。',
+          speechText: 'Э́то тетра́дь. Она́ лежи́т на столе́.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-06',
+          prompt: 'Вот словарь. ___ лежит в сумке.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 0,
+          answerText: 'он',
+          explanation: 'словарь は -ь で終わる男性名詞。тетрадь などの女性名詞と区別する。',
+          translation: 'これは辞書です。それはかばんの中にあります。',
+          speechText: 'Э́то слова́рь. Он лежи́т в су́мке.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-07',
+          prompt: 'Вот море. ___ спокойное.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 2,
+          answerText: 'оно',
+          explanation: 'мо́ре は -е で終わる中性名詞なので、代名詞は оно。',
+          translation: 'これは海です。それは穏やかです。',
+          speechText: 'Э́то мо́ре. Оно́ споко́йное.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s3-08',
+          prompt: 'Вот студенты. ___ читают.',
+          choices: ['он', 'она', 'оно', 'они'],
+          answer: 3,
+          answerText: 'они',
+          explanation: 'студенты は複数形なので、代名詞は они。',
+          translation: 'これは学生たちです。彼らは読んでいます。',
+          speechText: 'Э́то студе́нты. Они́ чита́ют.',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-4',
+      roman: 'IV',
+      title: '名詞の複数形',
+      instruction: '名詞を主格複数形に直し、アクセント記号も付けなさい。',
+      questions: [
+        {
+          kind: 'input',
+          id: 'mock-1-s4-01',
+          prompt: 'го́род（町） →',
+          fields: [
+            { id: 'answer', label: '複数形', answer: 'города́', explanation: 'город → города́。複数形でアクセントが語末へ移る。' },
+          ],
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s4-02',
+          prompt: 'друг（友人） →',
+          fields: [
+            { id: 'answer', label: '複数形', answer: 'друзья́', explanation: 'друг → друзья́ は語幹も変化する不規則な複数形。' },
+          ],
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s4-03',
+          prompt: 'кни́га（本） →',
+          fields: [
+            { id: 'answer', label: '複数形', answer: 'кни́ги', explanation: 'книга は複数形 кни́ги。к / г / х の後では ы ではなく и を使う。' },
+          ],
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s4-04',
+          prompt: 'окно́（窓） →',
+          fields: [
+            { id: 'answer', label: '複数形', answer: 'о́кна', explanation: 'окно́ → о́кна。中性名詞の -о が -а になる代表的な形。' },
+          ],
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s4-05',
+          prompt: 'челове́к（人） →',
+          fields: [
+            { id: 'answer', label: '複数形', answer: 'лю́ди', explanation: 'челове́к の複数形は лю́ди という不規則形。' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-5',
+      roman: 'V',
+      title: '格変化',
+      instruction: '文脈に合う名詞句の形を1つ選びなさい。',
+      questions: [
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-01',
+          prompt: 'Здесь нет ___（新しい学生）.',
+          choices: ['новый студент', 'нового студента', 'новому студенту'],
+          answer: 1,
+          answerText: 'нового студента',
+          explanation: 'нет の後ろは生格。男性単数の形容詞・名詞が нового студента になる。',
+          translation: 'ここには新しい学生がいません。',
+          speechText: 'Зде́сь нет но́вого студе́нта.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-02',
+          prompt: 'Я подошёл к ___（若い女性教師）.',
+          choices: ['молодая учительница', 'молодой учительнице', 'молодую учительницу'],
+          answer: 1,
+          answerText: 'молодой учительнице',
+          explanation: 'к は与格支配。女性単数では形容詞と名詞が молодой учительнице になる。',
+          translation: '私は若い女性教師のところへ近づきました。',
+          speechText: 'Я подошёл к молодо́й учи́тельнице.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-03',
+          prompt: 'Я вижу ___（大きな町）.',
+          choices: ['большой город', 'большого города', 'большому городу'],
+          answer: 0,
+          answerText: 'большой город',
+          explanation: 'вижу の直接目的語は対格。無生物の男性単数は主格と同じ形なので большой город。',
+          translation: '私は大きな町を見ます。',
+          speechText: 'Я ви́жу большо́й го́род.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-04',
+          prompt: 'Мы говорим о ___（ロシア語）.',
+          choices: ['русский язык', 'русского языка', 'русском языке'],
+          answer: 2,
+          answerText: 'русском языке',
+          explanation: 'о は前置格支配。「ロシア語について」は о русском языке となる。',
+          translation: '私たちはロシア語について話しています。',
+          speechText: 'Мы говори́м о ру́сском языке́.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-05',
+          prompt: 'Я стою перед ___（新しい家）.',
+          choices: ['нового дома', 'новым домом', 'новом доме'],
+          answer: 1,
+          answerText: 'новым домом',
+          explanation: 'перед は造格支配。「〜の前に」は перед новым домом。',
+          translation: '私は新しい家の前に立っています。',
+          speechText: 'Я стою́ пе́ред но́вым до́мом.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-06',
+          prompt: 'У меня нет ___（小さなアパート）.',
+          choices: ['маленькая квартира', 'маленькой квартиры', 'маленькую квартиру'],
+          answer: 1,
+          answerText: 'маленькой квартиры',
+          explanation: 'нет の後ろは生格。女性単数の形容詞・名詞が маленькой квартиры になる。',
+          translation: '私は小さなアパートを持っていません。',
+          speechText: 'У меня́ нет ма́ленькой кварти́ры.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-07',
+          prompt: 'Она помогает ___（弟）.',
+          choices: ['младший брат', 'младшему брату', 'младшего брата'],
+          answer: 1,
+          answerText: 'младшему брату',
+          explanation: 'помогать は与格を取る動詞。「弟を助ける」は помогает младшему брату。',
+          translation: '彼女は弟を助けています。',
+          speechText: 'Она́ помога́ет мла́дшему бра́ту.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-08',
+          prompt: 'Мы едем в ___（モスクワ）.',
+          choices: ['Москва', 'Москве', 'Москву'],
+          answer: 2,
+          answerText: 'Москву',
+          explanation: '移動の行き先を表す в の後ろは対格。Москва は Москву になる。',
+          translation: '私たちはモスクワへ行きます。',
+          speechText: 'Мы е́дем в Москву́.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-09',
+          prompt: 'Он интересуется ___（ロシアの音楽）.',
+          choices: ['русской музыкой', 'русскую музыку', 'русская музыка'],
+          answer: 0,
+          answerText: 'русской музыкой',
+          explanation: 'интересоваться は造格を取る動詞。「ロシアの音楽に興味がある」は русской музыкой。',
+          translation: '彼はロシアの音楽に興味があります。',
+          speechText: 'Он интересу́ется ру́сской му́зыкой.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s5-10',
+          prompt: 'Они говорят о ___（新しい本）.',
+          choices: ['новую книгу', 'новой книге', 'новая книга'],
+          answer: 1,
+          answerText: 'новой книге',
+          explanation: 'о の後ろは前置格。女性単数の「新しい本について」は о новой книге。',
+          translation: '彼らは新しい本について話しています。',
+          speechText: 'Они́ говоря́т о но́вой кни́ге.',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-6',
+      roman: 'VI',
+      title: '疑問文への応答',
+      instruction: '質問に対する自然な応答を1つ選びなさい。',
+      questions: [
+        {
+          kind: 'choice',
+          id: 'mock-1-s6-01',
+          prompt: 'Где ты живёшь?',
+          choices: ['Я живу́ в То́кио.', 'Я иду́ в То́кио.', 'Потому́ что я в То́кио.'],
+          answer: 0,
+          answerText: 'Я живу́ в То́кио.',
+          explanation: 'Где は場所をたずねる。жить「住む」を使い、в + 前置格で現在地を答える。',
+          translation: 'どこに住んでいますか。—私は東京に住んでいます。',
+          speechText: 'Где́ ты живёшь? Я живу́ в То́кио.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s6-02',
+          prompt: 'Куда она идёт?',
+          choices: ['Она́ идёт в апте́ку.', 'Она́ живёт в апте́ке.', 'Она́ бы́ла в апте́ке.'],
+          answer: 0,
+          answerText: 'Она́ идёт в апте́ку.',
+          explanation: 'Куда は行き先をたずねる。идти́「歩いて行く」と в + 対格で答える。',
+          translation: '彼女はどこへ行きますか。—彼女は薬局へ行きます。',
+          speechText: 'Куда́ она́ идёт? Она́ идёт в апте́ку.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s6-03',
+          prompt: 'Почему ты не работаешь?',
+          choices: ['Потому́ что я бо́лен.', 'Я рабо́таю в о́фисе.', 'В де́вять ча́сов.'],
+          answer: 0,
+          answerText: 'Потому́ что я бо́лен.',
+          explanation: 'Почему は理由をたずねる。Потому что「なぜなら〜だから」で理由を答える。',
+          translation: 'なぜ働いていないのですか。—病気だからです。',
+          speechText: 'Почему́ ты не рабо́таешь? Потому́ что я бо́лен.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s6-04',
+          prompt: 'Сколько стоит билет?',
+          choices: ['Он сто́ит ты́сячу рубле́й.', 'Он е́дет в Москву́.', 'Он лежи́т на столе́.'],
+          answer: 0,
+          answerText: 'Он сто́ит ты́сячу рубле́й.',
+          explanation: 'Сколько стоит は値段をたずねる表現。стоить「値段がする」を使って金額で答える。',
+          translation: '切符はいくらですか。—1000ルーブルです。',
+          speechText: 'Ско́лько сто́ит биле́т? Он сто́ит ты́сячу рубле́й.',
+        },
+        {
+          kind: 'choice',
+          id: 'mock-1-s6-05',
+          prompt: 'Когда начинается урок?',
+          choices: ['В де́вять ча́сов.', 'В шко́лу.', 'Пото́му что у́тром.'],
+          answer: 0,
+          answerText: 'В де́вять ча́сов.',
+          explanation: 'Когда は時間をたずねる。時刻を表す в + 数詞句で答える。',
+          translation: '授業はいつ始まりますか。—9時に始まります。',
+          speechText: 'Когда́ начина́ется уро́к? В де́вять ча́сов.',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-7',
+      roman: 'VII',
+      title: '動詞の現在形',
+      instruction: '文脈に合う動詞の現在形を、各空欄に記入しなさい。',
+      questions: [
+        {
+          kind: 'input',
+          id: 'mock-1-s7-01',
+          prompt: 'чита́ть（読む）：Я ___ кни́гу, а они́ ___ газе́ту.',
+          fields: [
+            { id: 'first', label: '①', answer: 'чита́ю', explanation: 'я に対応する читать の現在形は чита́ю。' },
+            { id: 'second', label: '②', answer: 'чита́ют', explanation: 'они́ に対応する читать の現在形は чита́ют。' },
+          ],
+          completedSentence: 'Я чита́ю кни́гу, а они́ чита́ют газе́ту.',
+          translation: '私は本を読み、彼らは新聞を読みます。',
+          speechText: 'Я чита́ю кни́гу, а они́ чита́ют газе́ту.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s7-02',
+          prompt: 'писа́ть（書く）：Ты ___ письмо́, а мы ___ упражне́ние.',
+          fields: [
+            { id: 'first', label: '①', answer: 'пи́шешь', explanation: 'ты に対応する писать は語幹が変化し、пи́шешь になる。' },
+            { id: 'second', label: '②', answer: 'пи́шем', explanation: 'мы に対応する писать の現在形は пи́шем。' },
+          ],
+          completedSentence: 'Ты пи́шешь письмо́, а мы пи́шем упражне́ние.',
+          translation: 'あなたは手紙を書き、私たちは練習問題を書きます。',
+          speechText: 'Ты пи́шешь письмо́, а мы пи́шем упражне́ние.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s7-03',
+          prompt: 'жить（住む）：Он ___ в Москве́, а вы ___ в То́кио.',
+          fields: [
+            { id: 'first', label: '①', answer: 'живёт', explanation: 'он に対応する жить は живёт。語幹が жив- になる。' },
+            { id: 'second', label: '②', answer: 'живёте', explanation: 'вы に対応する жить は живёте。' },
+          ],
+          completedSentence: 'Он живёт в Москве́, а вы живёте в То́кио.',
+          translation: '彼はモスクワに住み、あなたたちは東京に住みます。',
+          speechText: 'Он живёт в Москве́, а вы живёте в То́кио.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s7-04',
+          prompt: 'говори́ть（話す）：Она́ ___ по-ру́сски, а они́ ___ по-япо́нски.',
+          fields: [
+            { id: 'first', label: '①', answer: 'говори́т', explanation: 'она́ に対応する говорить の現在形は говори́т。' },
+            { id: 'second', label: '②', answer: 'говоря́т', explanation: 'они́ に対応する говорить の現在形は говоря́т。' },
+          ],
+          completedSentence: 'Она́ говори́т по-ру́сски, а они́ говоря́т по-япо́нски.',
+          translation: '彼女はロシア語で話し、彼らは日本語で話します。',
+          speechText: 'Она́ говори́т по-ру́сски, а они́ говоря́т по-япо́нски.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s7-05',
+          prompt: 'люби́ть（好きである）：Я ___ му́зыку, а он ___ кино́.',
+          fields: [
+            { id: 'first', label: '①', answer: 'люблю́', explanation: 'я に対応する любить は люблю́。' },
+            { id: 'second', label: '②', answer: 'лю́бит', explanation: 'он に対応する любить は лю́бит。' },
+          ],
+          completedSentence: 'Я люблю́ му́зыку, а он лю́бит кино́.',
+          translation: '私は音楽が好きで、彼は映画が好きです。',
+          speechText: 'Я люблю́ му́зыку, а он лю́бит кино́.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s7-06',
+          prompt: 'хоте́ть（〜したい）：Мы ___ пить чай, а ты ___ есть.',
+          fields: [
+            { id: 'first', label: '①', answer: 'хоти́м', explanation: 'мы に対応する хотеть は хоти́м。' },
+            { id: 'second', label: '②', answer: 'хо́чешь', explanation: 'ты に対応する хотеть は хо́чешь。' },
+          ],
+          completedSentence: 'Мы хоти́м пить чай, а ты хо́чешь есть.',
+          translation: '私たちはお茶を飲みたくて、あなたは食べたいと思っています。',
+          speechText: 'Мы хоти́м пить чай, а ты хо́чешь есть.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s7-07',
+          prompt: 'мочь（〜できる）：Вы ___ помо́чь, а она́ ___ подожда́ть.',
+          fields: [
+            { id: 'first', label: '①', answer: 'мо́жете', explanation: 'вы に対応する мочь は мо́жете。' },
+            { id: 'second', label: '②', answer: 'мо́жет', explanation: 'она́ に対応する мочь は мо́жет。' },
+          ],
+          completedSentence: 'Вы мо́жете помо́чь, а она́ мо́жет подожда́ть.',
+          translation: 'あなたたちは助けることができ、彼女は待つことができます。',
+          speechText: 'Вы мо́жете помо́чь, а она́ мо́жет подожда́ть.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s7-08',
+          prompt: 'идти́（歩いて行く）：Я ___ в шко́лу, а де́ти ___ в па́рк.',
+          fields: [
+            { id: 'first', label: '①', answer: 'иду́', explanation: 'я に対応する идти́ は不規則形の иду́。' },
+            { id: 'second', label: '②', answer: 'иду́т', explanation: 'они́ に対応する идти́ は иду́т。' },
+          ],
+          completedSentence: 'Я иду́ в шко́лу, а де́ти иду́т в па́рк.',
+          translation: '私は学校へ歩いて行き、子どもたちは公園へ歩いて行きます。',
+          speechText: 'Я иду́ в шко́лу, а де́ти иду́т в па́рк.',
+        },
+      ],
+    },
+    {
+      id: 'mock-1-section-8',
+      roman: 'VIII',
+      title: '過去形・未来形',
+      instruction: '各文の動詞を、指定された時制の形で記入しなさい。',
+      questions: [
+        {
+          kind: 'input',
+          id: 'mock-1-s8-01',
+          prompt: 'рабо́тать（働く）\\n［過去］Вчера́ А́нна ___ до́ма.\\n［未来］За́втра А́нна ___ до́ма.',
+          fields: [
+            { id: 'past', label: '過去形', answer: 'рабо́тала', explanation: 'А́нна は女性単数なので、過去形は рабо́тала。' },
+            { id: 'future', label: '未来形', answer: 'бу́дет рабо́тать', explanation: '不完了体の未来は быть の未来形 + 不定形。А́нна には бу́дет рабо́тать。' },
+          ],
+          completedSentence: 'Вчера́ А́нна рабо́тала до́ма. За́втра А́нна бу́дет рабо́тать до́ма.',
+          translation: '昨日アンナは家で働きました。明日アンナは家で働くでしょう。',
+          speechText: 'Вчера́ А́нна рабо́тала до́ма. За́втра А́нна бу́дет рабо́тать до́ма.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s8-02',
+          prompt: 'чита́ть（読む）\\n［過去］Вчера́ студе́нт ___ кни́гу.\\n［未来］За́втра студе́нт ___ кни́гу.',
+          fields: [
+            { id: 'past', label: '過去形', answer: 'чита́л', explanation: 'студе́нт は男性単数なので、過去形は чита́л。' },
+            { id: 'future', label: '未来形', answer: 'бу́дет чита́ть', explanation: 'студе́нт は3人称単数なので、быть の未来形は бу́дет。' },
+          ],
+          completedSentence: 'Вчера́ студе́нт чита́л кни́гу. За́втра студе́нт бу́дет чита́ть кни́гу.',
+          translation: '昨日学生は本を読みました。明日学生は本を読むでしょう。',
+          speechText: 'Вчера́ студе́нт чита́л кни́гу. За́втра студе́нт бу́дет чита́ть кни́гу.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s8-03',
+          prompt: 'идти́（歩いて行く）\\n［過去］Вчера́ Ива́н ___ в шко́лу.\\n［未来］За́втра Ива́н ___ в шко́лу.',
+          fields: [
+            { id: 'past', label: '過去形', answer: 'шёл', explanation: 'идти́ の過去形は不規則。Ива́н は男性単数なので шёл。' },
+            { id: 'future', label: '未来形', answer: 'бу́дет идти́', explanation: 'идти́ の不完了体未来は бу́дет идти́。' },
+          ],
+          completedSentence: 'Вчера́ Ива́н шёл в шко́лу. За́втра Ива́н бу́дет идти́ в шко́лу.',
+          translation: '昨日イワンは学校へ歩いて行きました。明日イワンは学校へ歩いて行くでしょう。',
+          speechText: 'Вчера́ Ива́н шёл в шко́лу. За́втра Ива́н бу́дет идти́ в шко́лу.',
+        },
+        {
+          kind: 'input',
+          id: 'mock-1-s8-04',
+          prompt: 'учи́ться（学ぶ）\\n［過去］Вчера́ де́вочка ___ в университе́те.\\n［未来］За́втра де́вочка ___ в университе́те.',
+          fields: [
+            { id: 'past', label: '過去形', answer: 'учи́лась', explanation: 'де́вочка は女性単数で、-ся 動詞の過去形は учи́лась。' },
+            { id: 'future', label: '未来形', answer: 'бу́дет учи́ться', explanation: '不完了体の未来は бу́дет + 不定形 учи́ться。' },
+          ],
+          completedSentence: 'Вчера́ де́вочка учи́лась в университе́те. За́втра де́вочка бу́дет учи́ться в университе́те.',
+          translation: '昨日女の子は大学で学びました。明日女の子は大学で学ぶでしょう。',
+          speechText: 'Вчера́ де́вочка учи́лась в университе́те. За́втра де́вочка бу́дет учи́ться в университе́те.',
+        },
+      ],
+    },
+  ] as MockSection[],
+} satisfies {
+  id: string
+  title: string
+  durationMinutes: number
+  totalQuestionCards: number
+  totalAnswerFields: number
+  sections: MockSection[]
+}
