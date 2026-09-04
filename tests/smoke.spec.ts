@@ -141,5 +141,8 @@ test('mock present tense answers accept plain spelling with separate stress posi
 
   await status.locator('nav button').nth(7).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
+  await expect(page.locator('body')).toContainText('бу́дем чита́ть')
+  await expect(page.locator('body')).toContainText('бу́дете идти́')
+  await expect(page.locator('body')).toContainText('бу́дут учи́ться')
   await expect(page.getByText('4 / 82', { exact: true })).toBeVisible()
 })
