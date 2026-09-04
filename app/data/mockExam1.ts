@@ -44,7 +44,7 @@ export const mockExam1 = {
   title: '模擬試験 第1回',
   durationMinutes: 45,
   totalQuestionCards: 54,
-  totalAnswerFields: 82,
+  totalAnswerFields: 87,
   sections: [
     {
       id: 'mock-1-section-1',
@@ -288,14 +288,15 @@ export const mockExam1 = {
       id: 'mock-1-section-4',
       roman: 'IV',
       title: '名詞の複数形',
-      instruction: '名詞を主格複数形に直し、アクセント記号も付けなさい。',
+      instruction: '名詞を主格複数形に直し、アクセント位置も答えなさい。',
       questions: [
         {
           kind: 'input',
           id: 'mock-1-s4-01',
           prompt: 'город（町） →',
           fields: [
-            { id: 'answer', label: '複数形', answer: 'города́', explanation: 'город → города́。複数形でアクセントが語末へ移る。' },
+            { id: 'spelling', label: '複数形の綴り', answer: 'города', displayAnswer: 'города́', explanation: 'город → города́。複数形でアクセントが語末へ移る。' },
+            { id: 'stress', label: 'アクセント位置', answer: '3', inputMode: 'number', explanation: 'アクセントは第3音節。' },
           ],
         },
         {
@@ -303,7 +304,8 @@ export const mockExam1 = {
           id: 'mock-1-s4-02',
           prompt: 'друг（友人） →',
           fields: [
-            { id: 'answer', label: '複数形', answer: 'друзья́', explanation: 'друг → друзья́ は語幹も変化する不規則な複数形。' },
+            { id: 'spelling', label: '複数形の綴り', answer: 'друзья', displayAnswer: 'друзья́', explanation: 'друг → друзья́ は語幹も変化する不規則な複数形。' },
+            { id: 'stress', label: 'アクセント位置', answer: '2', inputMode: 'number', explanation: 'アクセントは第2音節。' },
           ],
         },
         {
@@ -311,7 +313,8 @@ export const mockExam1 = {
           id: 'mock-1-s4-03',
           prompt: 'книга（本） →',
           fields: [
-            { id: 'answer', label: '複数形', answer: 'кни́ги', explanation: 'книга は複数形 кни́ги。к / г / х の後では ы ではなく и を使う。' },
+            { id: 'spelling', label: '複数形の綴り', answer: 'книги', displayAnswer: 'кни́ги', explanation: 'книга は複数形 кни́ги。к / г / х の後では ы ではなく и を使う。' },
+            { id: 'stress', label: 'アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
         },
         {
@@ -319,7 +322,8 @@ export const mockExam1 = {
           id: 'mock-1-s4-04',
           prompt: 'окно（窓） →',
           fields: [
-            { id: 'answer', label: '複数形', answer: 'о́кна', explanation: 'окно́ → о́кна。中性名詞の -о が -а になる代表的な形。' },
+            { id: 'spelling', label: '複数形の綴り', answer: 'окна', displayAnswer: 'о́кна', explanation: 'окно́ → о́кна。中性名詞の -о が -а になる代表的な形。' },
+            { id: 'stress', label: 'アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
         },
         {
@@ -327,7 +331,8 @@ export const mockExam1 = {
           id: 'mock-1-s4-05',
           prompt: 'человек（人） →',
           fields: [
-            { id: 'answer', label: '複数形', answer: 'лю́ди', explanation: 'челове́к の複数形は лю́ди という不規則形。' },
+            { id: 'spelling', label: '複数形の綴り', answer: 'люди', displayAnswer: 'лю́ди', explanation: 'челове́к の複数形は лю́ди という不規則形。' },
+            { id: 'stress', label: 'アクセント位置', answer: '1', inputMode: 'number', explanation: 'アクセントは第1音節。' },
           ],
         },
       ],

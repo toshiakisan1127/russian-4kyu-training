@@ -138,7 +138,21 @@ test('mock section II question 3 has a distinct stress position answer', async (
 
   await status.locator('nav button').nth(7).click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
-  await expect(page.getByText('1 / 82', { exact: true })).toBeVisible()
+  await expect(page.getByText('1 / 87', { exact: true })).toBeVisible()
+})
+
+test('mock section IV provides spelling and stress-position inputs', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(3).click()
+  const inputs = page.locator('article').first().locator('input')
+  await expect(inputs).toHaveCount(2)
+  await expect(inputs.nth(0)).toHaveAttribute('type', 'text')
+  await expect(inputs.nth(1)).toHaveAttribute('type', 'number')
 })
 
 test('mock present tense answers accept plain spelling with separate stress positions', async ({ page }) => {
@@ -163,5 +177,5 @@ test('mock present tense answers accept plain spelling with separate stress posi
   await expect(page.locator('body')).toContainText('бу́дем чита́ть')
   await expect(page.locator('body')).toContainText('бу́дете идти́')
   await expect(page.locator('body')).toContainText('бу́дут учи́ться')
-  await expect(page.getByText('4 / 82', { exact: true })).toBeVisible()
+  await expect(page.getByText('4 / 87', { exact: true })).toBeVisible()
 })
