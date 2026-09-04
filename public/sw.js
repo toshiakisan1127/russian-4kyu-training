@@ -1,4 +1,4 @@
-const CACHE_NAME = 'russian-4kyu-training-v1'
+const CACHE_NAME = 'russian-4kyu-training'
 const BASE_PATH = '/russian-4kyu-training/'
 const APP_SHELL = [
   BASE_PATH,
@@ -32,15 +32,18 @@ self.addEventListener('fetch', (event) => {
   const requestURL = new URL(event.request.url)
   if (requestURL.origin !== self.location.origin || !requestURL.pathname.startsWith(BASE_PATH)) return
 
+  const isDocument = event.request.destination === 'document'
+  const networkResponse = fetch(event.request).then((response) => {
+    if (response.ok && !isDocument) {
+      const responseClone = response.clone()
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
+    }
+    return response
+  })
+
   event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => cachedResponse || fetch(event.request).then((response) => {
-        if (response.ok) {
-          const responseClone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
-        }
-        return response
-      }))
-      .catch(() => caches.match(BASE_PATH)),
+    isDocument
+      ? networkResponse.catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse || caches.match(BASE_PATH)))
+      : caches.match(event.request).then((cachedResponse) => cachedResponse || networkResponse)
   )
 })

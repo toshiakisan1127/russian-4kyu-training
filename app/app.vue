@@ -42,6 +42,7 @@ onMounted(() => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/russian-4kyu-training/sw.js', {
       scope: '/russian-4kyu-training/',
+      updateViaCache: 'none',
     }).catch(() => {
       // PWA登録に失敗してもアプリ本体は通常どおり利用できる。
     })
