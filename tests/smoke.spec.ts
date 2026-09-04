@@ -156,7 +156,7 @@ test('mock section IV matches the stress-tap input UI', async ({ page }) => {
   await input.fill('города')
   await expect(question).toContainText('Stress')
   await question.getByRole('button', { name: 'а', exact: true }).click()
-  await expect(question).toContainText('Ответ: города́')
+  await expect(question).toContainText('回答: города́')
 })
 
 test('mock present tense answers accept plain spelling with separate stress positions', async ({ page }) => {
