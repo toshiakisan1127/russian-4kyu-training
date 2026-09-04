@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { mockExam1, type MockInputField, type MockQuestion, type MockSection } from '~/data/mockExam1'
+import { type MockInputField, type MockQuestion, type MockSection } from '~/data/activeExam.value'
+import { mockExams } from '~/data/mockExams'
 import { stripStress } from '~/utils/russianStress'
 
 type Phase = 'intro' | 'exam' | 'result'
@@ -19,24 +20,26 @@ type SavedExamProgress = {
   timeLeft: number
 }
 
-const progressStorageKey = `russian-mock-exam-progress-v1:${mockExam1.id}`
+const selectedExamIndex = ref(0)
+const activeExam = computed(() => mockExams[selectedExamIndex.value] ?? mockExams[0]!)
+const progressStorageKey = computed(() => `russian-mock-exam-progress-v1:${activeExam.value.id}`)
 
 const phase = ref<Phase>('intro')
 const currentSectionIndex = ref(0)
 const answers = ref<Record<string, string | number>>({})
 const selfGrades = ref<Record<string, boolean>>({})
-const timeLeft = ref(mockExam1.durationMinutes * 60)
+const timeLeft = ref(activeExam.value.durationMinutes * 60)
 const hasSavedProgress = ref(false)
 const speechSupported = ref(false)
 let timer: ReturnType<typeof setInterval> | undefined
 
-const currentSection = computed(() => mockExam1.sections[currentSectionIndex.value]!)
+const currentSection = computed(() => activeExam.value.sections[currentSectionIndex.value]!)
 const currentSectionQuestions = computed(() => currentSection.value.questions)
 
 const answerKey = (question: MockQuestion, fieldId = 'choice') => question.id + ':' + fieldId
 
 const answerEntries = computed<AnswerEntry[]>(() =>
-  mockExam1.sections.flatMap((section) =>
+  activeExam.value.sections.flatMap((section) =>
     section.questions.flatMap((question) => {
       if (question.kind === 'choice') {
         return [{ key: answerKey(question), question }]
@@ -55,7 +58,7 @@ const isSelfGradeQuestion = (question: MockQuestion) =>
   question.kind === 'input' && question.selfGrade === true
 
 const selfGradeQuestions = computed(() =>
-  mockExam1.sections.flatMap((section) => section.questions).filter(isSelfGradeQuestion),
+  activeExam.value.sections.flatMap((section) => section.questions).filter(isSelfGradeQuestion),
 )
 const totalExamAnswerFields = computed(() => answerEntries.value.length)
 const scoredEntries = computed(() => answerEntries.value.filter((entry) => !isSelfGradeQuestion(entry.question)))
@@ -77,7 +80,7 @@ const totalCorrect = computed(() =>
 )
 
 const scorePercentage = computed(() =>
-  Math.round((totalCorrect.value / mockExam1.totalAnswerFields) * 100),
+  Math.round((totalCorrect.value / activeExam.value.totalAnswerFields) * 100),
 )
 
 const sectionAnsweredCount = (section: MockSection) =>
@@ -139,7 +142,7 @@ const formatTime = (seconds: number) => {
 
 const clearSavedProgress = () => {
   if (typeof window !== 'undefined') {
-    window.localStorage.removeItem(progressStorageKey)
+    window.localStorage.removeItem(progressStorageKey.value)
   }
   hasSavedProgress.value = false
 }
@@ -147,7 +150,7 @@ const clearSavedProgress = () => {
 const saveProgress = () => {
   if (phase.value !== 'exam' || typeof window === 'undefined') return
 
-  window.localStorage.setItem(progressStorageKey, JSON.stringify({
+  window.localStorage.setItem(progressStorageKey.value, JSON.stringify({
     version: 1,
     phase: 'exam',
     currentSectionIndex: currentSectionIndex.value,
@@ -174,7 +177,7 @@ const loadSavedProgress = () => {
       && parsed.phase === 'exam'
       && Number.isInteger(sectionIndex)
       && sectionIndex >= 0
-      && sectionIndex < mockExam1.sections.length
+      && sectionIndex < activeExam.value.sections.length
       && Number.isFinite(savedTimeLeft)
       && savedTimeLeft > 0
       && parsed.answers
@@ -187,7 +190,7 @@ const loadSavedProgress = () => {
 
     currentSectionIndex.value = sectionIndex
     answers.value = parsed.answers
-    timeLeft.value = Math.min(mockExam1.durationMinutes * 60, savedTimeLeft)
+    timeLeft.value = Math.min(activeExam.value.durationMinutes * 60, savedTimeLeft)
     hasSavedProgress.value = true
   } catch {
     clearSavedProgress()
@@ -214,13 +217,22 @@ const startTimer = () => {
   }, 1000)
 }
 
+const selectExam = () => {
+  if (phase.value !== 'intro') return
+  answers.value = {}
+  selfGrades.value = {}
+  currentSectionIndex.value = 0
+  timeLeft.value = activeExam.value.durationMinutes * 60
+  loadSavedProgress()
+}
+
 const startExam = () => {
   clearSavedProgress()
   phase.value = 'exam'
   currentSectionIndex.value = 0
   answers.value = {}
   selfGrades.value = {}
-  timeLeft.value = mockExam1.durationMinutes * 60
+  timeLeft.value = activeExam.value.durationMinutes * 60
   saveProgress()
   startTimer()
 }
@@ -250,7 +262,7 @@ const restart = () => {
   phase.value = 'intro'
   currentSectionIndex.value = 0
   answers.value = {}
-  timeLeft.value = mockExam1.durationMinutes * 60
+  timeLeft.value = activeExam.value.durationMinutes * 60
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -341,7 +353,7 @@ const goToSection = (index: number) => {
 }
 
 const goNext = () => {
-  if (currentSectionIndex.value < mockExam1.sections.length - 1) {
+  if (currentSectionIndex.value < activeExam.value.sections.length - 1) {
     goToSection(currentSectionIndex.value + 1)
   } else {
     submitExam()
@@ -379,6 +391,18 @@ onBeforeUnmount(() => {
       <div v-if="phase === 'intro'" class="rounded-3xl border border-amber-200 bg-white p-5 shadow-xl shadow-amber-100/60 sm:p-8">
         <header class="mb-8">
           <p class="mb-1 text-xs font-black tracking-[0.14em] text-amber-700 uppercase">Mock Exam · Grammar</p>
+          <label class="mt-4 flex flex-col gap-2 text-sm font-black text-slate-700 sm:max-w-xs">
+            <span>模試を選択</span>
+            <select
+              v-model.number="selectedExamIndex"
+              class="min-h-11 rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold"
+              @change="selectExam"
+            >
+              <option v-for="(exam, index) in mockExams" :key="exam.id" :value="index">
+                {{ exam.title }}
+              </option>
+            </select>
+          </label>
           <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-4xl">模擬試験 第1回</h1>
           <p class="m-0 max-w-3xl leading-7 text-slate-600">
             実際の過去問の出題数と解答形式を参考にした、文法Ⅰ〜Ⅷのオリジナル模試です。
@@ -393,7 +417,7 @@ onBeforeUnmount(() => {
           </div>
           <div class="rounded-2xl bg-sky-50 p-4">
             <p class="mb-1 text-xs font-black text-sky-800">解答欄</p>
-            <p class="m-0 text-2xl font-black">{{ mockExam1.totalAnswerFields }}欄</p>
+            <p class="m-0 text-2xl font-black">{{ activeExam.totalAnswerFields }}欄</p>
           </div>
           <div class="rounded-2xl bg-emerald-50 p-4">
             <p class="mb-1 text-xs font-black text-emerald-800">目安時間</p>
@@ -405,7 +429,7 @@ onBeforeUnmount(() => {
           <h2 class="mb-4 text-lg font-black">出題構成</h2>
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div
-              v-for="section in mockExam1.sections"
+              v-for="section in activeExam.sections"
               :key="section.id"
               class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
             >
@@ -427,7 +451,7 @@ onBeforeUnmount(() => {
             <div>
               <p class="mb-1 text-sm font-black text-sky-900">途中データがあります</p>
               <p class="m-0 text-sm leading-6 text-sky-800">
-                第{{ mockExam1.sections[currentSectionIndex]?.roman ?? 'I' }}問から再開できます。残り時間 {{ formatTime(timeLeft) }}
+                第{{ activeExam.sections[currentSectionIndex]?.roman ?? 'I' }}問から再開できます。残り時間 {{ formatTime(timeLeft) }}
               </p>
             </div>
             <button
@@ -482,7 +506,7 @@ onBeforeUnmount(() => {
 
           <nav class="mt-5 grid grid-cols-4 gap-2 lg:grid-cols-8" aria-label="大問を選択">
             <button
-              v-for="(section, index) in mockExam1.sections"
+              v-for="(section, index) in activeExam.sections"
               :key="section.id"
               type="button"
               class="rounded-xl border px-2 py-2 text-left transition"
@@ -620,7 +644,7 @@ onBeforeUnmount(() => {
             </button>
 
             <button
-              v-if="currentSectionIndex < mockExam1.sections.length - 1"
+              v-if="currentSectionIndex < activeExam.sections.length - 1"
               type="button"
               class="min-h-12 rounded-xl bg-amber-700 px-6 py-3 font-black text-white transition hover:bg-amber-800"
               @click="goNext"
@@ -643,7 +667,7 @@ onBeforeUnmount(() => {
         <section class="rounded-3xl border border-emerald-200 bg-white p-5 text-center shadow-xl shadow-emerald-100/60 sm:p-8">
           <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Result · Mock Exam 1</p>
           <h1 class="mb-3 text-2xl font-black sm:text-3xl">採点結果</h1>
-          <p class="m-0 text-5xl font-black text-emerald-700">{{ totalCorrect }} / {{ mockExam1.totalAnswerFields }}</p>
+          <p class="m-0 text-5xl font-black text-emerald-700">{{ totalCorrect }} / {{ activeExam.totalAnswerFields }}</p>
           <p class="mt-3 mb-0 text-lg font-black text-sky-700">翻訳・自己採点 {{ selfGradedCorrectCount }} / {{ selfGradeQuestions.length }}</p>
           <p class="mt-3 mb-0 font-bold text-slate-600">解答欄ベースの正答率 {{ scorePercentage }}%</p>
           <p class="mt-3 mb-0 text-sm leading-6 text-slate-500">
@@ -655,7 +679,7 @@ onBeforeUnmount(() => {
           <h2 class="mb-4 text-xl font-black">大問別結果</h2>
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div
-              v-for="section in mockExam1.sections"
+              v-for="section in activeExam.sections"
               :key="section.id"
               class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
             >
@@ -669,7 +693,7 @@ onBeforeUnmount(() => {
         </section>
 
         <section
-          v-for="section in mockExam1.sections"
+          v-for="section in activeExam.sections"
           :key="section.id + '-review'"
           class="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/50 sm:p-8"
         >
