@@ -96,6 +96,7 @@ test('mock exam progress resumes and resets after submission', async ({ page }) 
 
   await status.locator('summary').click()
   await status.locator('nav button').nth(7).click()
+  await expect(page.locator('article').first()).not.toContainText('\\n')
   await page.getByRole('button', { name: '提出して採点する' }).click()
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
 
