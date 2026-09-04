@@ -145,10 +145,10 @@ export const mockExam1 = {
           kind: 'choice',
           id: 'mock-1-s2-03',
           prompt: 'アクセントの位置が異なる単語はどれか。',
-          choices: ['улица', 'комната', 'город'],
+          choices: ['улица', 'письмо', 'город'],
           answer: 1,
-          answerText: 'комната',
-          explanation: 'улица と город は第1音節、комната は第2音節にアクセントがある。',
+          answerText: 'письмо',
+          explanation: 'улица と город は第1音節、письмо は第2音節にアクセントがある。',
         },
         {
           kind: 'choice',
