@@ -83,6 +83,15 @@ test('reference page shows irregular noun plurals', async ({ page }) => {
 })
 
 
+test('about page shows the build timestamp', async ({ page }) => {
+  await page.goto(`${appBasePath}/about`, { waitUntil: 'networkidle' })
+
+  const lastUpdated = page.getByTestId('last-updated')
+  await expect(lastUpdated).toBeVisible()
+  await expect(lastUpdated).toHaveAttribute('datetime', /^\d{4}-\d{2}-\d{2}T/)
+  await expect(lastUpdated).toContainText(/\d{4}年\d{1,2}月\d{1,2}日/)
+})
+
 test('mock status card scrolls away and avoids fixed utility controls', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: '模試を開始する' }).click()

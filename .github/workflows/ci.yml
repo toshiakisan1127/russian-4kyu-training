@@ -31,7 +31,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Generate static site
-        run: pnpm generate
+        run: NUXT_PUBLIC_LAST_UPDATED_AT="$(git log -1 --format=%cI)" pnpm generate
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
