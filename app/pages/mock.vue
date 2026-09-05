@@ -155,6 +155,7 @@ const formatTime = (seconds: number) => {
 }
 
 const selfGradeStorageKey = computed(() => `russian-mock-exam-self-grades-v1:${activeExam.value.id}`)
+const resultStorageKey = computed(() => `russian-mock-exam-result-v1:${activeExam.value.id}`)
 
 const clearSavedSelfGrades = () => {
   if (typeof window !== 'undefined') {
@@ -163,6 +164,54 @@ const clearSavedSelfGrades = () => {
   selfGrades.value = {}
   selfGradeInputs.value = {}
   selfGradeErrors.value = {}
+}
+
+const clearSavedResult = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(resultStorageKey.value)
+  }
+}
+
+const saveResult = () => {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(resultStorageKey.value, JSON.stringify({
+    version: 1,
+    answers: answers.value,
+    selfGrades: selfGrades.value,
+  }))
+}
+
+const loadSavedResult = () => {
+  if (typeof window === 'undefined') return false
+
+  const raw = window.localStorage.getItem(resultStorageKey.value)
+  if (!raw) return false
+
+  try {
+    const parsed = JSON.parse(raw) as {
+      version?: number
+      answers?: Record<string, string | number>
+      selfGrades?: Record<string, unknown>
+    }
+    if (parsed.version !== 1 || !parsed.answers || typeof parsed.answers !== 'object') return false
+
+    const validValues = Object.fromEntries(
+      Object.entries(parsed.selfGrades ?? {}).filter(([, value]) =>
+        typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 100,
+      ),
+    ) as SelfGradeValues
+    answers.value = parsed.answers
+    selfGrades.value = validValues
+    selfGradeInputs.value = Object.fromEntries(
+      Object.entries(validValues).map(([questionId, value]) => [questionId, String(value)]),
+    )
+    selfGradeErrors.value = {}
+    phase.value = 'result'
+    return true
+  } catch {
+    clearSavedResult()
+    return false
+  }
 }
 
 const saveSelfGrades = () => {
@@ -296,6 +345,7 @@ const selectExam = () => {
   if (phase.value !== 'intro') return
   answers.value = {}
   clearSavedSelfGrades()
+  clearSavedResult()
   currentSectionIndex.value = 0
   timeLeft.value = activeExam.value.durationMinutes * 60
   loadSavedProgress()
@@ -307,6 +357,7 @@ const startExam = () => {
   currentSectionIndex.value = 0
   answers.value = {}
   clearSavedSelfGrades()
+  clearSavedResult()
   timeLeft.value = activeExam.value.durationMinutes * 60
   saveProgress()
   startTimer()
@@ -328,6 +379,7 @@ const submitExam = () => {
   stopTimer()
   clearSavedProgress()
   phase.value = 'result'
+  saveResult()
   window.scrollTo({ top: 0, behavior: 'auto' })
 }
 
@@ -338,6 +390,7 @@ const restart = () => {
   currentSectionIndex.value = 0
   answers.value = {}
   clearSavedSelfGrades()
+  clearSavedResult()
   timeLeft.value = activeExam.value.durationMinutes * 60
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -406,6 +459,7 @@ const setSelfGradePercentage = (question: MockQuestion, event: Event) => {
   selfGrades.value[question.id] = Number(rawValue)
   delete selfGradeErrors.value[question.id]
   saveSelfGrades()
+  if (phase.value === 'result') saveResult()
 }
 
 const selectedChoiceText = (question: MockQuestion) => {
@@ -464,6 +518,7 @@ onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
   loadSavedProgress()
   loadSelfGrades()
+  if (!hasSavedProgress.value) loadSavedResult()
 })
 
 onBeforeUnmount(() => {
