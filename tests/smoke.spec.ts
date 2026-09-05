@@ -70,6 +70,21 @@ test('home does not show breadcrumbs', async ({ page }) => {
 })
 
 
+test('about page keeps breadcrumbs after reloading a trailing-slash URL', async ({ page }) => {
+  await page.goto(`${appBasePath}/about/`, { waitUntil: 'networkidle' })
+
+  const nav = page.getByRole('navigation', { name: 'パンくずリスト' })
+  await expect(page).toHaveURL(/\/about\/?$/)
+  await expect(nav).toBeVisible()
+  await expect(nav.locator('[aria-current="page"]')).toHaveText('このサイトについて')
+
+  await page.getByRole('button', { name: 'ページを再読み込み' }).click()
+  await page.waitForLoadState('networkidle')
+  await expect(nav).toBeVisible()
+  await expect(nav.locator('[aria-current="page"]')).toHaveText('このサイトについて')
+})
+
+
 test('reference page shows irregular noun plurals', async ({ page }) => {
   await page.goto(`${appBasePath}/reference`, { waitUntil: 'networkidle' })
 

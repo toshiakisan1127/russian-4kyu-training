@@ -7,6 +7,24 @@ type BreadcrumbItem = {
 }
 
 const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
+
+const normalizeRoutePath = (path: string) => {
+  const basePath = runtimeConfig.app.baseURL.replace(/\/$/, '')
+  let normalizedPath = path || '/'
+
+  if (basePath && basePath !== '/') {
+    if (normalizedPath === basePath) {
+      normalizedPath = '/'
+    } else if (normalizedPath.startsWith(`${basePath}/`)) {
+      normalizedPath = normalizedPath.slice(basePath.length) || '/'
+    }
+  }
+
+  return normalizedPath.length > 1
+    ? normalizedPath.replace(/\/+$/, '')
+    : normalizedPath
+}
 
 const sectionLabels: Record<string, string> = {
   '1': '第I問・発音',
@@ -20,35 +38,36 @@ const sectionLabels: Record<string, string> = {
 }
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => {
+  const path = normalizeRoutePath(route.path)
   const home: BreadcrumbItem = { label: 'ホーム', to: '/' }
 
-  if (route.path === '/') return []
+  if (path === '/') return []
 
-  if (route.path === '/about') {
+  if (path === '/about') {
     return [home, { label: 'このサイトについて' }]
   }
 
-  if (route.path === '/reference') {
+  if (path === '/reference') {
     return [home, { label: '4級重要表現まとめ' }]
   }
 
-  if (route.path === '/reading') {
+  if (path === '/reading') {
     return [home, { label: '朗読対策' }]
   }
 
-  if (route.path === '/mock') {
+  if (path === '/mock') {
     return [home, { label: '模擬試験' }]
   }
 
-  if (route.path === '/prepositions') {
+  if (path === '/prepositions') {
     return [home, { label: '分野別トレーニング', to: '/' }, { label: '前置詞トレーニング' }]
   }
 
-  if (route.path === '/cases') {
+  if (path === '/cases') {
     return [home, { label: '分野別トレーニング', to: '/' }, { label: '格変化トレーニング' }]
   }
 
-  if (route.path === '/verbs') {
+  if (path === '/verbs') {
     const isMotion = route.query.filter === 'motion'
     const items: BreadcrumbItem[] = [
       home,
@@ -61,24 +80,24 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
       : items
   }
 
-  if (route.path === '/vocabulary') {
+  if (path === '/vocabulary') {
     return [home, { label: '分野別トレーニング', to: '/' }, { label: '語彙トレーニング' }]
   }
 
-  if (route.path === '/mixed') {
+  if (path === '/mixed') {
     return [home, { label: '分野別トレーニング', to: '/' }, { label: '総合トレーニング' }]
   }
 
-  if (route.path === '/translations/ru-ja') {
+  if (path === '/translations/ru-ja') {
     return [home, { label: '翻訳トレーニング', to: '/' }, { label: '露文和訳' }]
   }
 
-  if (route.path === '/translations/ja-ru') {
+  if (path === '/translations/ja-ru') {
     return [home, { label: '翻訳トレーニング', to: '/' }, { label: '和文露訳' }]
   }
 
-  if (route.path.startsWith('/sections/')) {
-    const sectionNumber = route.path.split('/').pop() ?? ''
+  if (path.startsWith('/sections/')) {
+    const sectionNumber = path.split('/').pop() ?? ''
     const sectionLabel = sectionLabels[sectionNumber]
     if (!sectionLabel) return []
 
