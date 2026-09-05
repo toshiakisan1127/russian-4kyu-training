@@ -236,6 +236,7 @@ const irregularPluralNouns = [
   { singular: 'оте́ц', plural: 'отцы́', meaning: '父', note: '語幹のつづりが変わり、アクセントも移る。' },
   { singular: 'жена́', plural: 'жёны', meaning: '妻', note: '語幹の母音が変わる。' },
   { singular: 'сестра́', plural: 'сёстры', meaning: '姉妹・姉・妹', note: '語幹の母音が変わる。' },
+  { singular: 'го́род', plural: 'города́', meaning: '町・都市', note: '男性名詞だが、複数形が -а になり、アクセントも移る。' },
 ] as const
 
 </script>
