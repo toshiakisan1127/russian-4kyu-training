@@ -40,7 +40,7 @@ https://toshiakisan1127.github.io/russian-4kyu-training/
 - /prepositions：前置詞
 - /cases：格変化
 - /verbs：動詞
-- /vocabulary：語彙550語
+- /vocabulary：語彙579語
 - /mixed：総合
 - /reading：朗読対策
 - /sections/1〜/sections/8：大問別問題集
@@ -61,14 +61,14 @@ https://toshiakisan1127.github.io/russian-4kyu-training/
 - section1.ts〜section8.ts：大問別問題
 - readingPassages.ts：朗読テキスト
 - vocabulary.ts：語彙データの入口
-- vocabularyBulk.ts：語彙550語の本体
+- vocabularyBulk.ts：語彙574語の一括データ（コア語彙5語を除く）
 - vocabularyExamples*.ts：語彙例文
 
 ## 語彙データ
 
 語彙は、単語、アクセント付き表記、日本語訳、IPA、品詞、名詞の性・単複・格変化、形容詞の活用、動詞の体・現在形活用、例文と日本語訳などを持ちます。
 
-vocabulary.tsでコア語彙と550語の一括データを結合し、例文を割り当てます。起動時に語彙数、例文数、重複例文、アクセントメタデータを検証します。
+vocabulary.tsでコア語彙5語と一括データ574語を結合し、合計579語に例文を割り当てます。起動時に語彙数、例文数、重複例文、アクセントメタデータを検証します。
 
 ## 大問別データ
 
