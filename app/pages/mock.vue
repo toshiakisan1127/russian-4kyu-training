@@ -277,9 +277,13 @@ const selfGradeSectionAverage = (section: MockSection) => {
 const selfGradeSectionLabel = (section: MockSection) => {
   const questions = section.questions.filter(isSelfGradeQuestion)
   const average = selfGradeSectionAverage(section)
-  if (average === null) return `未入力（0/${questions.length}問）`
   const gradedCount = questions.filter((question) => typeof selfGrades.value[question.id] === 'number').length
+  if (average === null) return `未入力（0/${questions.length}問）`
   return `${average}%（${gradedCount}/${questions.length}問）`
+}
+const selfGradeSectionComplete = (section: MockSection) => {
+  const questions = section.questions.filter(isSelfGradeQuestion)
+  return questions.length > 0 && questions.every((question) => typeof selfGrades.value[question.id] === 'number')
 }
 
 const grammarSections = computed(() =>
@@ -296,30 +300,38 @@ const grammarCorrectCount = computed(() =>
 const grammarPercentage = computed(() =>
   grammarEntries.value.length === 0 ? null : Math.round((grammarCorrectCount.value / grammarEntries.value.length) * 100),
 )
-const resultStatus = (percentage: number | null) => {
-  if (percentage === null) return '未入力'
+const resultStatus = (percentage: number | null, complete = true) => {
+  if (percentage === null || !complete) return '未入力'
   return percentage >= 60 ? '合格' : '未達'
 }
-const categoryResults = computed(() => [
-  {
-    id: 'grammar',
-    label: '文法',
-    percentage: grammarPercentage.value,
-    detail: `${grammarCorrectCount.value} / ${grammarEntries.value.length}問`,
-  },
-  {
-    id: 'russian-to-japanese',
-    label: '露文和訳',
-    percentage: selfGradeSectionAverage(activeExam.value.sections.find((section) => section.roman === 'IX')!),
-    detail: '自己採点',
-  },
-  {
-    id: 'japanese-to-russian',
-    label: '和文露訳',
-    percentage: selfGradeSectionAverage(activeExam.value.sections.find((section) => section.roman === 'X')!),
-    detail: '自己採点',
-  },
-])
+const categoryResults = computed(() => {
+  const russianToJapaneseSection = activeExam.value.sections.find((section) => section.roman === 'IX')!
+  const japaneseToRussianSection = activeExam.value.sections.find((section) => section.roman === 'X')!
+
+  return [
+    {
+      id: 'grammar',
+      label: '文法',
+      percentage: grammarPercentage.value,
+      complete: true,
+      detail: `${grammarCorrectCount.value} / ${grammarEntries.value.length}問`,
+    },
+    {
+      id: 'russian-to-japanese',
+      label: '露文和訳',
+      percentage: selfGradeSectionAverage(russianToJapaneseSection),
+      complete: selfGradeSectionComplete(russianToJapaneseSection),
+      detail: selfGradeSectionLabel(russianToJapaneseSection),
+    },
+    {
+      id: 'japanese-to-russian',
+      label: '和文露訳',
+      percentage: selfGradeSectionAverage(japaneseToRussianSection),
+      complete: selfGradeSectionComplete(japaneseToRussianSection),
+      detail: selfGradeSectionLabel(japaneseToRussianSection),
+    },
+  ]
+})
 
 const reviewTargets = computed<ReviewTarget[]>(() =>
   activeExam.value.sections.flatMap((section) => {
@@ -965,17 +977,17 @@ onBeforeUnmount(() => {
                 <h3 class="m-0 font-black">{{ category.label }}</h3>
                 <span
                   class="rounded-full px-2 py-1 text-xs font-black"
-                  :class="resultStatus(category.percentage) === '合格'
+                  :class="resultStatus(category.percentage, category.complete) === '合格'
                     ? 'bg-emerald-100 text-emerald-800'
-                    : resultStatus(category.percentage) === '未達'
+                    : resultStatus(category.percentage, category.complete) === '未達'
                       ? 'bg-rose-100 text-rose-800'
                       : 'bg-slate-200 text-slate-700'"
                 >
-                  {{ resultStatus(category.percentage) === '合格' ? '✓ 合格' : resultStatus(category.percentage) }}
+                  {{ resultStatus(category.percentage, category.complete) === '合格' ? '✓ 合格' : resultStatus(category.percentage, category.complete) }}
                 </span>
               </div>
               <p class="mt-3 mb-1 text-3xl font-black text-slate-900">
-                {{ category.percentage === null ? '未入力' : category.percentage + '%' }}
+                {{ category.percentage === null || !category.complete ? '未入力' : category.percentage + '%' }}
               </p>
               <p class="m-0 text-sm font-bold text-slate-500">{{ category.detail }}</p>
             </article>
