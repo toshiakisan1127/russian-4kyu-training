@@ -311,6 +311,7 @@ test('mock translation questions are self-graded after submission', async ({ pag
   await selfGradeInput.fill('80')
   await expect(review).toContainText('自己採点：80%')
   await expect(page.getByText('翻訳・自己採点 80%（1/6問）', { exact: true })).toBeVisible()
+  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '露文和訳' })).toContainText('合格')
 
   await page.reload({ waitUntil: 'networkidle' })
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
@@ -345,6 +346,7 @@ test('mock section X includes Japanese-to-Russian self-graded questions', async 
   await review.getByRole('spinbutton', { name: '自己採点率' }).fill('60')
   await expect(review).toContainText('自己採点：60%')
   await expect(page.getByText('翻訳・自己採点 60%（1/6問）', { exact: true })).toBeVisible()
+  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })).toContainText('合格')
 })
 
 test('mock written answers accept accentless spelling', async ({ page }) => {
