@@ -407,7 +407,7 @@ onBeforeUnmount(() => {
         <div class="mb-8 grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl bg-amber-50 p-4">
             <p class="mb-1 text-xs font-black text-amber-800">問題カード</p>
-            <p class="m-0 text-2xl font-black">60問</p>
+            <p class="m-0 text-2xl font-black">{{ activeExam.totalQuestionCards }}問</p>
           </div>
           <div class="rounded-2xl bg-sky-50 p-4">
             <p class="mb-1 text-xs font-black text-sky-800">解答欄</p>
