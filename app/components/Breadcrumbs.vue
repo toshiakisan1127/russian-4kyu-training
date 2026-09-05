@@ -59,6 +59,10 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
     return [home, { label: '模擬試験' }]
   }
 
+  if (path === '/dashboard') {
+    return [home, { label: '学習ダッシュボード' }]
+  }
+
   if (path === '/prepositions') {
     return [home, { label: '分野別トレーニング', to: '/' }, { label: '前置詞トレーニング' }]
   }

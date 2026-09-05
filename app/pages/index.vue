@@ -294,6 +294,14 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
 
       <div class="mb-8 flex flex-wrap gap-3">
         <NuxtLink
+          to="/dashboard"
+          class="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-600 px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-md"
+        >
+          <span aria-hidden="true">◒</span>
+          <span>学習ダッシュボード</span>
+          <span aria-hidden="true">→</span>
+        </NuxtLink>
+        <NuxtLink
           to="/about"
           class="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-2.5 text-sm font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md"
         >
