@@ -37,6 +37,7 @@ const activeExam = computed(() => mockExams[selectedExamIndex.value] ?? mockExam
 const progressStorageKey = computed(() => `russian-mock-exam-progress-v1:${activeExam.value.id}`)
 
 const phase = ref<Phase>('intro')
+const showRestartConfirm = ref(false)
 const reviewFilter = ref<ReviewFilter>('all')
 const reviewFilters = [
   { id: 'all', label: 'すべて' },
@@ -396,6 +397,13 @@ const returnToResult = () => {
   window.scrollTo({ top: 0, behavior: 'auto' })
 }
 
+const returnToIntro = () => {
+  stopTimer()
+  phase.value = 'intro'
+  currentSectionIndex.value = 0
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 const clearSavedProgress = () => {
   if (typeof window !== 'undefined') {
     window.localStorage.removeItem(progressStorageKey.value)
@@ -481,6 +489,20 @@ const selectExam = () => {
   currentSectionIndex.value = 0
   timeLeft.value = activeExam.value.durationMinutes * 60
   loadSavedProgress()
+}
+
+const requestStartExam = () => {
+  if (typeof window !== 'undefined' && window.localStorage.getItem(resultStorageKey.value)) {
+    showRestartConfirm.value = true
+    return
+  }
+
+  startExam()
+}
+
+const confirmStartExam = () => {
+  showRestartConfirm.value = false
+  startExam()
 }
 
 const startExam = () => {
@@ -743,7 +765,7 @@ onBeforeUnmount(() => {
         <button
           type="button"
           class="min-h-14 w-full rounded-2xl bg-amber-700 px-5 py-3 text-base font-black text-white transition hover:-translate-y-0.5 hover:bg-amber-800"
-          @click="startExam"
+          @click="requestStartExam"
         >
           {{ hasSavedProgress ? '最初から模試を始める' : '模試を開始する' }}
         </button>
@@ -987,7 +1009,7 @@ onBeforeUnmount(() => {
                 </span>
               </div>
               <p class="mt-3 mb-1 text-3xl font-black text-slate-900">
-                {{ category.percentage === null || !category.complete ? '未入力' : category.percentage + '%' }}
+                {{ category.percentage === null ? '未入力' : category.percentage + '%' }}
               </p>
               <p class="m-0 text-sm font-bold text-slate-500">{{ category.detail }}</p>
             </article>
@@ -1182,9 +1204,9 @@ onBeforeUnmount(() => {
         <button
           type="button"
           class="min-h-13 w-full rounded-2xl bg-amber-700 px-5 py-3 font-black text-white transition hover:bg-amber-800"
-          @click="restart"
+          @click="returnToIntro"
         >
-          もう一度、第1回を解く
+          トップに戻る
         </button>
       </div>
       <div v-else class="space-y-5">
@@ -1326,6 +1348,41 @@ onBeforeUnmount(() => {
         <section v-else class="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-center">
           <h2 class="mb-2 text-xl font-black text-emerald-900">復習対象はありません</h2>
           <p class="m-0 font-bold text-emerald-800">この分野には要復習問題がありません。</p>
+        </section>
+      </div>
+
+      <div
+        v-if="showRestartConfirm"
+        class="fixed inset-0 z-50 grid place-items-center bg-slate-950/50 px-4 py-8"
+        role="presentation"
+      >
+        <section
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="restart-confirm-title"
+          aria-describedby="restart-confirm-description"
+          class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl sm:p-8"
+        >
+          <h2 id="restart-confirm-title" class="m-0 text-xl font-black">再受験の確認</h2>
+          <p id="restart-confirm-description" class="mt-4 mb-0 leading-7 text-slate-700">
+            保存されている結果・自己採点・復習リストが消去されます。結果を消去して、もう一度模試を始めますか？
+          </p>
+          <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              class="min-h-12 rounded-xl border border-slate-300 bg-white px-5 py-3 font-black text-slate-700 transition hover:bg-slate-50"
+              @click="showRestartConfirm = false"
+            >
+              キャンセル
+            </button>
+            <button
+              type="button"
+              class="min-h-12 rounded-xl bg-rose-700 px-5 py-3 font-black text-white transition hover:bg-rose-800"
+              @click="confirmStartExam"
+            >
+              結果を消去して開始
+            </button>
+          </div>
         </section>
       </div>
 
