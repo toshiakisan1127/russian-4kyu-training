@@ -24,7 +24,7 @@ import {
   type QuestionStatus,
 } from '~/utils/questionProgress'
 
-type TrainingProgressKey = 'prepositions' | 'cases' | 'verbs' | 'vocabulary' | 'mixed'
+type TrainingProgressKey = 'prepositions' | 'cases' | 'verbs' | 'motion' | 'vocabulary' | 'mixed'
 type ExamProgressKey = 'section1' | 'section2' | 'section3' | 'section4' | 'section5' | 'section6' | 'section7' | 'section8'
 type TranslationProgressKey = 'ruJa' | 'jaRu'
 
@@ -74,6 +74,13 @@ const trainingItems: TrainingItem[] = [
     to: '/verbs',
     status: 'available',
     progressKey: 'verbs',
+  },
+  {
+    title: '行く系動詞',
+    description: 'идти́ / ходи́ть / е́хать / е́здитьの使い分けと活用を集中練習。',
+    to: '/verbs?filter=motion',
+    status: 'available',
+    progressKey: 'motion',
   },
   {
     title: '語彙',
@@ -203,6 +210,10 @@ const trainingProgress = computed(() => {
     verbs: {
       counts: getQuestionStatusCounts(verbTrainingQuestions.map((question) => question.id)),
       total: verbTrainingQuestions.length,
+    },
+    motion: {
+      counts: getQuestionStatusCounts(verbTrainingQuestions.filter((question) => question.category === 'motion').map((question) => question.id)),
+      total: verbTrainingQuestions.filter((question) => question.category === 'motion').length,
     },
     vocabulary: {
       counts: getQuestionStatusCounts(vocabularyItems.map((item) => item.id)),
