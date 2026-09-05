@@ -123,21 +123,25 @@ test('movement reference cards contain explanations on mobile', async ({ page })
     const cardNodes = [...section.querySelectorAll(':scope > div.grid > article')]
 
     return cardNodes.flatMap((card) => {
+      const title = card.querySelector('h3')?.textContent?.trim() ?? 'unknown card'
       const cardRect = card.getBoundingClientRect()
-      const descendants = [...card.querySelectorAll('h3, p, table, button')]
-      const offenders = descendants.filter((element) => {
-        const rect = element.getBoundingClientRect()
-        return rect.left < cardRect.left - 1
-          || rect.right > cardRect.right + 1
-          || rect.left < sectionRect.left - 1
-          || rect.right > sectionRect.right + 1
-      })
+      const issues: string[] = []
 
-      return offenders.map((element) => ({
-        card: card.querySelector('h3')?.textContent?.trim(),
-        element: element.tagName.toLowerCase(),
-        text: element.textContent?.trim().slice(0, 80),
-      }))
+      if (cardRect.left < sectionRect.left - 1 || cardRect.right > sectionRect.right + 1) {
+        issues.push(`${title} card exceeds movement section`)
+      }
+
+      if (card.scrollWidth > card.clientWidth + 1) {
+        issues.push(`${title} card has horizontal overflow`)
+      }
+
+      for (const paragraph of card.querySelectorAll('p')) {
+        if (paragraph.scrollWidth > paragraph.clientWidth + 1) {
+          issues.push(`${title} explanation overflows: ${paragraph.textContent?.trim().slice(0, 80)}`)
+        }
+      }
+
+      return issues
     })
   })
 
