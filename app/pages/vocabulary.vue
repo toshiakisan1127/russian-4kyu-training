@@ -372,7 +372,7 @@ const choiceClasses = (value: string) => {
           <div>
             <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Vocabulary</p>
             <h1 class="text-2xl font-black tracking-tight sm:text-3xl">語彙トレーニング</h1>
-            <p class="mt-1 mb-0 text-xs font-bold text-slate-500">550語プールから習熟度優先で10語</p>
+            <p class="mt-1 mb-0 text-xs font-bold text-slate-500">579語プールから習熟度優先で10語</p>
           </div>
           <span class="shrink-0 rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-black text-white">
             {{ Math.min(currentIndex + 1, questionSet.length) }} / {{ questionSet.length }}
@@ -563,7 +563,7 @@ const choiceClasses = (value: string) => {
         <section v-else class="py-10 text-center">
           <p class="mb-2 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Vocabulary Result</p>
           <h2 class="mb-3 text-4xl font-black text-indigo-700 sm:text-5xl">{{ correctCount }} / {{ questionSet.length }}</h2>
-          <p class="mx-auto mb-0 max-w-md leading-7 text-slate-600">550語プールから、新規・要復習を優先して10語ずつ進める。</p>
+          <p class="mx-auto mb-0 max-w-md leading-7 text-slate-600">579語プールから、新規・要復習を優先して10語ずつ進める。</p>
           <button type="button" class="mt-7 min-h-13 w-full rounded-2xl bg-indigo-600 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 hover:bg-indigo-700" @click="restart">もう一度やる</button>
         </section>
       </div>
