@@ -18,6 +18,7 @@ const routes = [
   '/sections/7',
   '/sections/8',
   '/mock',
+  '/dashboard',
   '/translations/ru-ja',
   '/translations/ja-ru',
 ] as const
@@ -37,6 +38,7 @@ const breadcrumbCases = [
   { route: '/reference', parent: 'ホーム', current: '4級重要表現まとめ' },
   { route: '/reading', parent: 'ホーム', current: '朗読対策' },
   { route: '/mock', parent: 'ホーム', current: '模擬試験' },
+  { route: '/dashboard', parent: 'ホーム', current: '学習ダッシュボード' },
   { route: '/prepositions', parent: '分野別トレーニング', current: '前置詞トレーニング' },
   { route: '/cases', parent: '分野別トレーニング', current: '格変化トレーニング' },
   { route: '/verbs', parent: '分野別トレーニング', current: '動詞トレーニング' },
@@ -67,6 +69,23 @@ for (const breadcrumb of breadcrumbCases) {
 test('home does not show breadcrumbs', async ({ page }) => {
   await page.goto(appBasePath, { waitUntil: 'networkidle' })
   await expect(page.getByRole('navigation', { name: 'パンくずリスト' })).toHaveCount(0)
+})
+
+test('dashboard shows a useful empty state before the first mock exam', async ({ page }) => {
+  await page.goto(`${appBasePath}/dashboard`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => {
+    window.localStorage.removeItem('russian-mock-exam-result-v1:mock-1')
+    window.localStorage.removeItem('russian-mock-exam-result-v1:mock-2')
+    window.localStorage.removeItem('russian-mock-exam-result-v1:mock-3')
+    window.localStorage.removeItem('russian-study-question-progress-v1')
+  })
+  await page.reload({ waitUntil: 'networkidle' })
+
+  await expect(page.getByRole('heading', { name: '学習ダッシュボード' })).toBeVisible()
+  await expect(page.getByTestId('dashboard-hero')).toContainText('まずは模試で')
+  await expect(page.getByTestId('dashboard-summary')).toContainText('0 / 3')
+  await expect(page.getByText('まだ模試の記録がありません')).toBeVisible()
+  await expect(page.getByTestId('dashboard-chart')).toHaveCount(0)
 })
 
 
