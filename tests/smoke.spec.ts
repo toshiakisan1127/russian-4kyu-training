@@ -18,7 +18,6 @@ const routes = [
   '/sections/7',
   '/sections/8',
   '/mock',
-  '/dashboard',
   '/translations/ru-ja',
   '/translations/ja-ru',
 ] as const
@@ -38,7 +37,6 @@ const breadcrumbCases = [
   { route: '/reference', parent: 'ホーム', current: '4級重要表現まとめ' },
   { route: '/reading', parent: 'ホーム', current: '朗読対策' },
   { route: '/mock', parent: 'ホーム', current: '模擬試験' },
-  { route: '/dashboard', parent: 'ホーム', current: '学習ダッシュボード' },
   { route: '/prepositions', parent: '分野別トレーニング', current: '前置詞トレーニング' },
   { route: '/cases', parent: '分野別トレーニング', current: '格変化トレーニング' },
   { route: '/verbs', parent: '分野別トレーニング', current: '動詞トレーニング' },
@@ -69,23 +67,6 @@ for (const breadcrumb of breadcrumbCases) {
 test('home does not show breadcrumbs', async ({ page }) => {
   await page.goto(appBasePath, { waitUntil: 'networkidle' })
   await expect(page.getByRole('navigation', { name: 'パンくずリスト' })).toHaveCount(0)
-})
-
-test('dashboard shows a useful empty state before the first mock exam', async ({ page }) => {
-  await page.goto(`${appBasePath}/dashboard`, { waitUntil: 'networkidle' })
-  await page.evaluate(() => {
-    window.localStorage.removeItem('russian-mock-exam-result-v1:mock-1')
-    window.localStorage.removeItem('russian-mock-exam-result-v1:mock-2')
-    window.localStorage.removeItem('russian-mock-exam-result-v1:mock-3')
-    window.localStorage.removeItem('russian-study-question-progress-v1')
-  })
-  await page.reload({ waitUntil: 'networkidle' })
-
-  await expect(page.getByRole('heading', { name: '学習ダッシュボード' })).toBeVisible()
-  await expect(page.getByTestId('dashboard-hero')).toContainText('まずは模試で')
-  await expect(page.getByTestId('dashboard-summary')).toContainText('0 / 3')
-  await expect(page.getByText('まだ模試の記録がありません')).toBeVisible()
-  await expect(page.getByTestId('dashboard-chart')).toHaveCount(0)
 })
 
 
@@ -246,7 +227,7 @@ test('mock exam progress resumes and resets after submission', async ({ page }) 
 
   await page.reload({ waitUntil: 'networkidle' })
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'もう一度、第1回を解く' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'トップに戻る' })).toBeVisible()
 })
 
 test('mock section navigation returns to the top', async ({ page }) => {
@@ -365,7 +346,7 @@ test('mock section X includes Japanese-to-Russian self-graded questions', async 
   await review.getByRole('spinbutton', { name: '自己採点率' }).fill('60')
   await expect(review).toContainText('自己採点：60%')
   await expect(page.getByText('翻訳・自己採点 60%（1/6問）', { exact: true })).toBeVisible()
-  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })).toContainText('未入力')
+  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })).toContainText('60%')
 
   const japaneseToRussianGrades = [
     ['昨日、オレグは学校で友だちとロシア語を話しました。', 80],
@@ -453,4 +434,70 @@ test('mock review mode filters saved targets without removing them', async ({ pa
   await page.getByRole('button', { name: '間違えた問題を復習する' }).click()
   await page.getByRole('button', { name: '露文和訳' }).click()
   await expect(reviewItems).toHaveCount(1)
+})
+
+
+test('mock self-grading updates results and removes graded questions from review', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => {
+    window.localStorage.setItem('russian-mock-exam-result-v1:mock-1', JSON.stringify({
+      version: 1,
+      answers: {},
+      selfGrades: {},
+    }))
+  })
+  await page.reload({ waitUntil: 'networkidle' })
+
+  const reviewButton = page.getByRole('button', { name: /間違えた問題を復習する/ })
+  const before = await reviewButton.textContent()
+  const beforeCount = Number(before?.match(/（(\d+)問）/)?.[1])
+  expect(beforeCount).toBeGreaterThan(0)
+
+  await page.locator('details').filter({ hasText: 'Меня зовут Ира.' }).first().locator('summary').click()
+  const russianToJapanese = page.getByRole('spinbutton', { name: '自己採点率' }).first()
+  await russianToJapanese.fill('80')
+
+  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '露文和訳' })).toContainText('80%')
+  await expect(page.getByText('翻訳・自己採点 80%（1/6問）', { exact: true })).toBeVisible()
+  await expect.poll(async () => {
+    const text = await reviewButton.textContent()
+    return Number(text?.match(/（(\d+)問）/)?.[1])
+  }).toBe(beforeCount)
+
+  await russianToJapanese.fill('100')
+  await expect.poll(async () => {
+    const text = await reviewButton.textContent()
+    return Number(text?.match(/（(\d+)問）/)?.[1])
+  }).toBe(beforeCount - 1)
+
+  await page.reload({ waitUntil: 'networkidle' })
+  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '露文和訳' })).toContainText('100%')
+})
+
+test('mock result returns to top without clearing saved result and warns before restart', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => {
+    window.localStorage.setItem('russian-mock-exam-result-v1:mock-1', JSON.stringify({
+      version: 1,
+      answers: {},
+      selfGrades: {},
+    }))
+  })
+  await page.reload({ waitUntil: 'networkidle' })
+
+  await page.getByRole('button', { name: 'トップに戻る' }).click()
+  await expect(page.getByRole('button', { name: '模試を開始する' })).toBeVisible()
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const dialog = page.getByRole('dialog', { name: '再受験の確認' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog).toContainText('結果・自己採点・復習リストが消去')
+  await dialog.getByRole('button', { name: 'キャンセル' }).click()
+  await expect(dialog).toBeHidden()
+  await expect(page.getByRole('button', { name: '模試を開始する' })).toBeVisible()
+
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+  await page.getByRole('dialog', { name: '再受験の確認' }).getByRole('button', { name: '結果を消去して開始' }).click()
+  await expect(page.getByTestId('mock-exam-status')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '採点結果' })).toHaveCount(0)
 })
