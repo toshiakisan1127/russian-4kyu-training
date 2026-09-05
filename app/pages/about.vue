@@ -1,4 +1,21 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
+const runtimeConfig = useRuntimeConfig()
+const lastUpdatedAt = String(runtimeConfig.public.lastUpdatedAt ?? '')
+const formattedLastUpdatedAt = computed(() => {
+  if (!lastUpdatedAt) return ''
+
+  const date = new Date(lastUpdatedAt)
+  if (Number.isNaN(date.getTime())) return ''
+
+  return new Intl.DateTimeFormat('ja-JP', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Tokyo',
+  }).format(date)
+})
+
 useHead({
   title: 'このサイトについて | ロシア語4級トレーニング',
 })
@@ -91,6 +108,15 @@ useHead({
           学習進捗や設定は端末内に保存されます。特にiPhone・iPadでは、Safariで開いたサイトとホーム画面に追加したアプリで保存領域が分かれ、進捗が共有されない場合があります。普段使う方を決めて、その方で学習してください。
         </div>
       </section>
+
+      <footer class="mt-5 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm">
+        <span class="font-black text-slate-600">サイト情報</span>
+        <p class="m-0 font-bold text-slate-500">
+          最終更新日時：
+          <time v-if="formattedLastUpdatedAt" data-testid="last-updated" :datetime="lastUpdatedAt">{{ formattedLastUpdatedAt }}</time>
+          <span v-else data-testid="last-updated-unavailable">ビルド情報なし</span>
+        </p>
+      </footer>
     </section>
   </main>
 </template>
