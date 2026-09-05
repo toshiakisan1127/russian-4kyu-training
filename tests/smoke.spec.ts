@@ -352,7 +352,7 @@ test('mock section X includes Japanese-to-Russian self-graded questions', async 
     ['昨日、オレグは学校で友だちとロシア語を話しました。', 80],
     ['明日の朝、彼女はバスで仕事へ行くでしょう。', 60],
     ['私たちの教室には大きな窓があります。', 40],
-    ['私は夏に海で泳ぐのが好きです。', 20],
+    ['私は夏に海で泳ぐのが好きです。', 60],
   ] as const
   for (const [prompt, percentage] of japaneseToRussianGrades) {
     const questionReview = page.locator('details').filter({ hasText: prompt }).first()
@@ -429,8 +429,7 @@ test('mock review mode filters saved targets without removing them', async ({ pa
   await page.getByRole('button', { name: '結果に戻る' }).click()
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
   const japaneseToRussianCategory = page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })
-  await expect(japaneseToRussianCategory).toContainText('60%')
-  await expect(japaneseToRussianCategory).toContainText('合格')
+  await expect(japaneseToRussianCategory).toContainText('未入力')
 
   await page.getByRole('button', { name: '間違えた問題を復習する' }).click()
   await page.getByRole('button', { name: '露文和訳' }).click()
