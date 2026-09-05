@@ -8,7 +8,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: 'pnpm dev --host 127.0.0.1 --port 3000',
+    command: 'NUXT_PUBLIC_LAST_UPDATED_AT="$(git log -1 --format=%cI)" pnpm dev --host 127.0.0.1 --port 3000',
     url: 'http://127.0.0.1:3000/toshiaki_Russia_language/',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
