@@ -140,12 +140,12 @@ export const vocabularyItems: VocabularyItem[] = rawVocabularyItems.map((item) =
   example: getVocabularyExample(item.word),
 }) as VocabularyItem)
 
-if (vocabularyItems.length !== 550) {
-  throw new Error(`Vocabulary pool must contain 550 items, got ${vocabularyItems.length}`)
+if (vocabularyItems.length !== 579) {
+  throw new Error(`Vocabulary pool must contain 579 items, got ${vocabularyItems.length}`)
 }
 
 if (vocabularyExampleCount !== vocabularyItems.length) {
-  throw new Error(`Vocabulary examples must match the 550-word pool, got ${vocabularyExampleCount}`)
+  throw new Error(`Vocabulary examples must match the 579-word pool, got ${vocabularyExampleCount}`)
 }
 
 const exampleOwners = new Map<string, string>()
