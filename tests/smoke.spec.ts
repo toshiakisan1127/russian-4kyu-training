@@ -70,6 +70,19 @@ test('home does not show breadcrumbs', async ({ page }) => {
 })
 
 
+test('about page keeps breadcrumbs after a hard reload', async ({ page }) => {
+  await page.goto(`${appBasePath}/about`, { waitUntil: 'networkidle' })
+
+  const nav = page.getByRole('navigation', { name: 'パンくずリスト' })
+  await expect(nav).toBeVisible()
+  await expect(nav.locator('[aria-current="page"]')).toHaveText('このサイトについて')
+
+  await page.reload({ waitUntil: 'networkidle' })
+  await expect(nav).toBeVisible()
+  await expect(nav.locator('[aria-current="page"]')).toHaveText('このサイトについて')
+})
+
+
 test('reference page shows irregular noun plurals', async ({ page }) => {
   await page.goto(`${appBasePath}/reference`, { waitUntil: 'networkidle' })
 
