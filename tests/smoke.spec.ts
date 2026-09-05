@@ -297,7 +297,9 @@ test('mock translation questions are self-graded after submission', async ({ pag
   const review = page.locator('details').filter({ hasText: 'Меня зовут Ира.' }).first()
   await review.locator('summary').click()
   await expect(review).toContainText('模範解答')
-  await expect(review.getByRole('button', { name: 'できた' })).toBeVisible()
+  await review.getByRole('spinbutton', { name: '自己採点率' }).fill('80')
+  await expect(review).toContainText('自己採点：80%')
+  await expect(page.getByText('翻訳・自己採点 80%（1/6問）', { exact: true })).toBeVisible()
 })
 
 test('mock section X includes Japanese-to-Russian self-graded questions', async ({ page }) => {
@@ -323,7 +325,9 @@ test('mock section X includes Japanese-to-Russian self-graded questions', async 
   await review.locator('summary').click()
   await expect(review).toContainText('模範解答')
   await expect(review).toContainText('Ка́ждое воскресе́нье мы хо́дим пешко́м к ба́бушке.')
-  await expect(review.getByRole('button', { name: 'できた' })).toBeVisible()
+  await review.getByRole('spinbutton', { name: '自己採点率' }).fill('60')
+  await expect(review).toContainText('自己採点：60%')
+  await expect(page.getByText('翻訳・自己採点 60%（1/6問）', { exact: true })).toBeVisible()
 })
 
 test('mock written answers accept accentless spelling', async ({ page }) => {
