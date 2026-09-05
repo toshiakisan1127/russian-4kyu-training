@@ -346,7 +346,24 @@ test('mock section X includes Japanese-to-Russian self-graded questions', async 
   await review.getByRole('spinbutton', { name: '自己採点率' }).fill('60')
   await expect(review).toContainText('自己採点：60%')
   await expect(page.getByText('翻訳・自己採点 60%（1/6問）', { exact: true })).toBeVisible()
-  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })).toContainText('合格')
+  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })).toContainText('未入力')
+
+  const japaneseToRussianGrades = [
+    ['昨日、オレグは学校で友だちとロシア語を話しました。', 80],
+    ['明日の朝、彼女はバスで仕事へ行くでしょう。', 60],
+    ['私たちの教室には大きな窓があります。', 40],
+    ['私は夏に海で泳ぐのが好きです。', 60],
+  ] as const
+  for (const [prompt, percentage] of japaneseToRussianGrades) {
+    const questionReview = page.locator('details').filter({ hasText: prompt }).first()
+    await questionReview.locator('summary').click()
+    await questionReview.getByRole('spinbutton', { name: '自己採点率' }).fill(String(percentage))
+  }
+
+  await expect(page.getByText('翻訳・自己採点 60%（5/6問）', { exact: true })).toBeVisible()
+  const japaneseToRussianCategory = page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })
+  await expect(japaneseToRussianCategory).toContainText('60%')
+  await expect(japaneseToRussianCategory).toContainText('合格')
 })
 
 test('mock written answers accept accentless spelling', async ({ page }) => {
@@ -376,4 +393,45 @@ test('mock written answers accept accentless spelling', async ({ page }) => {
   await expect(page.locator('body')).toContainText('бу́дете идти́')
   await expect(page.locator('body')).toContainText('бу́дут учи́ться')
   await expect(page.getByText('4 / 76', { exact: true })).toBeVisible()
+})
+
+
+test('mock review mode filters saved targets without removing them', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => {
+    window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1')
+    window.localStorage.removeItem('russian-mock-exam-result-v1:mock-1')
+    window.localStorage.removeItem('russian-mock-exam-self-grades-v1:mock-1')
+  })
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await status.locator('nav button').last().click()
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+
+  await page.getByRole('button', { name: '間違えた問題を復習する' }).click()
+  await expect(page.getByRole('heading', { name: '模試の復習' })).toBeVisible()
+
+  const reviewItems = page.locator('[data-testid="mock-review-item"]')
+  await expect(reviewItems.first()).toBeVisible()
+
+  await page.getByRole('button', { name: '露文和訳' }).click()
+  await expect(reviewItems).toHaveCount(1)
+  await expect(reviewItems.first()).toContainText('Меня зовут Ира.')
+  await expect(reviewItems.first()).toContainText('自己採点')
+
+  await page.getByRole('button', { name: '和文露訳' }).click()
+  await expect(reviewItems).toHaveCount(5)
+  await expect(reviewItems.first()).toContainText('毎週日曜日、私たちは祖母の家へ歩いて行きます。')
+
+  await page.getByRole('button', { name: '結果に戻る' }).click()
+  await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
+  const japaneseToRussianCategory = page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })
+  await expect(japaneseToRussianCategory).toContainText('未入力')
+
+  await page.getByRole('button', { name: '間違えた問題を復習する' }).click()
+  await page.getByRole('button', { name: '露文和訳' }).click()
+  await expect(reviewItems).toHaveCount(1)
 })

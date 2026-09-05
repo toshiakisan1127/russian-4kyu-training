@@ -4,7 +4,17 @@ import { type MockInputField, type MockQuestion, type MockSection } from '~/data
 import { mockExams } from '~/data/mockExams'
 import { stripStress } from '~/utils/russianStress'
 
-type Phase = 'intro' | 'exam' | 'result'
+type Phase = 'intro' | 'exam' | 'result' | 'review'
+
+type ReviewFilter = 'all' | 'grammar' | 'russian-to-japanese' | 'japanese-to-russian'
+
+type ReviewTarget = {
+  id: string
+  category: Exclude<ReviewFilter, 'all'>
+  section: MockSection
+  question: MockQuestion
+  fields: MockInputField[]
+}
 
 type AnswerEntry = {
   key: string
@@ -27,6 +37,14 @@ const activeExam = computed(() => mockExams[selectedExamIndex.value] ?? mockExam
 const progressStorageKey = computed(() => `russian-mock-exam-progress-v1:${activeExam.value.id}`)
 
 const phase = ref<Phase>('intro')
+const reviewFilter = ref<ReviewFilter>('all')
+const reviewFilters = [
+  { id: 'all', label: 'すべて' },
+  { id: 'grammar', label: '文法' },
+  { id: 'russian-to-japanese', label: '露文和訳' },
+  { id: 'japanese-to-russian', label: '和文露訳' },
+] as const
+const reviewAnswers = ref<Record<string, string | number>>({})
 const currentSectionIndex = ref(0)
 const answers = ref<Record<string, string | number>>({})
 const selfGrades = ref<SelfGradeValues>({})
@@ -259,9 +277,13 @@ const selfGradeSectionAverage = (section: MockSection) => {
 const selfGradeSectionLabel = (section: MockSection) => {
   const questions = section.questions.filter(isSelfGradeQuestion)
   const average = selfGradeSectionAverage(section)
-  if (average === null) return `未入力（0/${questions.length}問）`
   const gradedCount = questions.filter((question) => typeof selfGrades.value[question.id] === 'number').length
+  if (average === null) return `未入力（0/${questions.length}問）`
   return `${average}%（${gradedCount}/${questions.length}問）`
+}
+const selfGradeSectionComplete = (section: MockSection) => {
+  const questions = section.questions.filter(isSelfGradeQuestion)
+  return questions.length > 0 && questions.every((question) => typeof selfGrades.value[question.id] === 'number')
 }
 
 const grammarSections = computed(() =>
@@ -278,30 +300,101 @@ const grammarCorrectCount = computed(() =>
 const grammarPercentage = computed(() =>
   grammarEntries.value.length === 0 ? null : Math.round((grammarCorrectCount.value / grammarEntries.value.length) * 100),
 )
-const resultStatus = (percentage: number | null) => {
-  if (percentage === null) return '未入力'
+const resultStatus = (percentage: number | null, complete = true) => {
+  if (percentage === null || !complete) return '未入力'
   return percentage >= 60 ? '合格' : '未達'
 }
-const categoryResults = computed(() => [
-  {
-    id: 'grammar',
-    label: '文法',
-    percentage: grammarPercentage.value,
-    detail: `${grammarCorrectCount.value} / ${grammarEntries.value.length}問`,
-  },
-  {
-    id: 'russian-to-japanese',
-    label: '露文和訳',
-    percentage: selfGradeSectionAverage(activeExam.value.sections.find((section) => section.roman === 'IX')!),
-    detail: '自己採点',
-  },
-  {
-    id: 'japanese-to-russian',
-    label: '和文露訳',
-    percentage: selfGradeSectionAverage(activeExam.value.sections.find((section) => section.roman === 'X')!),
-    detail: '自己採点',
-  },
-])
+const categoryResults = computed(() => {
+  const russianToJapaneseSection = activeExam.value.sections.find((section) => section.roman === 'IX')!
+  const japaneseToRussianSection = activeExam.value.sections.find((section) => section.roman === 'X')!
+
+  return [
+    {
+      id: 'grammar',
+      label: '文法',
+      percentage: grammarPercentage.value,
+      complete: true,
+      detail: `${grammarCorrectCount.value} / ${grammarEntries.value.length}問`,
+    },
+    {
+      id: 'russian-to-japanese',
+      label: '露文和訳',
+      percentage: selfGradeSectionAverage(russianToJapaneseSection),
+      complete: selfGradeSectionComplete(russianToJapaneseSection),
+      detail: selfGradeSectionLabel(russianToJapaneseSection),
+    },
+    {
+      id: 'japanese-to-russian',
+      label: '和文露訳',
+      percentage: selfGradeSectionAverage(japaneseToRussianSection),
+      complete: selfGradeSectionComplete(japaneseToRussianSection),
+      detail: selfGradeSectionLabel(japaneseToRussianSection),
+    },
+  ]
+})
+
+const reviewTargets = computed<ReviewTarget[]>(() =>
+  activeExam.value.sections.flatMap((section) => {
+    const category = section.roman === 'IX'
+      ? 'russian-to-japanese'
+      : section.roman === 'X'
+        ? 'japanese-to-russian'
+        : 'grammar'
+
+    return section.questions.flatMap((question) => {
+      if (isSelfGradeQuestion(question)) {
+        const percentage = selfGrades.value[question.id]
+        return percentage === undefined || percentage < 100
+          ? [{ id: question.id, category, section, question, fields: question.fields }]
+          : []
+      }
+
+      if (question.kind === 'choice') {
+        return isEntryCorrect({ key: answerKey(question), question })
+          ? []
+          : [{ id: question.id, category, section, question, fields: [] }]
+      }
+
+      const wrongFields = question.fields.filter((field) =>
+        !isEntryCorrect({ key: answerKey(question, field.id), question, field }),
+      )
+      return wrongFields.length > 0
+        ? [{ id: question.id, category, section, question, fields: wrongFields }]
+        : []
+    })
+  }),
+)
+const filteredReviewTargets = computed(() =>
+  reviewFilter.value === 'all'
+    ? reviewTargets.value
+    : reviewTargets.value.filter((target) => target.category === reviewFilter.value),
+)
+const reviewCategoryLabel = (category: ReviewTarget['category']) => ({
+  grammar: '文法',
+  'russian-to-japanese': '露文和訳',
+  'japanese-to-russian': '和文露訳',
+}[category])
+const reviewInputValue = (question: MockQuestion, field: MockInputField) =>
+  String(reviewAnswers.value[answerKey(question, field.id)] ?? '')
+const setReviewChoice = (question: MockQuestion, choiceIndex: number) => {
+  if (phase.value !== 'review' || question.kind !== 'choice') return
+  reviewAnswers.value[answerKey(question)] = choiceIndex
+}
+const onReviewInput = (question: MockQuestion, field: MockInputField, event: Event) => {
+  if (phase.value !== 'review') return
+  reviewAnswers.value[answerKey(question, field.id)] = (event.target as HTMLInputElement).value
+}
+const openReview = () => {
+  if (reviewTargets.value.length === 0) return
+  reviewFilter.value = 'all'
+  reviewAnswers.value = {}
+  phase.value = 'review'
+  window.scrollTo({ top: 0, behavior: 'auto' })
+}
+const returnToResult = () => {
+  phase.value = 'result'
+  window.scrollTo({ top: 0, behavior: 'auto' })
+}
 
 const clearSavedProgress = () => {
   if (typeof window !== 'undefined') {
@@ -846,7 +939,7 @@ onBeforeUnmount(() => {
         </section>
       </div>
 
-      <div v-else class="space-y-5">
+      <div v-else-if="phase === 'result'" class="space-y-5">
         <section class="rounded-3xl border border-emerald-200 bg-white p-5 text-center shadow-xl shadow-emerald-100/60 sm:p-8">
           <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Result · Mock Exam 1</p>
           <h1 class="mb-3 text-2xl font-black sm:text-3xl">採点結果</h1>
@@ -856,6 +949,14 @@ onBeforeUnmount(() => {
           <p class="mt-3 mb-0 text-sm leading-6 text-slate-500">
             記述式の設問は、各入力欄をそれぞれ採点しています。
           </p>
+          <button
+            v-if="reviewTargets.length > 0"
+            type="button"
+            class="mt-5 min-h-12 rounded-xl bg-sky-700 px-5 py-3 font-black text-white transition hover:bg-sky-800"
+            @click="openReview"
+          >
+            間違えた問題を復習する（{{ reviewTargets.length }}問）
+          </button>
         </section>
 
         <section data-testid="mock-category-results" class="rounded-3xl border border-sky-200 bg-white p-5 shadow-xl shadow-sky-100/60 sm:p-8">
@@ -876,17 +977,17 @@ onBeforeUnmount(() => {
                 <h3 class="m-0 font-black">{{ category.label }}</h3>
                 <span
                   class="rounded-full px-2 py-1 text-xs font-black"
-                  :class="resultStatus(category.percentage) === '合格'
+                  :class="resultStatus(category.percentage, category.complete) === '合格'
                     ? 'bg-emerald-100 text-emerald-800'
-                    : resultStatus(category.percentage) === '未達'
+                    : resultStatus(category.percentage, category.complete) === '未達'
                       ? 'bg-rose-100 text-rose-800'
                       : 'bg-slate-200 text-slate-700'"
                 >
-                  {{ resultStatus(category.percentage) === '合格' ? '✓ 合格' : resultStatus(category.percentage) }}
+                  {{ resultStatus(category.percentage, category.complete) === '合格' ? '✓ 合格' : resultStatus(category.percentage, category.complete) }}
                 </span>
               </div>
               <p class="mt-3 mb-1 text-3xl font-black text-slate-900">
-                {{ category.percentage === null ? '未入力' : category.percentage + '%' }}
+                {{ category.percentage === null || !category.complete ? '未入力' : category.percentage + '%' }}
               </p>
               <p class="m-0 text-sm font-bold text-slate-500">{{ category.detail }}</p>
             </article>
@@ -1086,6 +1187,148 @@ onBeforeUnmount(() => {
           もう一度、第1回を解く
         </button>
       </div>
+      <div v-else class="space-y-5">
+        <section class="rounded-3xl border border-sky-200 bg-white p-5 shadow-xl shadow-sky-100/60 sm:p-8">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p class="mb-1 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">Review · Mock Exam</p>
+              <h1 class="mb-3 text-2xl font-black sm:text-3xl">模試の復習</h1>
+              <p class="m-0 leading-7 text-slate-600">
+                前回結果の要復習問題です。ここでの回答は模試の結果や復習対象を変更しません。
+              </p>
+            </div>
+            <button
+              type="button"
+              class="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 font-black text-slate-700 transition hover:bg-slate-50"
+              @click="returnToResult"
+            >
+              結果に戻る
+            </button>
+          </div>
+
+          <div class="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <button
+              v-for="filter in reviewFilters"
+              :key="filter.id"
+              type="button"
+              class="min-h-11 rounded-xl border px-3 py-2 text-sm font-black transition"
+              :class="reviewFilter === filter.id
+                ? 'border-sky-600 bg-sky-100 text-sky-950'
+                : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-sky-300 hover:bg-sky-50'"
+              @click="reviewFilter = filter.id"
+            >
+              {{ filter.label }}
+              <span class="ml-1 text-xs">
+                ({{ filter.id === 'all'
+                  ? reviewTargets.length
+                  : reviewTargets.filter((target) => target.category === filter.id).length }})
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <section v-if="filteredReviewTargets.length > 0" class="space-y-4">
+          <article
+            v-for="target in filteredReviewTargets"
+            :key="target.id"
+            data-testid="mock-review-item"
+            class="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/50 sm:p-8"
+          >
+            <header class="mb-5 border-b border-slate-200 pb-5">
+              <div class="mb-2 flex flex-wrap items-center gap-2">
+                <span class="rounded-full bg-sky-100 px-2 py-1 text-xs font-black text-sky-800">
+                  第{{ target.section.roman }}問・{{ reviewCategoryLabel(target.category) }}
+                </span>
+                <span class="rounded-full bg-rose-100 px-2 py-1 text-xs font-black text-rose-800">要復習</span>
+              </div>
+              <p class="m-0 whitespace-pre-line text-lg font-black leading-8 text-slate-900">{{ target.question.prompt }}</p>
+            </header>
+
+            <template v-if="target.question.kind === 'choice'">
+              <div class="grid gap-3 sm:grid-cols-3">
+                <button
+                  v-for="(choice, choiceIndex) in target.question.choices"
+                  :key="choice"
+                  type="button"
+                  class="min-h-14 rounded-xl border-2 px-4 py-3 text-left font-bold transition"
+                  :class="reviewAnswers[answerKey(target.question)] === choiceIndex
+                    ? 'border-sky-600 bg-sky-100 text-sky-950'
+                    : 'border-slate-300 bg-white hover:border-sky-400 hover:bg-sky-50'"
+                  :aria-pressed="reviewAnswers[answerKey(target.question)] === choiceIndex"
+                  @click="setReviewChoice(target.question, choiceIndex)"
+                >
+                  <span class="mr-2 inline-grid size-6 place-items-center rounded-full bg-slate-100 text-xs font-black text-slate-600">{{ choiceIndex + 1 }}</span>
+                  {{ choice }}
+                </button>
+              </div>
+              <details class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                <summary class="cursor-pointer font-black text-amber-900">模範解答・解説を見る</summary>
+                <p class="mt-3 mb-1 font-bold text-slate-800">正解：{{ target.question.answerText }}</p>
+                <p class="m-0 whitespace-pre-line leading-7 text-slate-800">{{ target.question.explanation }}</p>
+              </details>
+            </template>
+
+            <template v-else-if="target.category === 'grammar'">
+              <div class="grid gap-3 sm:grid-cols-2">
+                <label
+                  v-for="field in target.fields"
+                  :key="field.id"
+                  class="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                >
+                  <span class="mb-2 block text-xs font-black text-slate-600">{{ field.label }}（要復習）</span>
+                  <input
+                    :type="field.inputMode ?? 'text'"
+                    autocomplete="off"
+                    autocapitalize="none"
+                    spellcheck="false"
+                    :inputmode="field.inputMode === 'number' ? 'numeric' : 'text'"
+                    :value="reviewInputValue(target.question, field)"
+                    class="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                    placeholder="復習回答を入力"
+                    @input="onReviewInput(target.question, field, $event)"
+                  >
+                  <details class="mt-3 text-sm">
+                    <summary class="cursor-pointer font-black text-slate-700">正解・解説を見る</summary>
+                    <p class="mt-2 mb-1 font-bold text-emerald-900">正解：{{ field.displayAnswer ?? field.answer }}</p>
+                    <p class="m-0 leading-6 text-slate-700">{{ field.explanation }}</p>
+                  </details>
+                </label>
+              </div>
+            </template>
+
+            <template v-else>
+              <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="mb-1 text-xs font-black text-emerald-800">今回の自己採点</p>
+                    <p class="m-0 font-bold text-slate-800">
+                      {{ selfGrades[target.question.id] === undefined ? '未入力' : selfGrades[target.question.id] + '%' }}
+                    </p>
+                  </div>
+                  <button
+                    v-if="target.question.speechText"
+                    type="button"
+                    class="grid size-10 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-lg transition hover:bg-emerald-100 disabled:opacity-40"
+                    :disabled="!speechSupported"
+                    aria-label="模範解答を読み上げる"
+                    @click="speak(target.question.speechText)"
+                  >🔊</button>
+                </div>
+                <p class="mt-4 mb-1 text-xs font-black text-emerald-800">模範解答</p>
+                <p class="m-0 whitespace-pre-line font-bold leading-7 text-slate-800">{{ target.question.fields[0]?.answer }}</p>
+                <p class="mt-4 mb-1 text-xs font-black text-violet-900">自己採点のポイント</p>
+                <p class="m-0 leading-7 text-slate-700">{{ target.question.fields[0]?.explanation }}</p>
+              </div>
+            </template>
+          </article>
+        </section>
+
+        <section v-else class="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-center">
+          <h2 class="mb-2 text-xl font-black text-emerald-900">復習対象はありません</h2>
+          <p class="m-0 font-bold text-emerald-800">この分野には要復習問題がありません。</p>
+        </section>
+      </div>
+
     </section>
   </main>
 </template>
