@@ -34,7 +34,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Generate static site
-        run: pnpm generate
+        run: NUXT_PUBLIC_LAST_UPDATED_AT="$(git log -1 --format=%cI)" pnpm generate
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
