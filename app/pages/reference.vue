@@ -181,6 +181,8 @@ const travelVerbs = [
     example: 'Я иду́ в шко́лу.',
     exampleTranslation: '私は学校へ歩いて行きます。',
     forms: ['иду́', 'идёшь', 'идёт', 'идём', 'идёте', 'иду́т'],
+    pastForms: ['шёл', 'шла́', 'шло́', 'шли́'],
+    pastNote: 'идти́ の過去形は語幹が変わり、шёл / шла́ / шло́ / шли́ になる。',
   },
   {
     infinitive: 'ходи́ть',
@@ -189,6 +191,8 @@ const travelVerbs = [
     example: 'Я хожу́ в шко́лу ка́ждый де́нь.',
     exampleTranslation: '私は毎日学校へ通います。',
     forms: ['хожу́', 'хо́дишь', 'хо́дит', 'хо́дим', 'хо́дите', 'хо́дят'],
+    pastForms: ['ходи́л', 'ходи́ла', 'ходи́ло', 'ходи́ли'],
+    pastNote: 'ходи́ть の過去形は ходи́л / ходи́ла / ходи́ло / ходи́ли。',
   },
   {
     infinitive: 'е́хать',
@@ -197,6 +201,8 @@ const travelVerbs = [
     example: 'Мы е́дем в Москву́.',
     exampleTranslation: '私たちはモスクワへ乗り物で行きます。',
     forms: ['е́ду', 'е́дешь', 'е́дет', 'е́дем', 'е́дете', 'е́дут'],
+    pastForms: ['е́хал', 'е́хала', 'е́хало', 'е́хали'],
+    pastNote: 'е́хать の過去形は語幹が変わり、е́хал / е́хала / е́хало / е́хали になる。',
   },
   {
     infinitive: 'е́здить',
@@ -205,6 +211,8 @@ const travelVerbs = [
     example: 'Она е́здит на рабо́ту на авто́бусе.',
     exampleTranslation: '彼女はバスで仕事に通います。',
     forms: ['е́зжу', 'е́здишь', 'е́здит', 'е́здим', 'е́здите', 'е́здят'],
+    pastForms: ['е́здил', 'е́здила', 'е́здило', 'е́здили'],
+    pastNote: 'е́здить の過去形は е́здил / е́здила / е́здило / е́здили。',
   },
 ]
 
@@ -317,6 +325,16 @@ const travelPronouns = ['я', 'ты', 'он / она', 'мы', 'вы', 'они']
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div class="mt-4 border-t border-emerald-100 pt-4">
+              <p class="mb-2 text-xs font-black tracking-[0.08em] text-emerald-700 uppercase">過去形</p>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div v-for="(form, index) in verb.pastForms" :key="verb.infinitive + '-past-' + index" class="flex items-center justify-between gap-2 rounded-xl bg-emerald-50 px-3 py-2">
+                  <span class="font-bold text-slate-600">{{ ['男性', '女性', '中性', '複数'][index] }}</span>
+                  <strong style="font-family: 'PT Serif', Georgia, serif">{{ form }}</strong>
+                </div>
+              </div>
+              <p class="mt-2 mb-0 text-xs font-bold leading-5 text-slate-500">{{ verb.pastNote }}</p>
             </div>
             <div class="mt-3 flex items-start gap-2">
               <p class="m-0 flex-1 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ verb.example }}</p>
