@@ -189,9 +189,6 @@ const choiceClasses = (choice: string) => {
 <template>
   <main class="min-h-screen bg-slate-50 px-4 py-8 text-slate-950 sm:py-12">
     <section class="mx-auto w-full max-w-2xl">
-      <NuxtLink to="/" class="mb-4 inline-flex items-center gap-1 text-sm font-bold text-indigo-700 transition hover:text-indigo-900">
-        ← トップへ戻る
-      </NuxtLink>
 
       <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl shadow-indigo-100/60 sm:p-8">
         <header class="mb-6 flex items-start justify-between gap-4">
