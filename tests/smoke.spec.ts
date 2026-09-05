@@ -69,6 +69,20 @@ test('home does not show breadcrumbs', async ({ page }) => {
   await expect(page.getByRole('navigation', { name: 'パンくずリスト' })).toHaveCount(0)
 })
 
+
+test('reference page shows irregular noun plurals', async ({ page }) => {
+  await page.goto(`${appBasePath}/reference`, { waitUntil: 'networkidle' })
+
+  const section = page.locator('details').filter({ hasText: '不規則・要注意の名詞複数形' })
+  await expect(section).toBeVisible()
+  await expect(section).toContainText('челове́к')
+  await expect(section).toContainText('лю́ди')
+  await expect(section).toContainText('жёны')
+  await expect(section.locator('[data-testid="irregular-plural-item"]')).toHaveCount(17)
+  await expect(section.locator('button')).toHaveCount(34)
+})
+
+
 test('mock status card scrolls away and avoids fixed utility controls', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: '模試を開始する' }).click()
