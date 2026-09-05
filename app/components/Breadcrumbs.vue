@@ -100,9 +100,16 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
         <NuxtLink
           v-if="item.to"
           :to="item.to"
-          class="truncate text-indigo-700 transition hover:text-indigo-900"
+          custom
+          v-slot="{ href, navigate }"
         >
-          {{ item.label }}
+          <a
+            :href="href"
+            class="truncate text-indigo-700 transition hover:text-indigo-900"
+            @click="navigate"
+          >
+            {{ item.label }}
+          </a>
         </NuxtLink>
         <span v-else aria-current="page" class="truncate text-slate-700">
           {{ item.label }}
