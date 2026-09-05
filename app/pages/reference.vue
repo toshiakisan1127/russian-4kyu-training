@@ -218,6 +218,26 @@ const travelVerbs = [
 
 const travelPronouns = ['я', 'ты', 'он / она', 'мы', 'вы', 'они']
 
+const irregularPluralNouns = [
+  { singular: 'челове́к', plural: 'лю́ди', meaning: '人', note: '単数と複数で別の語になる。' },
+  { singular: 'ребёнок', plural: 'де́ти', meaning: '子ども', note: '単数と複数で別の語になる。' },
+  { singular: 'друг', plural: 'друзья́', meaning: '友人', note: '語幹が変わり、複数語尾も -ья になる。' },
+  { singular: 'брат', plural: 'бра́тья', meaning: '兄弟・兄', note: '語幹が変わり、-ья になる。' },
+  { singular: 'сын', plural: 'сыновья́', meaning: '息子', note: '語幹が変わり、-овья になる。' },
+  { singular: 'муж', plural: 'мужья́', meaning: '夫', note: '語幹が変わり、-ья になる。' },
+  { singular: 'стул', plural: 'сту́лья', meaning: 'いす', note: '語幹に л が現れ、-ья になる。' },
+  { singular: 'ма́ть', plural: 'ма́тери', meaning: '母', note: '語幹と語尾が変わる。' },
+  { singular: 'до́чь', plural: 'до́чери', meaning: '娘', note: '語幹と語尾が変わる。' },
+  { singular: 'и́мя', plural: 'имена́', meaning: '名前', note: '中性名詞の特殊な複数形。' },
+  { singular: 'вре́мя', plural: 'времена́', meaning: '時間・時', note: '中性名詞の特殊な複数形。' },
+  { singular: 'учи́тель', plural: 'учителя́', meaning: '教師・先生', note: '男性名詞だが、複数形が -я になる。' },
+  { singular: 'по́езд', plural: 'поезда́', meaning: '列車', note: '複数形が -а になり、アクセントも移る。' },
+  { singular: 'окно́', plural: 'о́кна', meaning: '窓', note: '中性名詞の複数形が -а になる。' },
+  { singular: 'оте́ц', plural: 'отцы́', meaning: '父', note: '語幹のつづりが変わり、アクセントも移る。' },
+  { singular: 'жена́', plural: 'жёны', meaning: '妻', note: '語幹の母音が変わる。' },
+  { singular: 'сестра́', plural: 'сёстры', meaning: '姉妹・姉・妹', note: '語幹の母音が変わる。' },
+] as const
+
 </script>
 
 <template>
@@ -231,6 +251,62 @@ const travelPronouns = ['я', 'ты', 'он / она', 'мы', 'вы', 'они']
           問題演習の途中で確認したくなる表現を、年齢・季節・頻度・重要構文に分けて整理しています。ロシア語文法を一通り学習した人の復習用です。
         </p>
       </header>
+
+      <details class="group mb-5 rounded-3xl border border-indigo-200 bg-indigo-50">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 transition hover:bg-indigo-100 sm:p-6 [&::-webkit-details-marker]:hidden">
+          <div>
+            <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-600 uppercase">Nouns</p>
+            <h2 class="m-0 text-xl font-black sm:text-2xl">不規則・要注意の名詞複数形</h2>
+            <p class="mt-1 mb-0 text-sm font-medium text-slate-600">{{ irregularPluralNouns.length }}語。単数形から機械的に作りにくいものを厳選</p>
+          </div>
+          <span class="grid size-9 place-items-center rounded-full bg-white text-lg text-indigo-700 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+        </summary>
+        <div class="border-t border-indigo-100 px-5 pt-5 pb-6 sm:px-6">
+          <p class="mb-4 max-w-3xl text-sm font-bold leading-6 text-slate-700">
+            単数形と複数形をセットで覚えよう。語幹・語尾・アクセントが変わる語が中心です。
+          </p>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <article
+              v-for="item in irregularPluralNouns"
+              :key="item.singular"
+              data-testid="irregular-plural-item"
+              class="rounded-2xl border border-indigo-100 bg-white p-4"
+            >
+              <div class="mb-3 flex items-end gap-2">
+                <div class="min-w-0 flex-1">
+                  <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-slate-500 uppercase">単数形</p>
+                  <div class="flex items-center gap-1.5">
+                    <strong class="truncate text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ item.singular }}</strong>
+                    <button
+                      type="button"
+                      class="grid size-7 shrink-0 place-items-center rounded-full border border-indigo-200 bg-white text-xs transition hover:bg-indigo-100 disabled:opacity-40"
+                      :disabled="!speechSupported"
+                      :aria-label="item.singular + 'を読み上げ'"
+                      @click="speak(item.singular)"
+                    >🔊</button>
+                  </div>
+                </div>
+                <span class="pb-1 text-sm font-black text-indigo-500" aria-hidden="true">→</span>
+                <div class="min-w-0 flex-1">
+                  <p class="mb-1 text-[11px] font-black tracking-[0.1em] text-slate-500 uppercase">複数形</p>
+                  <div class="flex items-center gap-1.5">
+                    <strong class="truncate text-lg" style="font-family: 'PT Serif', Georgia, serif">{{ item.plural }}</strong>
+                    <button
+                      type="button"
+                      class="grid size-7 shrink-0 place-items-center rounded-full border border-indigo-200 bg-white text-xs transition hover:bg-indigo-100 disabled:opacity-40"
+                      :disabled="!speechSupported"
+                      :aria-label="item.plural + 'を読み上げ'"
+                      @click="speak(item.plural)"
+                    >🔊</button>
+                  </div>
+                </div>
+              </div>
+              <p class="mb-1 text-sm font-black text-slate-800">{{ item.meaning }}</p>
+              <p class="m-0 text-xs font-bold leading-5 text-slate-500">{{ item.note }}</p>
+            </article>
+          </div>
+        </div>
+      </details>
 
       <details class="group mb-5 rounded-3xl border border-sky-200 bg-sky-50">
         <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-5 text-xl font-black transition hover:bg-sky-100 sm:p-6 [&::-webkit-details-marker]:hidden">
