@@ -292,12 +292,15 @@ test('mock translation questions are self-graded after submission', async ({ pag
   await page.getByRole('button', { name: '提出して採点する' }).click()
 
   await expect(page.getByText('0 / 76', { exact: true })).toBeVisible()
-  await expect(page.getByText('翻訳・自己採点 0 / 6', { exact: true })).toBeVisible()
+  await expect(page.getByText('翻訳・自己採点 未入力（0/6問）', { exact: true })).toBeVisible()
 
   const review = page.locator('details').filter({ hasText: 'Меня зовут Ира.' }).first()
   await review.locator('summary').click()
   await expect(review).toContainText('模範解答')
-  await review.getByRole('spinbutton', { name: '自己採点率' }).fill('80')
+  const selfGradeInput = review.getByRole('spinbutton', { name: '自己採点率' })
+  await selfGradeInput.fill('101')
+  await expect(review).toContainText('0〜100の整数で入力してください。')
+  await selfGradeInput.fill('80')
   await expect(review).toContainText('自己採点：80%')
   await expect(page.getByText('翻訳・自己採点 80%（1/6問）', { exact: true })).toBeVisible()
 })
@@ -319,7 +322,7 @@ test('mock section X includes Japanese-to-Russian self-graded questions', async 
   await page.getByRole('button', { name: '提出して採点する' }).click()
 
   await expect(page.getByText('0 / 76', { exact: true })).toBeVisible()
-  await expect(page.getByText('翻訳・自己採点 0 / 6', { exact: true })).toBeVisible()
+  await expect(page.getByText('翻訳・自己採点 未入力（0/6問）', { exact: true })).toBeVisible()
 
   const review = page.locator('details').filter({ hasText: '毎週日曜日、私たちは祖母の家へ歩いて行きます。' }).first()
   await review.locator('summary').click()
