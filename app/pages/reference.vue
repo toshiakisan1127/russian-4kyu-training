@@ -293,7 +293,12 @@ const travelPronouns = ['я', 'ты', 'он / она', 'мы', 'вы', 'они']
 
       <article class="mb-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 sm:p-7">
         <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Movement Verbs</p>
-        <h2 class="mb-3 text-2xl font-black">「行く」系の動詞 4つ</h2>
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="m-0 text-2xl font-black">「行く」系の動詞 4つ</h2>
+          <NuxtLink to="/verbs?filter=motion" class="inline-flex items-center rounded-full border border-emerald-300 bg-white px-3 py-2 text-sm font-black text-emerald-800 transition hover:bg-emerald-100">
+            問題集で練習 →
+          </NuxtLink>
+        </div>
         <p class="mb-5 text-sm font-bold leading-6 text-slate-700">
           徒歩か乗り物か、また一方向の移動か習慣的な移動かで動詞を使い分ける。<span style="font-family: 'PT Serif', Georgia, serif">идти́ / е́хать</span> は一方向、<span style="font-family: 'PT Serif', Georgia, serif">ходи́ть / е́здить</span> は習慣・往復を表す。
         </p>
