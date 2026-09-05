@@ -82,7 +82,7 @@ const progressGroups: ProgressGroup[] = [
   {
     key: 'vocabulary',
     label: '語彙',
-    description: '4級基本語彙550語',
+    description: '4級基本語彙579語',
     to: '/vocabulary',
     ids: vocabularyItems.map((item) => item.id),
   },
