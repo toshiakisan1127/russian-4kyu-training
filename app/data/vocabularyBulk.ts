@@ -283,7 +283,7 @@ const nounData = `
 писатель|писа́тель|作家|masculine|писатели|1
 японец|япо́нец|日本人男性|masculine|японцы|1
 выставка|вы́ставка|展示会・展覧会|feminine|выставки|0
-экскурсия|экску́рсия| экскурсия・見学|feminine|экскурсии|0
+экскурсия|экску́рсия|見学・ツアー|feminine|экскурсии|0
 композитор|компози́тор|作曲家|masculine|композиторы|1
 столовая|столо́вая|食堂|feminine|столовые|0
 собрание|собра́ние|会合・集会|neuter|собрания|0
@@ -646,6 +646,6 @@ export const bulkVocabularyItems: VocabularyItem[] = [
   ...simpleItems,
 ]
 
-if (bulkVocabularyItems.length !== 545) {
-  throw new Error(`Vocabulary pool must contain 545 bulk items, got ${bulkVocabularyItems.length}`)
+if (bulkVocabularyItems.length !== 574) {
+  throw new Error(`Vocabulary pool must contain 574 bulk items, got ${bulkVocabularyItems.length}`)
 }
