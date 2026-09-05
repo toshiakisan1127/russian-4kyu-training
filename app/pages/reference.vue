@@ -173,6 +173,43 @@ const months = [
   { word: 'дека́брь', inMonth: 'в декабре́', translation: '12月' },
 ]
 
+const travelVerbs = [
+  {
+    infinitive: 'идти́',
+    translation: '歩いて行く（今、これからの一方向の移動）',
+    note: '「今、学校へ向かっている」のように、話している時点の一回の移動に使う。',
+    example: 'Я иду́ в шко́лу.',
+    exampleTranslation: '私は学校へ歩いて行きます。',
+    forms: ['иду́', 'идёшь', 'идёт', 'идём', 'идёте', 'иду́т'],
+  },
+  {
+    infinitive: 'ходи́ть',
+    translation: '歩いて行く・通う（習慣・往復）',
+    note: '「毎日学校へ通う」「公園へ行って帰ってくる」など、反復する移動に使う。',
+    example: 'Я хожу́ в шко́лу ка́ждый де́нь.',
+    exampleTranslation: '私は毎日学校へ通います。',
+    forms: ['хожу́', 'хо́дишь', 'хо́дит', 'хо́дим', 'хо́дите', 'хо́дят'],
+  },
+  {
+    infinitive: 'е́хать',
+    translation: '乗り物で行く（今、これからの一方向の移動）',
+    note: '「今、電車でモスクワへ向かっている」のような、一回の移動に使う。',
+    example: 'Мы е́дем в Москву́.',
+    exampleTranslation: '私たちはモスクワへ乗り物で行きます。',
+    forms: ['е́ду', 'е́дешь', 'е́дет', 'е́дем', 'е́дете', 'е́дут'],
+  },
+  {
+    infinitive: 'е́здить',
+    translation: '乗り物で行く・通う（習慣・往復）',
+    note: '「毎週バスで通う」「何度も行く」など、反復する乗り物での移動に使う。',
+    example: 'Она е́здит на рабо́ту на авто́бусе.',
+    exampleTranslation: '彼女はバスで仕事に通います。',
+    forms: ['е́зжу', 'е́здишь', 'е́здит', 'е́здим', 'е́здите', 'е́здят'],
+  },
+]
+
+const travelPronouns = ['я', 'ты', 'он / она', 'мы', 'вы', 'они']
+
 </script>
 
 <template>
@@ -243,6 +280,58 @@ const months = [
         </div>
       </details>
 
+
+      
+
+      <article class="mb-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 sm:p-7">
+        <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Movement Verbs</p>
+        <h2 class="mb-3 text-2xl font-black">「行く」系の動詞 4つ</h2>
+        <p class="mb-5 text-sm font-bold leading-6 text-slate-700">
+          徒歩か乗り物か、また一方向の移動か習慣的な移動かで動詞を使い分ける。<span style="font-family: 'PT Serif', Georgia, serif">идти́ / е́хать</span> は一方向、<span style="font-family: 'PT Serif', Georgia, serif">ходи́ть / е́здить</span> は習慣・往復を表す。
+        </p>
+        <div class="grid gap-4 lg:grid-cols-2">
+          <article v-for="verb in travelVerbs" :key="verb.infinitive" class="rounded-2xl border border-emerald-100 bg-white p-4 sm:p-5">
+            <div class="flex items-start gap-2">
+              <div class="flex-1">
+                <h3 class="m-0 text-xl font-black" style="font-family: 'PT Serif', Georgia, serif">{{ verb.infinitive }}</h3>
+                <p class="mt-1 mb-0 text-sm font-bold text-emerald-700">{{ verb.translation }}</p>
+              </div>
+              <button
+                type="button"
+                class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                :disabled="!speechSupported"
+                :aria-label="verb.infinitive + 'を読み上げ'"
+                @click="speak(verb.infinitive)"
+              >🔊</button>
+            </div>
+            <p class="mt-3 mb-3 text-sm font-bold leading-6 text-slate-600">{{ verb.note }}</p>
+            <div class="overflow-x-auto rounded-xl border border-emerald-100">
+              <table class="w-full min-w-80 text-sm">
+                <thead class="bg-emerald-50 text-left text-xs font-black text-emerald-800">
+                  <tr><th class="px-3 py-2">人称</th><th class="px-3 py-2">現在形</th></tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(pronoun, index) in travelPronouns" :key="pronoun" class="border-t border-emerald-50">
+                    <td class="px-3 py-2 font-bold text-slate-600">{{ pronoun }}</td>
+                    <td class="px-3 py-2 font-bold" style="font-family: 'PT Serif', Georgia, serif">{{ verb.forms[index] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-3 flex items-start gap-2">
+              <p class="m-0 flex-1 text-sm font-bold leading-6" style="font-family: 'PT Serif', Georgia, serif">{{ verb.example }}</p>
+              <button
+                type="button"
+                class="grid size-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-sm transition hover:bg-emerald-100 disabled:opacity-40"
+                :disabled="!speechSupported"
+                :aria-label="verb.example + 'を読み上げ'"
+                @click="speak(verb.example)"
+              >🔊</button>
+            </div>
+            <p class="mt-1 mb-0 text-xs font-bold leading-5 text-slate-500">{{ verb.exampleTranslation }}</p>
+          </article>
+        </div>
+      </article>
 
       <article class="mb-5 rounded-3xl border border-violet-200 bg-violet-50 p-5 sm:p-7">
         <p class="mb-1 text-xs font-black tracking-[0.14em] text-violet-700 uppercase">Calendar & Time</p>
