@@ -38,6 +38,12 @@ const progressStorageKey = computed(() => `russian-mock-exam-progress-v1:${activ
 
 const phase = ref<Phase>('intro')
 const reviewFilter = ref<ReviewFilter>('all')
+const reviewFilters = [
+  { id: 'all', label: 'すべて' },
+  { id: 'grammar', label: '文法' },
+  { id: 'russian-to-japanese', label: '露文和訳' },
+  { id: 'japanese-to-russian', label: '和文露訳' },
+] as const
 const reviewAnswers = ref<Record<string, string | number>>({})
 const currentSectionIndex = ref(0)
 const answers = ref<Record<string, string | number>>({})
@@ -1190,12 +1196,7 @@ onBeforeUnmount(() => {
 
           <div class="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <button
-              v-for="filter in ([
-                { id: 'all', label: 'すべて' },
-                { id: 'grammar', label: '文法' },
-                { id: 'russian-to-japanese', label: '露文和訳' },
-                { id: 'japanese-to-russian', label: '和文露訳' },
-              ] satisfies { id: ReviewFilter; label: string }[])"
+              v-for="filter in reviewFilters"
               :key="filter.id"
               type="button"
               class="min-h-11 rounded-xl border px-3 py-2 text-sm font-black transition"
