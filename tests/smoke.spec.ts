@@ -218,8 +218,8 @@ test('mock exam progress resumes and resets after submission', async ({ page }) 
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
 
   await page.reload({ waitUntil: 'networkidle' })
-  await expect(page.getByRole('button', { name: '続きから再開' })).not.toBeVisible()
-  await expect(page.getByRole('button', { name: '模試を開始する' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'もう一度、第1回を解く' })).toBeVisible()
 })
 
 test('mock section navigation returns to the top', async ({ page }) => {
