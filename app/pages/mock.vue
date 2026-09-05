@@ -381,12 +381,6 @@ onBeforeUnmount(() => {
 <template>
   <main class="min-h-screen bg-slate-50 px-4 py-8 text-slate-950 sm:py-12">
     <section class="mx-auto w-full max-w-5xl">
-      <NuxtLink
-        to="/"
-        class="mb-4 inline-flex items-center gap-1 text-sm font-bold text-amber-800 transition hover:text-amber-950"
-      >
-        ← トップへ戻る
-      </NuxtLink>
 
       <div v-if="phase === 'intro'" class="rounded-3xl border border-amber-200 bg-white p-5 shadow-xl shadow-amber-100/60 sm:p-8">
         <header class="mb-8">

@@ -70,6 +70,7 @@ const reloadPage = () => {
 </script>
 
 <template>
+  <Breadcrumbs />
   <NuxtPage />
 
   <div class="fixed top-3 right-3 z-50 flex items-start gap-2">

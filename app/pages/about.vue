@@ -7,9 +7,6 @@ useHead({
 <template>
   <main class="min-h-screen bg-slate-50 px-4 py-8 text-slate-950 sm:py-12">
     <section class="mx-auto w-full max-w-4xl">
-      <NuxtLink to="/" class="mb-5 inline-flex items-center gap-1 text-sm font-bold text-indigo-700 transition hover:text-indigo-900">
-        ← トップへ戻る
-      </NuxtLink>
 
       <header class="mb-8">
         <p class="mb-2 text-xs font-black tracking-[0.16em] text-indigo-600 uppercase">About this site</p>
