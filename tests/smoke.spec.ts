@@ -303,6 +303,12 @@ test('mock translation questions are self-graded after submission', async ({ pag
   await selfGradeInput.fill('80')
   await expect(review).toContainText('自己採点：80%')
   await expect(page.getByText('翻訳・自己採点 80%（1/6問）', { exact: true })).toBeVisible()
+
+  await page.reload({ waitUntil: 'networkidle' })
+  await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
+  const restoredReview = page.locator('details').filter({ hasText: 'Меня зовут Ира.' }).first()
+  await restoredReview.locator('summary').click()
+  await expect(restoredReview.getByRole('spinbutton', { name: '自己採点率' })).toHaveValue('80')
 })
 
 test('mock section X includes Japanese-to-Russian self-graded questions', async ({ page }) => {
