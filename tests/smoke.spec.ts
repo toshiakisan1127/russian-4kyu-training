@@ -109,6 +109,41 @@ test('about page shows the build timestamp', async ({ page }) => {
   await expect(lastUpdated).toContainText(/\d{4}年\d{1,2}月\d{1,2}日/)
 })
 
+
+test('movement reference cards contain explanations on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto(`${appBasePath}/reference`, { waitUntil: 'networkidle' })
+
+  const movementSection = page.locator('article').filter({ hasText: '「行く」系の動詞 4つ' }).first()
+  const cards = movementSection.locator(':scope > div.grid > article')
+  await expect(cards).toHaveCount(4)
+
+  const overflow = await movementSection.evaluate((section) => {
+    const sectionRect = section.getBoundingClientRect()
+    const cardNodes = [...section.querySelectorAll(':scope > div.grid > article')]
+
+    return cardNodes.flatMap((card) => {
+      const cardRect = card.getBoundingClientRect()
+      const descendants = [...card.querySelectorAll('h3, p, table, button')]
+      const offenders = descendants.filter((element) => {
+        const rect = element.getBoundingClientRect()
+        return rect.left < cardRect.left - 1
+          || rect.right > cardRect.right + 1
+          || rect.left < sectionRect.left - 1
+          || rect.right > sectionRect.right + 1
+      })
+
+      return offenders.map((element) => ({
+        card: card.querySelector('h3')?.textContent?.trim(),
+        element: element.tagName.toLowerCase(),
+        text: element.textContent?.trim().slice(0, 80),
+      }))
+    })
+  })
+
+  expect(overflow).toEqual([])
+})
+
 test('mock status card scrolls away and avoids fixed utility controls', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: '模試を開始する' }).click()
