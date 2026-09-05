@@ -408,9 +408,16 @@ test('mock review mode filters saved targets without removing them', async ({ pa
   await page.getByRole('button', { name: '和文露訳' }).click()
   await expect(reviewItems).toHaveCount(5)
   await expect(reviewItems.first()).toContainText('毎週日曜日、私たちは祖母の家へ歩いて行きます。')
+  for (const [index, percentage] of [100, 80, 60, 40, 20].entries()) {
+    await reviewItems.nth(index).getByRole('spinbutton', { name: '自己採点率' }).fill(String(percentage))
+  }
 
   await page.getByRole('button', { name: '結果に戻る' }).click()
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
+  const japaneseToRussianCategory = page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })
+  await expect(japaneseToRussianCategory).toContainText('60%')
+  await expect(japaneseToRussianCategory).toContainText('合格')
+
   await page.getByRole('button', { name: '間違えた問題を復習する' }).click()
   await page.getByRole('button', { name: '露文和訳' }).click()
   await expect(reviewItems).toHaveCount(1)
