@@ -346,7 +346,24 @@ test('mock section X includes Japanese-to-Russian self-graded questions', async 
   await review.getByRole('spinbutton', { name: '自己採点率' }).fill('60')
   await expect(review).toContainText('自己採点：60%')
   await expect(page.getByText('翻訳・自己採点 60%（1/6問）', { exact: true })).toBeVisible()
-  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })).toContainText('合格')
+  await expect(page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })).toContainText('未入力')
+
+  const japaneseToRussianGrades = [
+    ['昨日、オレグは学校で友だちとロシア語を話しました。', 80],
+    ['明日の朝、彼女はバスで仕事へ行くでしょう。', 60],
+    ['私たちの教室には大きな窓があります。', 40],
+    ['私は夏に海で泳ぐのが好きです。', 20],
+  ] as const
+  for (const [prompt, percentage] of japaneseToRussianGrades) {
+    const questionReview = page.locator('details').filter({ hasText: prompt }).first()
+    await questionReview.locator('summary').click()
+    await questionReview.getByRole('spinbutton', { name: '自己採点率' }).fill(String(percentage))
+  }
+
+  await expect(page.getByText('翻訳・自己採点 60%（5/6問）', { exact: true })).toBeVisible()
+  const japaneseToRussianCategory = page.getByTestId('mock-category-results').locator('article').filter({ hasText: '和文露訳' })
+  await expect(japaneseToRussianCategory).toContainText('60%')
+  await expect(japaneseToRussianCategory).toContainText('合格')
 })
 
 test('mock written answers accept accentless spelling', async ({ page }) => {
@@ -408,9 +425,6 @@ test('mock review mode filters saved targets without removing them', async ({ pa
   await page.getByRole('button', { name: '和文露訳' }).click()
   await expect(reviewItems).toHaveCount(5)
   await expect(reviewItems.first()).toContainText('毎週日曜日、私たちは祖母の家へ歩いて行きます。')
-  for (const [index, percentage] of [100, 80, 60, 40, 20].entries()) {
-    await reviewItems.nth(index).getByRole('spinbutton', { name: '自己採点率' }).fill(String(percentage))
-  }
 
   await page.getByRole('button', { name: '結果に戻る' }).click()
   await expect(page.getByRole('heading', { name: '採点結果' })).toBeVisible()
