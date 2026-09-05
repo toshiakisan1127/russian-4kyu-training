@@ -256,7 +256,7 @@ test('mock section II question 3 has a distinct stress position answer', async (
   await status.locator('nav button').nth(7).click()
   await status.locator('nav button').last().click()
   await page.getByRole('button', { name: '提出して採点する' }).click()
-  await expect(page.getByText('1 / 71', { exact: true })).toBeVisible()
+  await expect(page.getByText('1 / 76', { exact: true })).toBeVisible()
 })
 
 test('mock section IV matches the stress-tap input UI', async ({ page }) => {
@@ -290,12 +290,38 @@ test('mock translation questions are self-graded after submission', async ({ pag
 
   await page.getByRole('button', { name: '提出して採点する' }).click()
 
-  await expect(page.getByText('0 / 71', { exact: true })).toBeVisible()
-  await expect(page.getByText('翻訳・自己採点 0 / 1', { exact: true })).toBeVisible()
+  await expect(page.getByText('0 / 76', { exact: true })).toBeVisible()
+  await expect(page.getByText('翻訳・自己採点 0 / 2', { exact: true })).toBeVisible()
 
   const review = page.locator('details').filter({ hasText: 'Меня зовут Ира.' }).first()
   await review.locator('summary').click()
   await expect(review).toContainText('模範解答')
+  await expect(review.getByRole('button', { name: 'できた' })).toBeVisible()
+})
+
+test('mock section X includes Japanese-to-Russian self-graded questions', async ({ page }) => {
+  await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
+  await page.evaluate(() => window.localStorage.removeItem('russian-mock-exam-progress-v1:mock-1'))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.getByRole('button', { name: '模試を開始する' }).click()
+
+  const status = page.locator('[data-testid="mock-exam-status"]')
+  await status.locator('summary').click()
+  await status.locator('nav button').nth(9).click()
+
+  await expect(page.locator('article')).toHaveCount(5)
+  await expect(page.locator('article').first()).toContainText('毎週日曜日、私たちは祖母の家へ歩いて行きます。')
+  await page.locator('article').first().locator('textarea').fill('Каждое воскресенье мы ходим пешком к бабушке.')
+
+  await page.getByRole('button', { name: '提出して採点する' }).click()
+
+  await expect(page.getByText('0 / 76', { exact: true })).toBeVisible()
+  await expect(page.getByText('翻訳・自己採点 0 / 2', { exact: true })).toBeVisible()
+
+  const review = page.locator('details').filter({ hasText: '毎週日曜日、私たちは祖母の家へ歩いて行きます。' }).first()
+  await review.locator('summary').click()
+  await expect(review).toContainText('模範解答')
+  await expect(review).toContainText('Ка́ждое воскресе́нье мы хо́дим пешко́м к ба́бушке.')
   await expect(review.getByRole('button', { name: 'できた' })).toBeVisible()
 })
 
@@ -325,5 +351,5 @@ test('mock written answers accept accentless spelling', async ({ page }) => {
   await expect(page.locator('body')).toContainText('бу́дем чита́ть')
   await expect(page.locator('body')).toContainText('бу́дете идти́')
   await expect(page.locator('body')).toContainText('бу́дут учи́ться')
-  await expect(page.getByText('4 / 71', { exact: true })).toBeVisible()
+  await expect(page.getByText('4 / 76', { exact: true })).toBeVisible()
 })
