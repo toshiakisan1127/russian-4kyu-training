@@ -32,6 +32,43 @@ for (const route of routes) {
   })
 }
 
+const breadcrumbCases = [
+  { route: '/about', parent: 'ホーム', current: 'このサイトについて' },
+  { route: '/reference', parent: 'ホーム', current: '4級重要表現まとめ' },
+  { route: '/reading', parent: 'ホーム', current: '朗読対策' },
+  { route: '/mock', parent: 'ホーム', current: '模擬試験' },
+  { route: '/prepositions', parent: '分野別トレーニング', current: '前置詞トレーニング' },
+  { route: '/cases', parent: '分野別トレーニング', current: '格変化トレーニング' },
+  { route: '/verbs', parent: '分野別トレーニング', current: '動詞トレーニング' },
+  { route: '/verbs?filter=motion', parent: '動詞トレーニング', current: '行く系動詞トレーニング' },
+  { route: '/mixed', parent: '分野別トレーニング', current: '総合トレーニング' },
+  { route: '/vocabulary', parent: '分野別トレーニング', current: '語彙トレーニング' },
+  { route: '/translations/ru-ja', parent: '翻訳トレーニング', current: '露文和訳' },
+  { route: '/translations/ja-ru', parent: '翻訳トレーニング', current: '和文露訳' },
+  { route: '/sections/1', parent: '大問別問題集', current: '第I問・発音' },
+  { route: '/sections/8', parent: '大問別問題集', current: '第VIII問・過去形と未来形' },
+] as const
+
+for (const breadcrumb of breadcrumbCases) {
+  test(`${breadcrumb.route} shows breadcrumbs`, async ({ page }) => {
+    await page.goto(`${appBasePath}${breadcrumb.route}`, { waitUntil: 'networkidle' })
+
+    const nav = page.getByRole('navigation', { name: 'パンくずリスト' })
+    await expect(nav).toBeVisible()
+    await expect(nav.getByRole('link', { name: 'ホーム' })).toBeVisible()
+    await expect(nav.locator('[aria-current="page"]')).toHaveText(breadcrumb.current)
+
+    if (breadcrumb.parent !== 'ホーム') {
+      await expect(nav).toContainText(breadcrumb.parent)
+    }
+  })
+}
+
+test('home does not show breadcrumbs', async ({ page }) => {
+  await page.goto(appBasePath, { waitUntil: 'networkidle' })
+  await expect(page.getByRole('navigation', { name: 'パンくずリスト' })).toHaveCount(0)
+})
+
 test('mock status card scrolls away and avoids fixed utility controls', async ({ page }) => {
   await page.goto(`${appBasePath}/mock`, { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: '模試を開始する' }).click()
