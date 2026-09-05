@@ -264,6 +264,45 @@ const selfGradeSectionLabel = (section: MockSection) => {
   return `${average}%（${gradedCount}/${questions.length}問）`
 }
 
+const grammarSections = computed(() =>
+  activeExam.value.sections.filter((section) => ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'].includes(section.roman)),
+)
+const grammarEntries = computed(() =>
+  scoredEntries.value.filter((entry) =>
+    grammarSections.value.some((section) => section.questions.includes(entry.question)),
+  ),
+)
+const grammarCorrectCount = computed(() =>
+  grammarEntries.value.filter((entry) => isEntryCorrect(entry)).length,
+)
+const grammarPercentage = computed(() =>
+  grammarEntries.value.length === 0 ? null : Math.round((grammarCorrectCount.value / grammarEntries.value.length) * 100),
+)
+const resultStatus = (percentage: number | null) => {
+  if (percentage === null) return '未入力'
+  return percentage >= 60 ? '合格' : '未達'
+}
+const categoryResults = computed(() => [
+  {
+    id: 'grammar',
+    label: '文法',
+    percentage: grammarPercentage.value,
+    detail: `${grammarCorrectCount.value} / ${grammarEntries.value.length}問`,
+  },
+  {
+    id: 'russian-to-japanese',
+    label: '露文和訳',
+    percentage: selfGradeSectionAverage(activeExam.value.sections.find((section) => section.roman === 'IX')!),
+    detail: '自己採点',
+  },
+  {
+    id: 'japanese-to-russian',
+    label: '和文露訳',
+    percentage: selfGradeSectionAverage(activeExam.value.sections.find((section) => section.roman === 'X')!),
+    detail: '自己採点',
+  },
+])
+
 const clearSavedProgress = () => {
   if (typeof window !== 'undefined') {
     window.localStorage.removeItem(progressStorageKey.value)
@@ -817,6 +856,41 @@ onBeforeUnmount(() => {
           <p class="mt-3 mb-0 text-sm leading-6 text-slate-500">
             記述式の設問は、各入力欄をそれぞれ採点しています。
           </p>
+        </section>
+
+        <section data-testid="mock-category-results" class="rounded-3xl border border-sky-200 bg-white p-5 shadow-xl shadow-sky-100/60 sm:p-8">
+          <div class="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <p class="mb-1 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">Previous Result</p>
+              <h2 class="m-0 text-xl font-black">分野別結果</h2>
+            </div>
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">合格基準 60%</span>
+          </div>
+          <div class="grid gap-3 md:grid-cols-3">
+            <article
+              v-for="category in categoryResults"
+              :key="category.id"
+              class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="m-0 font-black">{{ category.label }}</h3>
+                <span
+                  class="rounded-full px-2 py-1 text-xs font-black"
+                  :class="resultStatus(category.percentage) === '合格'
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : resultStatus(category.percentage) === '未達'
+                      ? 'bg-rose-100 text-rose-800'
+                      : 'bg-slate-200 text-slate-700'"
+                >
+                  {{ resultStatus(category.percentage) === '合格' ? '✓ 合格' : resultStatus(category.percentage) }}
+                </span>
+              </div>
+              <p class="mt-3 mb-1 text-3xl font-black text-slate-900">
+                {{ category.percentage === null ? '未入力' : category.percentage + '%' }}
+              </p>
+              <p class="m-0 text-sm font-bold text-slate-500">{{ category.detail }}</p>
+            </article>
+          </div>
         </section>
 
         <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/50 sm:p-8">
