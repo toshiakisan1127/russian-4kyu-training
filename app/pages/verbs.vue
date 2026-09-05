@@ -32,7 +32,8 @@ const categoryLabels: Record<VerbTrainingCategory, string> = {
   aspect: '完了体・不完了体',
 }
 
-const selectedFilter = ref<FilterKey>('all')
+const route = useRoute()
+const selectedFilter = ref<FilterKey>(route.query.filter === 'motion' ? 'motion' : 'all')
 
 const filteredPool = computed(() => selectedFilter.value === 'all'
   ? verbTrainingQuestions
@@ -196,8 +197,8 @@ const choiceClasses = (choice: string) => {
         <header class="mb-6 flex items-start justify-between gap-4">
           <div>
             <p class="mb-1 text-xs font-black tracking-[0.14em] text-indigo-700 uppercase">Training</p>
-            <h1 class="text-2xl font-black tracking-tight sm:text-3xl">動詞トレーニング</h1>
-            <p class="mt-1 mb-0 text-xs font-bold text-slate-500">{{ verbTrainingQuestions.length }}問から分野を選んで10問</p>
+            <h1 class="text-2xl font-black tracking-tight sm:text-3xl">{{ selectedFilter === 'motion' ? '行く系動詞トレーニング' : '動詞トレーニング' }}</h1>
+            <p class="mt-1 mb-0 text-xs font-bold text-slate-500">{{ selectedFilter === 'motion' ? '移動動詞の問題から10問' : verbTrainingQuestions.length + '問から分野を選んで10問' }}</p>
           </div>
           <span class="shrink-0 rounded-full bg-indigo-700 px-3 py-1.5 text-sm font-black text-white">
             {{ Math.min(currentIndex + 1, questionSet.length) }} / {{ questionSet.length }}
