@@ -44,6 +44,7 @@ const nounSpecialDeclensions: Record<string, Record<RussianCase, string>> = {
   ботинок: { nominative: 'ботинок', genitive: 'ботинка', dative: 'ботинку', accusative: 'ботинок', instrumental: 'ботинком', prepositional: 'ботинке' },
   цветок: { nominative: 'цветок', genitive: 'цветка', dative: 'цветку', accusative: 'цветок', instrumental: 'цветком', prepositional: 'цветке' },
   ванная: { nominative: 'ванная', genitive: 'ванной', dative: 'ванной', accusative: 'ванную', instrumental: 'ванной', prepositional: 'ванной' },
+  столовая: { nominative: 'столовая', genitive: 'столовой', dative: 'столовой', accusative: 'столовую', instrumental: 'столовой', prepositional: 'столовой' },
   животное: { nominative: 'животное', genitive: 'животного', dative: 'животному', accusative: 'животное', instrumental: 'животным', prepositional: 'животном' },
 }
 
@@ -179,6 +180,7 @@ const verbOverrides: Record<string, readonly [string, string, string, string, st
   мочь: ['могу', 'можешь', 'может', 'можем', 'можете', 'могут'],
   хотеть: ['хочу', 'хочешь', 'хочет', 'хотим', 'хотите', 'хотят'],
   видеть: ['вижу', 'видишь', 'видит', 'видим', 'видите', 'видят'],
+  висеть: ['вишу', 'висишь', 'висит', 'висим', 'висите', 'висят'],
   идти: ['иду', 'идёшь', 'идёт', 'идём', 'идёте', 'идут'],
   стоять: ['стою', 'стоишь', 'стоит', 'стоим', 'стоите', 'стоят'],
   жить: ['живу', 'живёшь', 'живёт', 'живём', 'живёте', 'живут'],
