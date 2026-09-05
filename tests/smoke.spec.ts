@@ -78,7 +78,9 @@ test('reference page shows irregular noun plurals', async ({ page }) => {
   await expect(section).toContainText('челове́к')
   await expect(section).toContainText('лю́ди')
   await expect(section).toContainText('жёны')
-  await expect(section.locator('[data-testid="irregular-plural-item"]')).toHaveCount(17)
+  await expect(section).toContainText('го́род')
+  await expect(section).toContainText('города́')
+  await expect(section.locator('[data-testid="irregular-plural-item"]')).toHaveCount(18)
   await expect(section.locator('button')).toHaveCount(34)
 })
 
