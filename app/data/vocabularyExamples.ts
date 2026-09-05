@@ -45,8 +45,8 @@ for (const [word, example] of Object.entries(vocabularyExampleLevel4Corrections)
 
 export const vocabularyExampleCount = exampleMap.size
 
-if (vocabularyExampleCount !== 550) {
-  throw new Error(`Vocabulary example catalog must contain 550 items, got ${vocabularyExampleCount}`)
+if (vocabularyExampleCount !== 579) {
+  throw new Error(`Vocabulary example catalog must contain 579 items, got ${vocabularyExampleCount}`)
 }
 
 export const getVocabularyExample = (word: string): VocabularyExample => {
