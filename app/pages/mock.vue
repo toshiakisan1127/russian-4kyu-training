@@ -20,6 +20,8 @@ type SavedExamProgress = {
   timeLeft: number
 }
 
+type SelfGradeValues = Record<string, number>
+
 const selectedExamIndex = ref(0)
 const activeExam = computed(() => mockExams[selectedExamIndex.value] ?? mockExams[0]!)
 const progressStorageKey = computed(() => `russian-mock-exam-progress-v1:${activeExam.value.id}`)
@@ -27,7 +29,9 @@ const progressStorageKey = computed(() => `russian-mock-exam-progress-v1:${activ
 const phase = ref<Phase>('intro')
 const currentSectionIndex = ref(0)
 const answers = ref<Record<string, string | number>>({})
-const selfGrades = ref<Record<string, boolean>>({})
+const selfGrades = ref<SelfGradeValues>({})
+const selfGradeInputs = ref<Record<string, string>>({})
+const selfGradeErrors = ref<Record<string, string>>({})
 const timeLeft = ref(activeExam.value.durationMinutes * 60)
 const hasSavedProgress = ref(false)
 const speechSupported = ref(false)
@@ -62,8 +66,18 @@ const selfGradeQuestions = computed(() =>
 )
 const totalExamAnswerFields = computed(() => answerEntries.value.length)
 const scoredEntries = computed(() => answerEntries.value.filter((entry) => !isSelfGradeQuestion(entry.question)))
-const selfGradedCorrectCount = computed(() =>
-  selfGradeQuestions.value.filter((question) => selfGrades.value[question.id] === true).length,
+const selfGradedCount = computed(() =>
+  selfGradeQuestions.value.filter((question) => typeof selfGrades.value[question.id] === 'number').length,
+)
+const selfGradeAverage = computed(() => {
+  if (selfGradedCount.value === 0) return null
+  const total = selfGradeQuestions.value.reduce((sum, question) => sum + (selfGrades.value[question.id] ?? 0), 0)
+  return Math.round(total / selfGradedCount.value)
+})
+const selfGradeSummary = computed(() =>
+  selfGradeAverage.value === null
+    ? `未入力（0/${selfGradeQuestions.value.length}問）`
+    : `${selfGradeAverage.value}%（${selfGradedCount.value}/${selfGradeQuestions.value.length}問）`,
 )
 
 const answeredCount = computed(() =>
@@ -138,6 +152,67 @@ const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60).toString().padStart(2, '0')
   const remaining = (seconds % 60).toString().padStart(2, '0')
   return minutes + ':' + remaining
+}
+
+const selfGradeStorageKey = computed(() => `russian-mock-exam-self-grades-v1:${activeExam.value.id}`)
+
+const clearSavedSelfGrades = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(selfGradeStorageKey.value)
+  }
+  selfGrades.value = {}
+  selfGradeInputs.value = {}
+  selfGradeErrors.value = {}
+}
+
+const saveSelfGrades = () => {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(selfGradeStorageKey.value, JSON.stringify(selfGrades.value))
+}
+
+const loadSelfGrades = () => {
+  if (typeof window === 'undefined') return
+
+  const raw = window.localStorage.getItem(selfGradeStorageKey.value)
+  if (!raw) {
+    selfGrades.value = {}
+    selfGradeInputs.value = {}
+    selfGradeErrors.value = {}
+    return
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>
+    const validValues = Object.fromEntries(
+      Object.entries(parsed).filter(([, value]) =>
+        typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 100,
+      ),
+    ) as SelfGradeValues
+    selfGrades.value = validValues
+    selfGradeInputs.value = Object.fromEntries(
+      Object.entries(validValues).map(([questionId, value]) => [questionId, String(value)]),
+    )
+    selfGradeErrors.value = {}
+  } catch {
+    clearSavedSelfGrades()
+  }
+}
+
+const selfGradeSectionAverage = (section: MockSection) => {
+  const questions = section.questions.filter(isSelfGradeQuestion)
+  const values = questions
+    .map((question) => selfGrades.value[question.id])
+    .filter((value): value is number => typeof value === 'number')
+  if (values.length === 0) return null
+  return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
+}
+
+const selfGradeSectionLabel = (section: MockSection) => {
+  const questions = section.questions.filter(isSelfGradeQuestion)
+  const average = selfGradeSectionAverage(section)
+  if (average === null) return `未入力（0/${questions.length}問）`
+  const gradedCount = questions.filter((question) => typeof selfGrades.value[question.id] === 'number').length
+  return `${average}%（${gradedCount}/${questions.length}問）`
 }
 
 const clearSavedProgress = () => {
@@ -220,7 +295,7 @@ const startTimer = () => {
 const selectExam = () => {
   if (phase.value !== 'intro') return
   answers.value = {}
-  selfGrades.value = {}
+  clearSavedSelfGrades()
   currentSectionIndex.value = 0
   timeLeft.value = activeExam.value.durationMinutes * 60
   loadSavedProgress()
@@ -231,7 +306,7 @@ const startExam = () => {
   phase.value = 'exam'
   currentSectionIndex.value = 0
   answers.value = {}
-  selfGrades.value = {}
+  clearSavedSelfGrades()
   timeLeft.value = activeExam.value.durationMinutes * 60
   saveProgress()
   startTimer()
@@ -245,7 +320,7 @@ const resumeExam = () => {
   }
 
   phase.value = 'exam'
-  selfGrades.value = {}
+  loadSelfGrades()
   startTimer()
 }
 
@@ -262,6 +337,7 @@ const restart = () => {
   phase.value = 'intro'
   currentSectionIndex.value = 0
   answers.value = {}
+  clearSavedSelfGrades()
   timeLeft.value = activeExam.value.durationMinutes * 60
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -304,14 +380,32 @@ const isEntryCorrect = (entry: AnswerEntry) => {
 
 const selfGradeStatus = (question: MockQuestion) => {
   if (!isSelfGradeQuestion(question)) return ''
-  return selfGrades.value[question.id] === undefined
-    ? '未採点'
-    : selfGrades.value[question.id] ? 'できた' : '要復習'
+  const value = selfGrades.value[question.id]
+  return typeof value === 'number' ? value + '%' : '未採点'
 }
 
-const setSelfGrade = (question: MockQuestion, correct: boolean) => {
+const selfGradeInputValue = (question: MockQuestion) => {
+  if (!isSelfGradeQuestion(question)) return ''
+  return selfGradeInputs.value[question.id] ?? ''
+}
+
+const setSelfGradePercentage = (question: MockQuestion, event: Event) => {
   if (!isSelfGradeQuestion(question)) return
-  selfGrades.value[question.id] = correct
+
+  const target = event.target as HTMLInputElement
+  const rawValue = target.value.trim()
+  selfGradeInputs.value[question.id] = rawValue
+
+  if (rawValue === '' || !/^\d+$/u.test(rawValue) || Number(rawValue) < 0 || Number(rawValue) > 100) {
+    delete selfGrades.value[question.id]
+    selfGradeErrors.value[question.id] = '0〜100の整数で入力してください。'
+    saveSelfGrades()
+    return
+  }
+
+  selfGrades.value[question.id] = Number(rawValue)
+  delete selfGradeErrors.value[question.id]
+  saveSelfGrades()
 }
 
 const selectedChoiceText = (question: MockQuestion) => {
@@ -369,6 +463,7 @@ const goPrevious = () => {
 onMounted(() => {
   speechSupported.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
   loadSavedProgress()
+  loadSelfGrades()
 })
 
 onBeforeUnmount(() => {
@@ -662,7 +757,7 @@ onBeforeUnmount(() => {
           <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Result · Mock Exam 1</p>
           <h1 class="mb-3 text-2xl font-black sm:text-3xl">採点結果</h1>
           <p class="m-0 text-5xl font-black text-emerald-700">{{ totalCorrect }} / {{ activeExam.totalAnswerFields }}</p>
-          <p class="mt-3 mb-0 text-lg font-black text-sky-700">翻訳・自己採点 {{ selfGradedCorrectCount }} / {{ selfGradeQuestions.length }}</p>
+          <p class="mt-3 mb-0 text-lg font-black text-sky-700">翻訳・自己採点 {{ selfGradeSummary }}</p>
           <p class="mt-3 mb-0 font-bold text-slate-600">解答欄ベースの正答率 {{ scorePercentage }}%</p>
           <p class="mt-3 mb-0 text-sm leading-6 text-slate-500">
             記述式の設問は、各入力欄をそれぞれ採点しています。
@@ -679,7 +774,10 @@ onBeforeUnmount(() => {
             >
               <div class="flex items-center justify-between gap-3">
                 <span class="font-black">第{{ section.roman }}問・{{ section.title }}</span>
-                <strong class="text-emerald-700">{{ sectionCorrectCount(section) }} / {{ sectionTotalAnswerFields(section) }}</strong>
+                <strong class="text-emerald-700">
+                  <template v-if="section.questions.some(isSelfGradeQuestion)">自己採点 {{ selfGradeSectionLabel(section) }}</template>
+                  <template v-else>{{ sectionCorrectCount(section) }} / {{ sectionTotalAnswerFields(section) }}</template>
+                </strong>
               </div>
               <p class="mt-2 mb-0 text-xs font-bold text-slate-500">解答済み {{ sectionAnsweredCount(section) }}欄</p>
             </div>
@@ -779,21 +877,32 @@ onBeforeUnmount(() => {
                     <p class="mb-1 text-xs font-black text-violet-900">自己採点のポイント</p>
                     <p class="m-0 leading-7 text-slate-700">{{ question.fields[0]?.explanation }}</p>
                   </div>
-                  <div v-if="selfGrades[question.id] === undefined" class="mt-4 grid gap-3 sm:grid-cols-2">
-                    <button
-                      type="button"
-                      class="min-h-12 rounded-xl border-2 border-amber-400 bg-amber-50 px-4 py-2 font-black text-amber-900 transition hover:bg-amber-100"
-                      @click="setSelfGrade(question, false)"
-                    >要復習</button>
-                    <button
-                      type="button"
-                      class="min-h-12 rounded-xl bg-emerald-600 px-4 py-2 font-black text-white transition hover:bg-emerald-700"
-                      @click="setSelfGrade(question, true)"
-                    >できた</button>
+                  <div class="mt-4 rounded-xl border border-violet-200 bg-violet-50 p-4">
+                    <label class="block">
+                      <span class="mb-2 block text-sm font-black text-violet-900">自己採点率（0〜100%）</span>
+                      <div class="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="1"
+                          inputmode="numeric"
+                          :value="selfGradeInputValue(question)"
+                          aria-label="自己採点率"
+                          class="min-h-12 w-full rounded-xl border border-violet-300 bg-white px-3 py-2 text-lg font-black text-slate-900 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
+                          placeholder="例：80"
+                          @input="setSelfGradePercentage(question, $event)"
+                        >
+                        <span class="text-lg font-black text-violet-900">%</span>
+                      </div>
+                    </label>
+                    <p v-if="selfGradeErrors[question.id]" class="mt-2 mb-0 text-sm font-bold text-rose-700">
+                      {{ selfGradeErrors[question.id] }}
+                    </p>
+                    <p class="mt-3 mb-0 text-sm font-bold text-slate-700">
+                      自己採点：{{ selfGradeStatus(question) }}
+                    </p>
                   </div>
-                  <p v-else class="mt-4 rounded-xl bg-slate-100 px-4 py-3 text-center text-sm font-bold text-slate-700">
-                    自己採点：{{ selfGradeStatus(question) }}
-                  </p>
                 </template>
                 <template v-else>
                   <div v-if="question.completedSentence || question.translation" class="rounded-xl border border-sky-200 bg-sky-50 p-4">
