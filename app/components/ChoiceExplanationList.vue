@@ -5,18 +5,22 @@ type ChoiceDetail = {
   isCorrect?: boolean
 }
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   choices: readonly ChoiceDetail[]
   title?: string
 }>(), {
   title: '他の選択肢も確認',
 })
+
+const displayTitle = computed(() => (
+  props.title === '意味の選択肢を確認' ? '他の選択肢も確認' : props.title
+))
 </script>
 
 <template>
   <details v-if="choices.length > 0" class="group mb-7 overflow-hidden rounded-2xl border border-slate-200 bg-white">
     <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-base font-black transition hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
-      <span>{{ title }}</span>
+      <span>{{ displayTitle }}</span>
       <span class="text-lg transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
     </summary>
     <div class="border-t border-slate-200 px-4">
