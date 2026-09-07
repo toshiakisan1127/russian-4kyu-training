@@ -1,5 +1,8 @@
 import tailwindcss from '@tailwindcss/vite'
 
+const baseURL = process.env.NUXT_APP_BASE_URL ?? '/russian-4kyu-training/'
+const assetUrl = (path: string) => `${baseURL.replace(/\/$/, '')}/${path}`
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
@@ -13,7 +16,7 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
   app: {
-    baseURL: '/russian-4kyu-training/',
+    baseURL,
     head: {
       htmlAttrs: { lang: 'ja' },
       title: 'ロシア語4級トレーニング',
@@ -28,9 +31,9 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-title', content: 'ロシア語4級' },
       ],
       link: [
-        { rel: 'manifest', href: '/russian-4kyu-training/manifest.webmanifest' },
-        { rel: 'icon', href: '/russian-4kyu-training/icon.svg', type: 'image/svg+xml' },
-        { rel: 'apple-touch-icon', href: '/russian-4kyu-training/icon.svg' },
+        { rel: 'manifest', href: assetUrl('manifest.webmanifest') },
+        { rel: 'icon', href: assetUrl('icon.svg'), type: 'image/svg+xml' },
+        { rel: 'apple-touch-icon', href: assetUrl('icon.svg') },
       ],
     },
   },
