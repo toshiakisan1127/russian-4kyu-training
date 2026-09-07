@@ -109,6 +109,20 @@ useHead({
         </div>
       </section>
 
+      <section class="mt-5 rounded-3xl border border-violet-200 bg-violet-50 p-5 sm:p-7">
+        <p class="mb-1 text-xs font-black tracking-[0.14em] text-violet-700 uppercase">Feedback</p>
+        <h2 class="mb-3 text-xl font-black sm:text-2xl">要望・不具合を教えてください</h2>
+        <p class="mb-5 leading-7 text-slate-700">
+          欲しい機能や使いにくいところ、不具合などのフィードバックを受け付けています。GitHubアカウントがある方はIssueから、ない方は簡易フォームから送れます。
+        </p>
+        <NuxtLink
+          to="/feedback"
+          class="inline-flex items-center gap-2 rounded-2xl bg-violet-700 px-4 py-3 text-sm font-black text-white transition hover:bg-violet-800"
+        >
+          要望・不具合報告へ →
+        </NuxtLink>
+      </section>
+
       <footer class="mt-5 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm">
         <span class="font-black text-slate-600">サイト情報</span>
         <p class="m-0 font-bold text-slate-500">

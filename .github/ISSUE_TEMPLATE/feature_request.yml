@@ -1,0 +1,40 @@
+name: ✨ 機能要望
+description: ロシア語4級トレーニングへの機能追加・改善の要望
+title: "[要望] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ご要望ありがとうございます！
+        「こんな機能が欲しい」「ここをもっと使いやすくしてほしい」など、気軽にお寄せください。
+
+  - type: textarea
+    id: request
+    attributes:
+      label: どんな機能・改善が欲しいですか？
+      placeholder: 例）間違えた単語だけをまとめて復習できるようにしてほしい
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: どんなときに欲しいと感じましたか？
+      description: 利用場面や困っていることがあれば教えてください。
+      placeholder: 例）語彙トレーニング後に、間違えた問題だけもう一度解きたい
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: こんな形だと嬉しい、という案があれば教えてください
+      description: 具体的なアイデアがなければ空欄でOKです。
+
+  - type: checkboxes
+    id: public
+    attributes:
+      label: 注意事項
+      options:
+        - label: GitHub Issueとして投稿内容が公開されることを確認しました
+          required: true
