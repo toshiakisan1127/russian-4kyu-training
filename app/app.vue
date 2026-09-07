@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
 const STORAGE_KEY = 'russian-speech-rate'
 const THEME_KEY = 'russian-theme'
+const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
+
+const isHome = computed(() => {
+  const basePath = runtimeConfig.app.baseURL.replace(/\/$/, '')
+  return route.path === '/'
+    || (basePath !== '' && basePath !== '/' && (route.path === basePath || route.path === `${basePath}/`))
+})
 
 const clampSpeechRate = (value: number) => Math.min(1, Math.max(0.1, value))
 
@@ -73,16 +81,28 @@ const reloadPage = () => {
   <Breadcrumbs />
   <NuxtPage />
 
-  <div class="fixed top-3 right-3 z-50 flex items-start gap-2">
-    <NuxtLink
-      to="/bonus"
-      class="grid size-10 place-items-center rounded-full border border-rose-200 bg-white/95 text-lg shadow-lg shadow-slate-900/10 backdrop-blur transition hover:scale-105 hover:bg-rose-50"
-      aria-label="おまけ"
-      title="おまけ"
-    >
-      🎁
-    </NuxtLink>
+  <section v-if="isHome" class="bg-slate-50 px-4 pb-10 text-slate-950 sm:pb-14" aria-labelledby="bonus-link-heading">
+    <div class="mx-auto w-full max-w-5xl border-t border-slate-200 pt-8">
+      <NuxtLink
+        to="/bonus"
+        class="group flex flex-col gap-5 overflow-hidden rounded-3xl border border-rose-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-rose-400 hover:shadow-lg hover:shadow-rose-100 sm:flex-row sm:items-center sm:justify-between sm:p-7"
+      >
+        <div class="flex items-start gap-4">
+          <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-rose-100 text-2xl" aria-hidden="true">🎁</span>
+          <div>
+            <p class="mb-1 text-xs font-black tracking-[0.14em] text-rose-700 uppercase">Bonus</p>
+            <h2 id="bonus-link-heading" class="mb-2 text-xl font-black sm:text-2xl">おまけ：ロシア国歌で遊ぶ</h2>
+            <p class="m-0 max-w-2xl leading-6 text-slate-600">
+              歌詞・日本語訳・アクセント・単語集つき。試験勉強の最後に、ちょっと寄り道。
+            </p>
+          </div>
+        </div>
+        <span class="shrink-0 text-sm font-black text-rose-700 transition group-hover:translate-x-1">のぞいてみる →</span>
+      </NuxtLink>
+    </div>
+  </section>
 
+  <div class="fixed top-3 right-3 z-50 flex items-start gap-2">
     <button
       type="button"
       class="grid size-10 place-items-center rounded-full border border-slate-200 bg-white/95 text-lg shadow-lg shadow-slate-900/10 backdrop-blur transition hover:scale-105 hover:bg-indigo-50"
