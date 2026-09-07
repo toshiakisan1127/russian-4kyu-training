@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://russian4kyu-training.com/sitemap.xml
