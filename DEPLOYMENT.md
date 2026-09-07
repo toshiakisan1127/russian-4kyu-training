@@ -2,40 +2,78 @@
 
 The application can be deployed to AWS as a static Nuxt site while the existing GitHub Pages deployment remains available during migration.
 
+Architecture details are documented in `docs/AWS_PUBLIC_HOSTING.md` and mirrored to the project Wiki page **一般公開のためのコンポーネント構成図**.
+
 ## Architecture
 
-- S3 (`ap-northeast-1`): private static assets
+- Existing private S3 bucket (`ap-northeast-1`): static assets
 - CloudFront: HTTPS distribution with Origin Access Control (OAC)
 - AWS WAF (`us-east-1`): CloudFront Web ACL with a per-IP rate limit
 - ACM (`us-east-1`, optional): certificate for a custom CloudFront domain
 - Route 53 (optional): alias records to CloudFront
 - GitHub Actions: OIDC -> IAM Role -> private S3
 
-The S3 bucket has Block Public Access enabled. Public traffic reaches objects only through CloudFront OAC.
+The S3 bucket stays private. Public traffic reaches objects only through CloudFront OAC.
 
-## 1. Install dependencies
+## 1. Prepare the private S3 bucket
+
+The production bucket is created once outside CDK and then imported by name. The current default is:
+
+```text
+russian4kyu-training-prod-<AWS_ACCOUNT_ID>
+```
+
+For account `470529257240` this resolves to:
+
+```text
+russian4kyu-training-prod-470529257240
+```
+
+Block Public Access must remain enabled for the bucket. CDK manages the bucket policy that allows object reads only from the created CloudFront distribution and denies insecure transport.
+
+To use a different existing bucket, pass:
+
+```bash
+-c bucketName=<EXISTING_PRIVATE_BUCKET_NAME>
+```
+
+## 2. Install dependencies
 
 ```bash
 corepack enable
 pnpm install --no-frozen-lockfile
 ```
 
-## 2. Configure AWS credentials
+If the local Corepack installation hits `ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING`, the temporary workaround used during setup is:
+
+```bash
+DISABLE_V8_COMPILE_CACHE=1 pnpm <command>
+```
+
+CI runs on Node.js 22.
+
+## 3. Configure AWS credentials
 
 CDK needs AWS credentials so that `CDK_DEFAULT_ACCOUNT` is available and, when a custom domain is used, so Route 53 can be looked up.
 
-For example, sign in with your normal AWS CLI/SSO profile before running CDK commands.
+Verify the active identity first:
 
-## 3. Bootstrap CDK
+```bash
+aws sts get-caller-identity
+```
 
-Both regions are required because CloudFront WAF and ACM resources live in `us-east-1`, while the S3 hosting stack is in `ap-northeast-1`.
+## 4. Bootstrap CDK
+
+Both regions are required because CloudFront WAF and ACM resources live in `us-east-1`, while the hosting stack is deployed from `ap-northeast-1`.
 
 ```bash
 pnpm exec cdk bootstrap aws://<AWS_ACCOUNT_ID>/us-east-1
 pnpm exec cdk bootstrap aws://<AWS_ACCOUNT_ID>/ap-northeast-1
 ```
 
-## 4. Review and deploy
+Bootstrap is a one-time environment setup. It creates the CDK toolkit resources that CloudFormation/CDK uses during deployments.
+
+## 5. Review and deploy
 
 Without a custom domain, CloudFront's generated domain name is enough to test the site.
 
@@ -45,18 +83,6 @@ pnpm cdk:diff
 pnpm cdk:deploy
 ```
 
-The default bucket name is:
-
-```text
-japanese-russian-grade4-app-prod-<AWS_ACCOUNT_ID>
-```
-
-Override it when necessary:
-
-```bash
-pnpm exec cdk deploy --all -c bucketName=<UNIQUE_BUCKET_NAME>
-```
-
 The deploy outputs include:
 
 - `BucketName`
@@ -64,7 +90,7 @@ The deploy outputs include:
 - `CloudFrontDomainName`
 - `GitHubDeployRoleArn`
 
-## 5. Configure GitHub Actions variables
+## 6. Configure GitHub Actions variables
 
 In GitHub repository settings, add the following Actions **variables** (not secrets):
 
@@ -88,22 +114,12 @@ pnpm exec cdk deploy --all \
 
 ## Custom domain
 
-Purchase/register the domain separately. Once a Route 53 Hosted Zone exists, pass the domain to CDK.
-
-For an apex domain:
+Purchase/register the domain separately. The planned production domain is `russian4kyu-training.jp`. Once a Route 53 Hosted Zone exists, pass the domain to CDK.
 
 ```bash
 pnpm exec cdk deploy --all \
-  -c domainName=example.jp \
-  -c hostedZoneName=example.jp
-```
-
-For a subdomain:
-
-```bash
-pnpm exec cdk deploy --all \
-  -c domainName=russian.example.jp \
-  -c hostedZoneName=example.jp
+  -c domainName=russian4kyu-training.jp \
+  -c hostedZoneName=russian4kyu-training.jp
 ```
 
 CDK creates the ACM certificate in `us-east-1`, DNS validation records, and Route 53 A/AAAA aliases to CloudFront.
@@ -121,7 +137,7 @@ The CloudFront cache policy respects these origin TTLs, so normal deployments do
 
 ## WAF rate limit
 
-The CloudFront Web ACL blocks an IP after 500 requests in the WAF rate-based evaluation window. Adjust the limit in `infra/lib/edge-stack.ts` after observing real traffic if necessary.
+The CloudFront Web ACL blocks an IP after more than 500 requests in a 300-second evaluation window. The threshold is intentionally simple for the initial static-site release and can be tuned from CloudWatch/WAF sampled requests later.
 
 ## GitHub Pages during migration
 
