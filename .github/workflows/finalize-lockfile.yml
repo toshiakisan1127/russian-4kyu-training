@@ -28,20 +28,17 @@ jobs:
       - name: Generate lockfile
         run: pnpm install --lockfile-only --no-frozen-lockfile
 
-      - name: Require frozen lockfile in CI and deployment
-        run: |
-          sed -i 's/pnpm install --no-frozen-lockfile/pnpm install --frozen-lockfile/g' \
-            .github/workflows/ci.yml \
-            .github/workflows/deploy-aws.yml \
-            DEPLOYMENT.md
+      - name: Update deployment docs
+        run: sed -i 's/pnpm install --no-frozen-lockfile/pnpm install --frozen-lockfile/g' DEPLOYMENT.md
 
-      - name: Remove one-shot workflow
-        run: rm .github/workflows/finalize-lockfile.yml
-
-      - name: Commit changes
+      - name: Commit generated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml .github/workflows/ci.yml .github/workflows/deploy-aws.yml DEPLOYMENT.md .github/workflows/finalize-lockfile.yml
+          git add pnpm-lock.yaml DEPLOYMENT.md
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit"
+            exit 0
+          fi
           git commit -m "chore: lock pnpm dependencies for CI and deploy"
           git push origin HEAD:chore/pnpm-lockfile-frozen-install
