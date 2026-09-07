@@ -74,6 +74,15 @@ const reloadPage = () => {
   <NuxtPage />
 
   <div class="fixed top-3 right-3 z-50 flex items-start gap-2">
+    <NuxtLink
+      to="/bonus"
+      class="grid size-10 place-items-center rounded-full border border-rose-200 bg-white/95 text-lg shadow-lg shadow-slate-900/10 backdrop-blur transition hover:scale-105 hover:bg-rose-50"
+      aria-label="おまけ"
+      title="おまけ"
+    >
+      🎁
+    </NuxtLink>
+
     <button
       type="button"
       class="grid size-10 place-items-center rounded-full border border-slate-200 bg-white/95 text-lg shadow-lg shadow-slate-900/10 backdrop-blur transition hover:scale-105 hover:bg-indigo-50"

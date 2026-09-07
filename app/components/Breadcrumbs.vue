@@ -47,6 +47,10 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
     return [home, { label: 'このサイトについて' }]
   }
 
+  if (path === '/bonus') {
+    return [home, { label: 'おまけ' }]
+  }
+
   if (path === '/reference') {
     return [home, { label: '4級重要表現まとめ' }]
   }
