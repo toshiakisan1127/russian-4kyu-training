@@ -141,6 +141,7 @@ export class HostingStack extends Stack {
     })
 
     bucket.grantReadWrite(deployRole)
+    bucket.grantDelete(deployRole)
 
     new CfnOutput(this, 'BucketName', {
       value: bucket.bucketName,
