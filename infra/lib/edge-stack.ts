@@ -8,6 +8,7 @@ import {
 import type { Construct } from 'constructs'
 
 interface EdgeStackProps extends StackProps {
+  stage: 'dev' | 'stg' | 'prod'
   domainName?: string
   hostedZoneName?: string
 }
@@ -24,7 +25,7 @@ export class EdgeStack extends Stack {
       defaultAction: { allow: {} },
       visibilityConfig: {
         cloudWatchMetricsEnabled: true,
-        metricName: 'russian-4kyu-web-acl',
+        metricName: `russian-4kyu-${props.stage}-web-acl`,
         sampledRequestsEnabled: true,
       },
       rules: [
@@ -41,7 +42,7 @@ export class EdgeStack extends Stack {
           },
           visibilityConfig: {
             cloudWatchMetricsEnabled: true,
-            metricName: 'russian-4kyu-rate-limit',
+            metricName: `russian-4kyu-${props.stage}-rate-limit`,
             sampledRequestsEnabled: true,
           },
         },
