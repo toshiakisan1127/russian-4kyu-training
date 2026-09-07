@@ -10,7 +10,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       lastUpdatedAt: '',
-      feedbackFormUrl: '',
     },
   },
   vite: {
