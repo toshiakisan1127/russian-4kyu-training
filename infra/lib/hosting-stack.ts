@@ -50,17 +50,6 @@ export class HostingStack extends Stack {
       autoDeleteObjects: !isProd,
     })
 
-    const cachePolicy = new cloudfront.CachePolicy(this, 'CachePolicy', {
-      minTtl: Duration.seconds(0),
-      defaultTtl: Duration.seconds(0),
-      maxTtl: Duration.days(365),
-      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
-      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
-      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
-      enableAcceptEncodingBrotli: true,
-      enableAcceptEncodingGzip: true,
-    })
-
     const distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultRootObject: 'index.html',
       webAclId: props.webAclArn,
@@ -73,7 +62,7 @@ export class HostingStack extends Stack {
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
         cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD_OPTIONS,
         compress: true,
-        cachePolicy,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
       },
       errorResponses: [
