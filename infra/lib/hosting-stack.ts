@@ -1,6 +1,7 @@
 import {
   CfnOutput,
   Duration,
+  RemovalPolicy,
   Stack,
   type StackProps,
   aws_certificatemanager as acm,
@@ -14,12 +15,13 @@ import {
 import type { Construct } from 'constructs'
 
 interface HostingStackProps extends StackProps {
+  stage: 'dev' | 'stg' | 'prod'
   webAclArn: string
   certificate?: acm.ICertificate
   domainName?: string
   hostedZoneName?: string
   bucketName: string
-  githubOidcProviderArn?: string
+  githubOidcProvider: iam.IOpenIdConnectProvider
 }
 
 const GITHUB_OWNER = 'toshiakisan1127'
@@ -27,7 +29,6 @@ const GITHUB_OWNER_ID = '48203235'
 const GITHUB_REPOSITORY = 'russian-4kyu-training'
 const GITHUB_REPOSITORY_ID = '1355052125'
 const GITHUB_BRANCH = 'main'
-const DEPLOY_ROLE_NAME = 'github-actions-russian-4kyu-deploy'
 
 export class HostingStack extends Stack {
   constructor(scope: Construct, id: string, props: HostingStackProps) {
@@ -37,9 +38,17 @@ export class HostingStack extends Stack {
       throw new Error('certificate is required when domainName is configured')
     }
 
-    // The production bucket is intentionally created once outside CDK and imported here.
-    // This avoids replacing the bucket that already contains the generated site.
-    const bucket = s3.Bucket.fromBucketName(this, 'AppBucket', props.bucketName)
+    const isProd = props.stage === 'prod'
+
+    const bucket = new s3.Bucket(this, 'AppBucket', {
+      bucketName: props.bucketName,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      autoDeleteObjects: !isProd,
+    })
 
     const cachePolicy = new cloudfront.CachePolicy(this, 'CachePolicy', {
       minTtl: Duration.seconds(0),
@@ -83,43 +92,20 @@ export class HostingStack extends Stack {
       ],
     })
 
-    // Imported buckets cannot be mutated through the high-level Bucket construct, so the
-    // resource policy is managed explicitly. Only this CloudFront distribution may read
-    // objects, and all S3 access must use TLS.
-    new s3.CfnBucketPolicy(this, 'AppBucketPolicy', {
-      bucket: bucket.bucketName,
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Sid: 'AllowCloudFrontServicePrincipalReadOnly',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'cloudfront.amazonaws.com',
-            },
-            Action: 's3:GetObject',
-            Resource: `${bucket.bucketArn}/*`,
-            Condition: {
-              StringEquals: {
-                'AWS:SourceArn': distribution.distributionArn,
-              },
-            },
+    bucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        sid: 'AllowCloudFrontServicePrincipalReadOnly',
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
+        actions: ['s3:GetObject'],
+        resources: [bucket.arnForObjects('*')],
+        conditions: {
+          StringEquals: {
+            'AWS:SourceArn': distribution.distributionArn,
           },
-          {
-            Sid: 'DenyInsecureTransport',
-            Effect: 'Deny',
-            Principal: '*',
-            Action: 's3:*',
-            Resource: [bucket.bucketArn, `${bucket.bucketArn}/*`],
-            Condition: {
-              Bool: {
-                'aws:SecureTransport': 'false',
-              },
-            },
-          },
-        ],
-      },
-    })
+        },
+      }),
+    )
 
     if (props.domainName) {
       if (!props.hostedZoneName) {
@@ -145,30 +131,22 @@ export class HostingStack extends Stack {
       })
     }
 
-    const oidcProvider = props.githubOidcProviderArn
-      ? iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
-          this,
-          'GitHubOidcProvider',
-          props.githubOidcProviderArn,
-        )
-      : new iam.OpenIdConnectProvider(this, 'GitHubOidcProvider', {
-          url: 'https://token.actions.githubusercontent.com',
-          clientIds: ['sts.amazonaws.com'],
-        })
-
     const immutableSubject =
       `repo:${GITHUB_OWNER}@${GITHUB_OWNER_ID}/${GITHUB_REPOSITORY}@${GITHUB_REPOSITORY_ID}` +
       `:ref:refs/heads/${GITHUB_BRANCH}`
 
     const deployRole = new iam.Role(this, 'GitHubDeployRole', {
-      roleName: DEPLOY_ROLE_NAME,
-      assumedBy: new iam.WebIdentityPrincipal(oidcProvider.openIdConnectProviderArn, {
-        StringEquals: {
-          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-          'token.actions.githubusercontent.com:sub': immutableSubject,
+      roleName: `github-actions-russian-4kyu-${props.stage}-deploy`,
+      assumedBy: new iam.WebIdentityPrincipal(
+        props.githubOidcProvider.openIdConnectProviderArn,
+        {
+          StringEquals: {
+            'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+            'token.actions.githubusercontent.com:sub': immutableSubject,
+          },
         },
-      }),
-      description: 'Deploy russian-4kyu-training static assets from GitHub Actions to S3',
+      ),
+      description: `Deploy russian-4kyu-training ${props.stage} static assets from GitHub Actions to S3`,
     })
 
     bucket.grantReadWrite(deployRole)
