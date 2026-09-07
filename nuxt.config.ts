@@ -5,6 +5,7 @@ const assetUrl = (path: string) => `${baseURL.replace(/\/$/, '')}/${path}`
 const siteUrl = 'https://russian4kyu-training.com/'
 const siteTitle = 'ロシア語能力検定4級トレーニング｜文法・語彙・模擬試験'
 const siteDescription = 'ロシア語能力検定4級の合格を目指す学習アプリ。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
+const ogImageUrl = `${siteUrl}og-image.png`
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
@@ -29,6 +30,21 @@ export default defineNuxtConfig({
           content: siteDescription,
         },
         { name: 'robots', content: 'index, follow' },
+        { property: 'og:title', content: siteTitle },
+        { property: 'og:description', content: siteDescription },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: siteUrl },
+        { property: 'og:image', content: ogImageUrl },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:image:alt', content: 'ロシア語4級トレーニング' },
+        { property: 'og:site_name', content: 'ロシア語4級トレーニング' },
+        { property: 'og:locale', content: 'ja_JP' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: siteTitle },
+        { name: 'twitter:description', content: siteDescription },
+        { name: 'twitter:image', content: ogImageUrl },
+        { name: 'twitter:image:alt', content: 'ロシア語4級トレーニング' },
         { name: 'theme-color', content: '#4f46e5' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
