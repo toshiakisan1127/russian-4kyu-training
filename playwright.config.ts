@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test'
 
 const webServerCommand = process.env.CI
-  ? 'python3 -m http.server 3000 --directory .output/public'
+  ? 'rm -rf .playwright-static && mkdir -p .playwright-static && ln -s ../.output/public .playwright-static/russian-4kyu-training && python3 -m http.server 3000 --directory .playwright-static'
   : 'NUXT_PUBLIC_LAST_UPDATED_AT="$(git log -1 --format=%cI)" pnpm dev --host 127.0.0.1 --port 3000'
 
 export default defineConfig({
