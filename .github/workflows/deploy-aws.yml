@@ -1,0 +1,65 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: aws-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate static site
+        env:
+          NUXT_APP_BASE_URL: /
+          NUXT_PUBLIC_LAST_UPDATED_AT: ${{ github.event.head_commit.timestamp }}
+        run: pnpm generate
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-session-name: github-actions-${{ github.run_id }}
+          aws-region: ap-northeast-1
+
+      - name: Deploy non-hashed assets
+        env:
+          AWS_BUCKET_NAME: ${{ vars.AWS_BUCKET_NAME }}
+        run: |
+          aws s3 sync .output/public "s3://${AWS_BUCKET_NAME}" \
+            --delete \
+            --exclude "_nuxt/*" \
+            --cache-control "no-cache" \
+            --only-show-errors
+
+      - name: Deploy hashed assets
+        env:
+          AWS_BUCKET_NAME: ${{ vars.AWS_BUCKET_NAME }}
+        run: |
+          aws s3 sync .output/public/_nuxt "s3://${AWS_BUCKET_NAME}/_nuxt" \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --only-show-errors

@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Synthesize CDK
+        run: pnpm exec cdk synth -c accountId=111111111111 >/dev/null
+
       - name: Generate static site
         run: NUXT_PUBLIC_LAST_UPDATED_AT="$(git log -1 --format=%cI)" pnpm generate
 
