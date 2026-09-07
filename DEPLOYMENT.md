@@ -11,7 +11,7 @@ Architecture details are documented in `docs/AWS_PUBLIC_HOSTING.md` and the proj
 - AWS WAF (`us-east-1`): CloudFront Web ACL with a per-IP rate limit
 - ACM (`us-east-1`, optional): certificate for a custom CloudFront domain
 - Route 53 (optional): alias records to CloudFront
-- GitHub Actions: OIDC -> IAM Role -> private S3
+- GitHub Actions: OIDC -> IAM deploy role -> CDK bootstrap roles / private S3
 
 The S3 bucket is created by CDK with Block Public Access enabled. Public traffic reaches objects only through CloudFront OAC.
 
@@ -66,7 +66,11 @@ pnpm exec cdk bootstrap aws://<AWS_ACCOUNT_ID>/us-east-1
 pnpm exec cdk bootstrap aws://<AWS_ACCOUNT_ID>/ap-northeast-1
 ```
 
-## 4. Review and deploy production
+The GitHub Actions deploy role does not receive CloudFormation, CloudFront, ACM, Route 53, or WAF permissions directly. It is allowed to assume only the CDK bootstrap deploy, lookup, and file-publishing roles for these two regions. CDK then uses the standard bootstrap execution role permissions during deployment.
+
+## 4. Review and deploy manually
+
+Local deploy remains useful for initial setup and non-production environments:
 
 ```bash
 pnpm cdk:synth
@@ -108,9 +112,45 @@ In GitHub repository settings, add these Actions **variables**:
 - `AWS_DEPLOY_ROLE_ARN`: production `GitHubDeployRoleArn`
 - `AWS_BUCKET_NAME`: production `BucketName`
 
-`.github/workflows/deploy-aws.yml` then deploys every push to `main` to production.
-
 GitHub Actions uses OIDC; no long-lived AWS Access Key / Secret Access Key is stored.
+
+### One-time migration for automated CDK deploy
+
+The existing production GitHub deploy role originally had S3 permissions only. Before the first workflow run that includes CDK deployment, update that role once from a trusted local AWS session using the commit that contains the bootstrap-role policy:
+
+```bash
+pnpm exec cdk deploy Russian4KyuHostingStack-prod \
+  --require-approval never \
+  -c stage=prod \
+  -c domainName=russian4kyu-training.com \
+  -c hostedZoneName=russian4kyu-training.com
+```
+
+This is the final required local production infrastructure deploy for the migration. After it succeeds, future production infrastructure changes are applied from GitHub Actions after they are merged to `main`.
+
+### Production workflow
+
+`.github/workflows/deploy-aws.yml` runs on each push to `main` and can also be started manually with `workflow_dispatch`.
+
+It:
+
+1. checks out the exact triggering `github.sha`
+2. installs dependencies and generates the static site
+3. assumes the GitHub OIDC deploy role
+4. deploys `Russian4KyuHostingStack-prod`; CDK includes its required dependency stacks
+5. uploads the generated static files to S3
+
+The production workflow keeps a single `aws-production` concurrency group, so overlapping production deployments are cancelled rather than running concurrently. CDK deploy runs before the S3 sync; if infrastructure deployment fails, application assets are not partially promoted afterward.
+
+The production CDK command always supplies the custom-domain context:
+
+```text
+stage=prod
+domainName=russian4kyu-training.com
+hostedZoneName=russian4kyu-training.com
+```
+
+This prevents an automated deploy from accidentally synthesizing production without the existing ACM / Route 53 configuration.
 
 ### Shared OIDC provider
 
