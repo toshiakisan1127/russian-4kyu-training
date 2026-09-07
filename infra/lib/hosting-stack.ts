@@ -29,6 +29,9 @@ const GITHUB_OWNER_ID = '48203235'
 const GITHUB_REPOSITORY = 'russian-4kyu-training'
 const GITHUB_REPOSITORY_ID = '1355052125'
 const GITHUB_BRANCH = 'main'
+const CDK_BOOTSTRAP_QUALIFIER = 'hnb659fds'
+const CDK_DEPLOY_REGIONS = ['ap-northeast-1', 'us-east-1'] as const
+const CDK_BOOTSTRAP_ROLE_TYPES = ['deploy-role', 'file-publishing-role', 'lookup-role'] as const
 
 export class HostingStack extends Stack {
   constructor(scope: Construct, id: string, props: HostingStackProps) {
@@ -147,10 +150,22 @@ function handler(event) {
           },
         },
       ),
-      description: `Deploy russian-4kyu-training ${props.stage} static assets from GitHub Actions to S3`,
+      description: `Deploy russian-4kyu-training ${props.stage} infrastructure and static assets from GitHub Actions`,
     })
 
     bucket.grantReadWrite(deployRole)
+
+    deployRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: CDK_DEPLOY_REGIONS.flatMap((region) =>
+          CDK_BOOTSTRAP_ROLE_TYPES.map(
+            (roleType) =>
+              `arn:${this.partition}:iam::${this.account}:role/cdk-${CDK_BOOTSTRAP_QUALIFIER}-${roleType}-${this.account}-${region}`,
+          ),
+        ),
+      }),
+    )
 
     new CfnOutput(this, 'BucketName', {
       value: bucket.bucketName,
