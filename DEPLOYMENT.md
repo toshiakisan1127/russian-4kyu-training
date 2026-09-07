@@ -125,19 +125,19 @@ pnpm exec cdk deploy --all \
 
 ## Custom domain
 
-Planned production domain:
+Production domain:
 
 ```text
-russian4kyu-training.jp
+russian4kyu-training.com
 ```
 
-After the Route 53 Hosted Zone exists:
+The domain is registered in Route 53. After the public Hosted Zone exists, attach it to CloudFront with:
 
 ```bash
 pnpm exec cdk deploy --all \
   -c stage=prod \
-  -c domainName=russian4kyu-training.jp \
-  -c hostedZoneName=russian4kyu-training.jp
+  -c domainName=russian4kyu-training.com \
+  -c hostedZoneName=russian4kyu-training.com
 ```
 
 CDK creates the ACM certificate in `us-east-1`, DNS validation, and Route 53 A/AAAA aliases to CloudFront.
