@@ -5,7 +5,7 @@ const basePath = '/russian-4kyu-training'
 test('opens the bonus page from the bottom of the home page', async ({ page }) => {
   await page.goto(`${basePath}/`)
 
-  await expect(page.getByRole('link', { name: 'おまけ' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'おまけ', exact: true })).toHaveCount(0)
 
   const bonusLink = page.getByRole('link', { name: /おまけ：ロシア国歌で遊ぶ/ })
   await expect(bonusLink).toBeVisible()

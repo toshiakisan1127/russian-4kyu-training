@@ -6,6 +6,8 @@ const THEME_KEY = 'russian-theme'
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 
+usePageSeo()
+
 const isHome = computed(() => {
   const basePath = runtimeConfig.app.baseURL.replace(/\/$/, '')
   return route.path === '/'
