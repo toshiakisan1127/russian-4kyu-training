@@ -28,7 +28,7 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Synthesize CDK
         run: pnpm exec cdk synth -c accountId=111111111111 >/dev/null
