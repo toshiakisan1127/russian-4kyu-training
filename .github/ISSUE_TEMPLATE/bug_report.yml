@@ -1,0 +1,56 @@
+name: 🐛 不具合報告
+description: 表示崩れ・正誤判定・保存データなどの不具合を報告
+title: "[不具合] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ご報告ありがとうございます！
+        再現しやすい情報があると、原因を特定しやすくなります。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 何が起きましたか？
+      placeholder: 例）正解を選んでも不正解と表示される
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      placeholder: |
+        1. 語彙トレーニングを開く
+        2. ○○の問題に回答する
+        3. △△と表示される
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 本来どうなると期待していましたか？
+
+  - type: input
+    id: environment
+    attributes:
+      label: 利用環境
+      description: 分かる範囲で、端末・OS・ブラウザ・PWA版かどうかを教えてください。
+      placeholder: 例）iPhone / Safari / ホーム画面に追加したPWA版
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 補足
+      description: スクリーンショットなどがあれば添付してください。個人情報は含めないでください。
+
+  - type: checkboxes
+    id: public
+    attributes:
+      label: 注意事項
+      options:
+        - label: GitHub Issueとして投稿内容が公開されることを確認しました
+          required: true
