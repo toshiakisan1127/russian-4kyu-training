@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const runtimeConfig = useRuntimeConfig()
-const feedbackFormUrl = computed(() => String(runtimeConfig.public.feedbackFormUrl ?? '').trim())
-
 const githubFeatureUrl = 'https://github.com/toshiakisan1127/russian-4kyu-training/issues/new?template=feature_request.yml'
 const githubBugUrl = 'https://github.com/toshiakisan1127/russian-4kyu-training/issues/new?template=bug_report.yml'
+const xProfileUrl = 'https://x.com/toshiakisan1127'
 
 useHead({
   title: '要望・不具合報告 | ロシア語4級トレーニング',
@@ -28,13 +24,13 @@ useHead({
           <div class="mb-4 flex items-start gap-4">
             <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-slate-100 text-2xl" aria-hidden="true">⌘</span>
             <div>
-              <p class="mb-1 text-xs font-black tracking-[0.14em] text-slate-500 uppercase">GitHub account</p>
-              <h2 class="m-0 text-xl font-black sm:text-2xl">GitHubアカウントがある方</h2>
+              <p class="mb-1 text-xs font-black tracking-[0.14em] text-slate-500 uppercase">GitHub</p>
+              <h2 class="m-0 text-xl font-black sm:text-2xl">GitHub Issueから送る</h2>
             </div>
           </div>
 
           <p class="mb-5 leading-7 text-slate-600">
-            GitHub Issueから送ってもらえると、そのまま開発タスクとして確認できます。投稿内容は公開されます。
+            GitHubアカウントがある方は、Issueから送ってもらえるとそのまま開発タスクとして確認できます。投稿内容は公開されます。
           </p>
 
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
@@ -59,31 +55,27 @@ useHead({
           </div>
         </article>
 
-        <article class="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 sm:p-7">
+        <article class="rounded-3xl border border-sky-200 bg-sky-50 p-5 sm:p-7">
           <div class="mb-4 flex items-start gap-4">
-            <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-white text-2xl" aria-hidden="true">✉️</span>
+            <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-white text-xl font-black" aria-hidden="true">𝕏</span>
             <div>
-              <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">No GitHub account</p>
-              <h2 class="m-0 text-xl font-black sm:text-2xl">GitHubアカウントがない方</h2>
+              <p class="mb-1 text-xs font-black tracking-[0.14em] text-sky-700 uppercase">X / Twitter</p>
+              <h2 class="m-0 text-xl font-black sm:text-2xl">Xから送る</h2>
             </div>
           </div>
 
           <p class="mb-5 leading-7 text-slate-700">
-            GitHubへの登録なしで使える簡易フォームを用意します。送ってもらった内容は、必要に応じて開発用Issueに整理して反映します。
+            GitHubを使わない方は、Xで <strong>@toshiakisan1127</strong> までメンションやリプライで送ってください。内容を確認して、必要に応じて開発用Issueに整理します。
           </p>
 
           <a
-            v-if="feedbackFormUrl"
-            :href="feedbackFormUrl"
+            :href="xProfileUrl"
             target="_blank"
             rel="noreferrer"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-4 py-3 text-sm font-black text-white transition hover:bg-emerald-800"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800"
           >
-            簡易フォームから送る ↗
+            𝕏 @toshiakisan1127 を開く ↗
           </a>
-          <div v-else class="rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-center text-sm font-black text-emerald-800">
-            簡易フォームは現在準備中です
-          </div>
         </article>
       </div>
 
