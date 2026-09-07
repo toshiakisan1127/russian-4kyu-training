@@ -35,6 +35,7 @@ export class EdgeStack extends Stack {
           statement: {
             rateBasedStatement: {
               aggregateKeyType: 'IP',
+              evaluationWindowSec: 300,
               limit: 500,
             },
           },
