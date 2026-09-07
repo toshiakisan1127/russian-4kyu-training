@@ -80,6 +80,14 @@ Because `prod` is the default stage, the commands above create:
 - production WAF / optional ACM edge stack
 - production S3 / CloudFront / IAM deploy role hosting stack
 
+The edge stack (`us-east-1`) passes WAF/ACM values to the hosting stack (`ap-northeast-1`) through CDK cross-region references. On the **first** `cdk diff`, the accurate CloudFormation change-set diff for the hosting stack can report a missing `/cdk/exports/...` SSM parameter because the producer stack has not been deployed yet. CDK then falls back to a template diff. This does not mean the synthesized deployment is invalid; `cdk deploy --all` respects the stack dependency order and deploys the producer before the consumer.
+
+For a template-only first diff without the change-set warning:
+
+```bash
+pnpm exec cdk diff --method=template
+```
+
 To deploy another stage:
 
 ```bash
