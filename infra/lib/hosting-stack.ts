@@ -1,8 +1,6 @@
 import {
-  Aws,
   CfnOutput,
   Duration,
-  RemovalPolicy,
   Stack,
   type StackProps,
   aws_certificatemanager as acm,
@@ -20,7 +18,7 @@ interface HostingStackProps extends StackProps {
   certificate?: acm.ICertificate
   domainName?: string
   hostedZoneName?: string
-  bucketName?: string
+  bucketName: string
   githubOidcProviderArn?: string
 }
 
@@ -39,14 +37,9 @@ export class HostingStack extends Stack {
       throw new Error('certificate is required when domainName is configured')
     }
 
-    const bucket = new s3.Bucket(this, 'AppBucket', {
-      bucketName: props.bucketName ?? `japanese-russian-grade4-app-prod-${Aws.ACCOUNT_ID}`,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      enforceSSL: true,
-      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-      removalPolicy: RemovalPolicy.RETAIN,
-    })
+    // The production bucket is intentionally created once outside CDK and imported here.
+    // This avoids replacing the bucket that already contains the generated site.
+    const bucket = s3.Bucket.fromBucketName(this, 'AppBucket', props.bucketName)
 
     const cachePolicy = new cloudfront.CachePolicy(this, 'CachePolicy', {
       minTtl: Duration.seconds(0),
@@ -88,6 +81,44 @@ export class HostingStack extends Stack {
           ttl: Duration.seconds(0),
         },
       ],
+    })
+
+    // Imported buckets cannot be mutated through the high-level Bucket construct, so the
+    // resource policy is managed explicitly. Only this CloudFront distribution may read
+    // objects, and all S3 access must use TLS.
+    new s3.CfnBucketPolicy(this, 'AppBucketPolicy', {
+      bucket: bucket.bucketName,
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Sid: 'AllowCloudFrontServicePrincipalReadOnly',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'cloudfront.amazonaws.com',
+            },
+            Action: 's3:GetObject',
+            Resource: `${bucket.bucketArn}/*`,
+            Condition: {
+              StringEquals: {
+                'AWS:SourceArn': distribution.distributionArn,
+              },
+            },
+          },
+          {
+            Sid: 'DenyInsecureTransport',
+            Effect: 'Deny',
+            Principal: '*',
+            Action: 's3:*',
+            Resource: [bucket.bucketArn, `${bucket.bucketArn}/*`],
+            Condition: {
+              Bool: {
+                'aws:SecureTransport': 'false',
+              },
+            },
+          },
+        ],
+      },
     })
 
     if (props.domainName) {
@@ -141,7 +172,6 @@ export class HostingStack extends Stack {
     })
 
     bucket.grantReadWrite(deployRole)
-    bucket.grantDelete(deployRole)
 
     new CfnOutput(this, 'BucketName', {
       value: bucket.bucketName,
