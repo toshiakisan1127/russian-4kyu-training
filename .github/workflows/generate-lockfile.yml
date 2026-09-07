@@ -1,0 +1,33 @@
+name: Generate pnpm lockfile
+
+on:
+  push:
+    branches:
+      - chore/pnpm-lockfile-frozen-install
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Generate lockfile
+        run: pnpm install --lockfile-only --no-frozen-lockfile
+
+      - name: Upload lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: pnpm-lock
+          path: pnpm-lock.yaml
