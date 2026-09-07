@@ -70,7 +70,7 @@ const vocabulary: VocabularyItem[] = [
   { word: 'вели́кий', meaning: '偉大な' },
   { word: 'сла́ва', meaning: '栄光、名声' },
   { word: 'достоя́ние', meaning: '財産、遺産' },
-  { word: 'времена́', meaning: '時代、時々', note: 'вре́мя の複数形' },
+  { word: 'вре́мя', meaning: '時間、時代', note: '国歌では複数形 времена́' },
   { word: 'сла́виться', meaning: '名高い、称えられる', note: 'Сла́вься! = 「栄えあれ！」' },
   { word: 'Оте́чество', meaning: '祖国' },
   { word: 'свобо́дный', meaning: '自由な' },
