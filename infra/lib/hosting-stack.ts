@@ -92,21 +92,6 @@ export class HostingStack extends Stack {
       ],
     })
 
-    bucket.addToResourcePolicy(
-      new iam.PolicyStatement({
-        sid: 'AllowCloudFrontServicePrincipalReadOnly',
-        effect: iam.Effect.ALLOW,
-        principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-        actions: ['s3:GetObject'],
-        resources: [bucket.arnForObjects('*')],
-        conditions: {
-          StringEquals: {
-            'AWS:SourceArn': distribution.distributionArn,
-          },
-        },
-      }),
-    )
-
     if (props.domainName) {
       if (!props.hostedZoneName) {
         throw new Error('hostedZoneName is required when domainName is configured')
