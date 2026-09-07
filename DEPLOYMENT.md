@@ -38,7 +38,7 @@ This keeps production data protected while allowing disposable non-production st
 
 ```bash
 corepack enable
-pnpm install --no-frozen-lockfile
+pnpm install --frozen-lockfile
 ```
 
 If local Corepack hits `ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING`, the temporary workaround is:
