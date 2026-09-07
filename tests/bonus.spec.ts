@@ -2,10 +2,12 @@ import { expect, test } from '@playwright/test'
 
 const basePath = '/russian-4kyu-training'
 
-test('opens the bonus page from the gift shortcut', async ({ page }) => {
+test('opens the bonus page from the bottom of the home page', async ({ page }) => {
   await page.goto(`${basePath}/`)
 
-  const bonusLink = page.getByRole('link', { name: 'おまけ' })
+  await expect(page.getByRole('link', { name: 'おまけ' })).toHaveCount(0)
+
+  const bonusLink = page.getByRole('link', { name: /おまけ：ロシア国歌で遊ぶ/ })
   await expect(bonusLink).toBeVisible()
   await bonusLink.click()
 
