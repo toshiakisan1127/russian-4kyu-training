@@ -10,14 +10,14 @@
 - GitHub Actionsには長期Access Keyを保存しない
 - `main`へのマージをproductionデプロイのトリガーにする
 - `dev` / `stg` / `prod`を同じCDKコードから構築できるようにする
-- 将来`russian4kyu-training.jp`へ切り替えられる構成にする
+- productionドメイン`russian4kyu-training.com`で公開する
 
 ## 全体構成
 
 ```mermaid
 flowchart TD
     User[ユーザー / Browser]
-    DNS[Route 53\n任意: custom domain]
+    DNS[Route 53\nrussian4kyu-training.com]
     WAF[AWS WAF\nus-east-1\n500 req / 300 sec / IP]
     CF[CloudFront\nHTTPS / Cache / Security Headers]
     OAC[Origin Access Control\nSigV4]
@@ -168,13 +168,20 @@ production Actionsではproduction S3へのデプロイに必要な権限だけ�
 
 ## カスタムドメイン
 
-予定ドメイン:
+productionドメイン:
 
 ```text
-russian4kyu-training.jp
+russian4kyu-training.com
 ```
 
-ドメイン購入はRoute 53コンソールで行う。Hosted Zone作成後はCDKがACM証明書、DNS validation、Route 53 A/AAAA Aliasを構築する。
+ドメインはRoute 53で登録する。Public Hosted Zone作成後はCDKがACM証明書、DNS validation、Route 53 A/AAAA Aliasを構築する。
+
+```bash
+pnpm exec cdk deploy --all \
+  -c stage=prod \
+  -c domainName=russian4kyu-training.com \
+  -c hostedZoneName=russian4kyu-training.com
+```
 
 ## CDK Stack
 
