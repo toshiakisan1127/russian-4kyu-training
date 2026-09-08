@@ -4,6 +4,8 @@
 
 一度ロシア語文法を学んだことがあり、4級対策として「問題を解きながら思い出したい・定着させたい」人を主な対象にしています。
 
+**公開サイト: [https://russian4kyu-training.com/](https://russian4kyu-training.com/)**
+
 > [!IMPORTANT]
 > このサイトは個人制作の**非公式学習ツール**です。ロシア語能力検定試験の主催団体とは関係ありません。
 >
@@ -11,8 +13,9 @@
 
 ## 公開サイト
 
-- GitHub Pages: https://toshiakisan1127.github.io/russian-4kyu-training/
-- AWS本番環境: S3 + CloudFrontで構成。カスタムドメインを含む詳細は [DEPLOYMENT.md](DEPLOYMENT.md) を参照してください。
+- **本番**: https://russian4kyu-training.com/
+- **GitHub Pages**: https://toshiakisan1127.github.io/russian-4kyu-training/ （移行・フォールバック用として当面維持）
+- 本番は Route 53 + CloudFront + private S3 で配信しています。構成の詳細は [AWS公開構成](docs/AWS_PUBLIC_HOSTING.md)、デプロイ手順は [DEPLOYMENT.md](DEPLOYMENT.md) を参照してください。
 
 ## 主な機能
 
@@ -152,6 +155,20 @@
 - Web Speech API
 - PWA / Service Worker
 
+### SEO / OGP
+
+検索エンジンやSNSクローラーがJavaScript実行前でもページ内容を取得できるよう、Nuxt SSGを前提に構成しています。
+
+- `pnpm generate` による主要ページのprerender
+- ページごとの title / description / canonical URL
+- `robots.txt` / `sitemap.xml`
+- `WebSite` / `WebApplication` のJSON-LD
+- Open Graph / Twitter Card
+- 1200x630のOGP画像
+- CloudFront Functionで `/verbs` などのclean URLをSSG済みHTMLへrewrite
+
+詳細は [SEO設計・運用メモ](docs/SEO.md) を参照してください。
+
 ### テスト
 
 - Playwright
@@ -169,14 +186,23 @@ PRのCI実行時間は、直近25回の成功runを対象に自動集計して�
 
 ### AWS本番ホスティング
 
+- Amazon Route 53: `russian4kyu-training.com` のDNS
+- AWS Certificate Manager: HTTPS証明書
+- Amazon CloudFront: HTTPS配信。Free pricing planを利用
 - Amazon S3: 非公開の静的ファイル保存
-- Amazon CloudFront: HTTPS配信
 - Origin Access Control (OAC): CloudFront経由のみS3へアクセス
-- AWS WAF: CloudFrontへのレート制限
+- AWS WAF: IP単位 `500 requests / 300 sec` のレート制限
+- CloudFront Function: clean URLをNuxt SSGの `index.html` へrewrite
 - AWS CDK: インフラ管理
 - GitHub Actions + OIDC: 長期AWSアクセスキーを置かずにデプロイ
 
-GitHub Pages版も移行期間中は利用できる構成です。詳細は [DEPLOYMENT.md](DEPLOYMENT.md) を参照してください。
+`main` へのpush後は、確定したcommitに対して先に `cdk diff` を実行します。
+
+- **CloudFormation差分なし**: 承認なしでNuxtをgenerateし、S3へ自動デプロイ
+- **CloudFormation差分あり**: diffを確認し、GitHub `production` EnvironmentでApprove後にCDK deploy → S3 deploy
+- diff自体が失敗した場合はデプロイを止め、インフラ差分として誤判定しない
+
+GitHub Pages版も当面は並行して利用できる構成です。詳細は [DEPLOYMENT.md](DEPLOYMENT.md) を参照してください。
 
 ## 開発
 
@@ -211,7 +237,7 @@ pnpm cdk:deploy   # AWSへデプロイ
 ```text
 .github/
   ISSUE_TEMPLATE/  機能要望・不具合報告テンプレート
-  workflows/       CI / GitHub Pages / AWSデプロイ
+  workflows/       CI / CI計測 / GitHub Pages / AWSデプロイ
 app/
   components/      共通UI
   data/            問題・語彙・模試・読解データ
@@ -219,9 +245,10 @@ app/
   types/           型定義
   utils/           出題・進捗・アクセント処理など
 infra/             AWS CDK
-public/            PWA manifest / icon / Service Worker
+public/            PWA manifest / icon / Service Worker / SEO静的ファイル
+scripts/           CI計測などの補助スクリプト
 tests/             Playwrightテスト
-docs/              技術・公開構成の補足資料
+docs/              技術・公開構成・SEOの補足資料
 DEPLOYMENT.md       AWSデプロイ手順
 nuxt.config.ts
 ```
@@ -230,6 +257,7 @@ nuxt.config.ts
 
 - [技術概要](docs/TECHNICAL_OVERVIEW.md)
 - [AWS公開構成](docs/AWS_PUBLIC_HOSTING.md)
+- [SEO設計・運用メモ](docs/SEO.md)
 - [デプロイ手順](DEPLOYMENT.md)
 
 ## 利用・著作権について
