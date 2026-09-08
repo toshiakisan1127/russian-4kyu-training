@@ -105,7 +105,7 @@ The deploy outputs include:
 - `CloudFrontDomainName`
 - `GitHubDeployRoleArn`
 
-## 5. Configure GitHub Actions variables
+## 5. Configure GitHub Actions
 
 In GitHub repository settings, add these Actions **variables**:
 
@@ -114,9 +114,25 @@ In GitHub repository settings, add these Actions **variables**:
 
 GitHub Actions uses OIDC; no long-lived AWS Access Key / Secret Access Key is stored.
 
+### Configure the production approval gate
+
+Create a GitHub Actions Environment named exactly `production` and configure a required reviewer before merging the automated CDK deployment workflow:
+
+1. Open **Settings -> Environments**.
+2. Create or open **production**.
+3. Add the repository owner (or another trusted reviewer) under **Required reviewers**.
+4. Optionally restrict deployment branches to `main`.
+
+The workflow references `environment: production`, so the deploy job waits until the environment review is approved. The preceding CDK diff job does not reference the environment and therefore runs before the approval gate.
+
+The IAM trust policy accepts two immutable GitHub OIDC subjects:
+
+- the `main` branch subject, used by the CDK diff job
+- the `production` environment subject, used only by the approved deploy job
+
 ### One-time migration for automated CDK deploy
 
-The existing production GitHub deploy role originally had S3 permissions only. Before the first workflow run that includes CDK deployment, update that role once from a trusted local AWS session using the commit that contains the bootstrap-role policy:
+The existing production GitHub deploy role originally had S3 permissions only and trusts only the `main` branch subject. Before the first workflow run that includes CDK deployment, update that role once from a trusted local AWS session using the commit that contains both the bootstrap-role policy and the `production` environment OIDC subject:
 
 ```bash
 pnpm exec cdk deploy Russian4KyuHostingStack-prod \
@@ -126,7 +142,7 @@ pnpm exec cdk deploy Russian4KyuHostingStack-prod \
   -c hostedZoneName=russian4kyu-training.com
 ```
 
-This is the final required local production infrastructure deploy for the migration. After it succeeds, future production infrastructure changes are applied from GitHub Actions after they are merged to `main`.
+This is the final required local production infrastructure deploy for the migration. After it succeeds, future production infrastructure changes are planned and deployed from GitHub Actions after they are merged to `main`.
 
 ### Production workflow
 
@@ -135,14 +151,20 @@ This is the final required local production infrastructure deploy for the migrat
 It:
 
 1. checks out the exact triggering `github.sha`
-2. installs dependencies and generates the static site
-3. assumes the GitHub OIDC deploy role
-4. deploys `Russian4KyuHostingStack-prod`; CDK includes its required dependency stacks
-5. uploads the generated static files to S3
+2. assumes the GitHub OIDC role using the `main` branch subject
+3. runs a Change Set based `cdk diff --all`
+4. writes the diff to the Actions Job Summary and uploads `cdk-diff.txt` as an artifact
+5. waits for approval of the `production` Environment
+6. checks out the same `github.sha` again
+7. generates the static site and assumes the OIDC role using the `production` environment subject
+8. deploys `Russian4KyuHostingStack-prod`; CDK includes its required dependency stacks
+9. uploads the generated static files to S3
 
-The production workflow keeps a single `aws-production` concurrency group, so overlapping production deployments are cancelled rather than running concurrently. CDK deploy runs before the S3 sync; if infrastructure deployment fails, application assets are not partially promoted afterward.
+The production workflow keeps a single `aws-production` concurrency group. A newer `main` deployment cancels an older pending run, including one that is waiting for approval, so an obsolete diff is not deployed after a newer commit exists.
 
-The production CDK command always supplies the custom-domain context:
+CDK deploy runs before the S3 sync; if infrastructure deployment fails, application assets are not partially promoted afterward.
+
+The production CDK commands always supply the custom-domain context:
 
 ```text
 stage=prod
@@ -151,6 +173,8 @@ hostedZoneName=russian4kyu-training.com
 ```
 
 This prevents an automated deploy from accidentally synthesizing production without the existing ACM / Route 53 configuration.
+
+> Note: GitHub required reviewers for Environments are available on public repositories on GitHub Free. If this repository is later made private, the account plan must support required reviewers for private repositories or this approval mechanism must be replaced with a manual deployment workflow.
 
 ### Shared OIDC provider
 
