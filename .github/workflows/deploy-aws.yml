@@ -23,6 +23,8 @@ jobs:
   plan:
     name: CDK diff
     runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.diff.outputs.has_changes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,16 +50,29 @@ jobs:
           aws-region: ap-northeast-1
 
       - name: Create CDK diff
+        id: diff
         shell: bash
         run: |
-          set -o pipefail
+          set +e
           pnpm exec cdk diff --all \
             --method=change-set \
+            --fail \
             --no-color \
             -c stage="${CDK_STAGE}" \
             -c domainName="${CDK_DOMAIN_NAME}" \
             -c hostedZoneName="${CDK_HOSTED_ZONE_NAME}" \
             2>&1 | tee cdk-diff.txt
+          status=${PIPESTATUS[0]}
+          set -e
+
+          if [[ "$status" -eq 0 ]]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          elif [[ "$status" -eq 1 ]] && grep -Eq 'Number of stacks with differences: [1-9][0-9]*' cdk-diff.txt; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "CDK diff failed with exit code ${status}; refusing to classify it as an infrastructure change." >&2
+            exit "$status"
+          fi
 
       - name: Add CDK diff to job summary
         shell: bash
@@ -67,7 +82,11 @@ jobs:
             echo
             echo "Commit: \`${GITHUB_SHA}\`"
             echo
-            echo 'Review this exact diff before approving the production deployment.'
+            if [[ "${{ steps.diff.outputs.has_changes }}" == "true" ]]; then
+              echo '**Infrastructure changes detected. Production approval is required before CDK deploy.**'
+            else
+              echo '**No infrastructure changes detected. S3 application deploy will continue automatically.**'
+            fi
             echo
             echo '```text'
             cat cdk-diff.txt
@@ -82,11 +101,54 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  deploy:
-    name: Deploy production
+  infra-deploy:
+    name: Approve and deploy infrastructure
     needs: plan
+    if: needs.plan.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-session-name: github-actions-infra-${{ github.run_id }}
+          aws-region: ap-northeast-1
+
+      - name: Deploy CDK infrastructure
+        run: |
+          pnpm exec cdk deploy Russian4KyuHostingStack-prod \
+            --require-approval never \
+            -c stage="${CDK_STAGE}" \
+            -c domainName="${CDK_DOMAIN_NAME}" \
+            -c hostedZoneName="${CDK_HOSTED_ZONE_NAME}"
+
+  assets-deploy:
+    name: Deploy application to S3
+    needs:
+      - plan
+      - infra-deploy
+    if: >-
+      always() &&
+      needs.plan.result == 'success' &&
+      (needs.infra-deploy.result == 'success' || needs.infra-deploy.result == 'skipped')
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -114,16 +176,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
-          role-session-name: github-actions-deploy-${{ github.run_id }}
+          role-session-name: github-actions-assets-${{ github.run_id }}
           aws-region: ap-northeast-1
-
-      - name: Deploy CDK infrastructure
-        run: |
-          pnpm exec cdk deploy Russian4KyuHostingStack-prod \
-            --require-approval never \
-            -c stage="${CDK_STAGE}" \
-            -c domainName="${CDK_DOMAIN_NAME}" \
-            -c hostedZoneName="${CDK_HOSTED_ZONE_NAME}"
 
       - name: Deploy non-hashed assets
         env:
