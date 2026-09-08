@@ -74,7 +74,6 @@ function handler(event) {
     const distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultRootObject: 'index.html',
       webAclId: props.webAclArn,
-      priceClass: cloudfront.PriceClass.PRICE_CLASS_200,
       certificate: props.certificate,
       domainNames: props.domainName ? [props.domainName] : undefined,
       defaultBehavior: {
@@ -107,6 +106,9 @@ function handler(event) {
         },
       ],
     })
+
+    const cfnDistribution = distribution.node.defaultChild as cloudfront.CfnDistribution
+    cfnDistribution.addPropertyDeletionOverride('DistributionConfig.PriceClass')
 
     if (props.domainName) {
       if (!props.hostedZoneName) {
