@@ -7,9 +7,10 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt build",
-    "generate": "nuxt generate",
+    "og:image": "tsx scripts/generate-og-image.ts",
+    "dev": "pnpm og:image && nuxt dev",
+    "build": "pnpm og:image && nuxt build",
+    "generate": "pnpm og:image && nuxt generate",
     "preview": "nuxt preview",
     "test:smoke": "playwright test",
     "cdk": "cdk",
