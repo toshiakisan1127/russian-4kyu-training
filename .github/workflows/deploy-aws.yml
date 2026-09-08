@@ -14,9 +14,77 @@ concurrency:
   group: aws-production
   cancel-in-progress: true
 
+env:
+  CDK_STAGE: prod
+  CDK_DOMAIN_NAME: russian4kyu-training.com
+  CDK_HOSTED_ZONE_NAME: russian4kyu-training.com
+
 jobs:
-  deploy:
+  plan:
+    name: CDK diff
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-session-name: github-actions-plan-${{ github.run_id }}
+          aws-region: ap-northeast-1
+
+      - name: Create CDK diff
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm exec cdk diff --all \
+            --method=change-set \
+            --no-color \
+            -c stage="${CDK_STAGE}" \
+            -c domainName="${CDK_DOMAIN_NAME}" \
+            -c hostedZoneName="${CDK_HOSTED_ZONE_NAME}" \
+            2>&1 | tee cdk-diff.txt
+
+      - name: Add CDK diff to job summary
+        shell: bash
+        run: |
+          {
+            echo '## CDK production diff'
+            echo
+            echo 'Review this diff before approving the production deployment.'
+            echo
+            echo '```text'
+            cat cdk-diff.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload CDK diff
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdk-diff-${{ github.sha }}
+          path: cdk-diff.txt
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    name: Deploy production
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -44,16 +112,16 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
-          role-session-name: github-actions-${{ github.run_id }}
+          role-session-name: github-actions-deploy-${{ github.run_id }}
           aws-region: ap-northeast-1
 
       - name: Deploy CDK infrastructure
         run: |
           pnpm exec cdk deploy Russian4KyuHostingStack-prod \
             --require-approval never \
-            -c stage=prod \
-            -c domainName=russian4kyu-training.com \
-            -c hostedZoneName=russian4kyu-training.com
+            -c stage="${CDK_STAGE}" \
+            -c domainName="${CDK_DOMAIN_NAME}" \
+            -c hostedZoneName="${CDK_HOSTED_ZONE_NAME}"
 
       - name: Deploy non-hashed assets
         env:
