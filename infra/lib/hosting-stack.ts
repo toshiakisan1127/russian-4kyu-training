@@ -29,6 +29,7 @@ const GITHUB_OWNER_ID = '48203235'
 const GITHUB_REPOSITORY = 'russian-4kyu-training'
 const GITHUB_REPOSITORY_ID = '1355052125'
 const GITHUB_BRANCH = 'main'
+const GITHUB_PRODUCTION_ENVIRONMENT = 'production'
 const CDK_BOOTSTRAP_QUALIFIER = 'hnb659fds'
 const CDK_DEPLOY_REGIONS = ['ap-northeast-1', 'us-east-1'] as const
 const CDK_BOOTSTRAP_ROLE_TYPES = ['deploy-role', 'file-publishing-role', 'lookup-role'] as const
@@ -137,9 +138,12 @@ function handler(event) {
       })
     }
 
-    const immutableSubject =
-      `repo:${GITHUB_OWNER}@${GITHUB_OWNER_ID}/${GITHUB_REPOSITORY}@${GITHUB_REPOSITORY_ID}` +
-      `:ref:refs/heads/${GITHUB_BRANCH}`
+    const immutableRepository =
+      `repo:${GITHUB_OWNER}@${GITHUB_OWNER_ID}/${GITHUB_REPOSITORY}@${GITHUB_REPOSITORY_ID}`
+    const allowedSubjects = [
+      `${immutableRepository}:ref:refs/heads/${GITHUB_BRANCH}`,
+      `${immutableRepository}:environment:${GITHUB_PRODUCTION_ENVIRONMENT}`,
+    ]
 
     const deployRole = new iam.Role(this, 'GitHubDeployRole', {
       roleName: `github-actions-russian-4kyu-${props.stage}-deploy`,
@@ -148,7 +152,7 @@ function handler(event) {
         {
           StringEquals: {
             'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-            'token.actions.githubusercontent.com:sub': immutableSubject,
+            'token.actions.githubusercontent.com:sub': allowedSubjects,
           },
         },
       ),
