@@ -133,6 +133,12 @@ content-type: text/html
 curl -s https://russian4kyu-training.com/verbs | grep -E '<title>|canonical|description'
 ```
 
+OGPも確認する場合は次のように取得します。
+
+```bash
+curl -s https://russian4kyu-training.com/ | grep -E 'og:|twitter:'
+```
+
 ## 7. CloudFront Free pricing planの注意点
 
 CloudFrontはFree pricing planを使用しています。
@@ -148,29 +154,50 @@ cfnDistribution.addPropertyDeletionOverride('DistributionConfig.PriceClass')
 
 `PriceClass = None` のように値を設定するのではなく、プロパティそのものを送信しないことが重要です。
 
-## 8. CDK deploy時のcontext
+## 8. CDK deployとGitHub Actions
 
 独自ドメインとACM証明書はCDK contextを使って構成します。
 
-手動でdeploy / diffする場合は必ず本番domain contextを付けます。
+手動でdeploy / diffする場合は本番domain contextを付けます。
 
 ```bash
 pnpm exec cdk diff Russian4KyuHostingStack-prod \
-  -c accountId=<AWS_ACCOUNT_ID> \
   -c domainName=russian4kyu-training.com \
   -c hostedZoneName=russian4kyu-training.com
 ```
 
 ```bash
 pnpm exec cdk deploy Russian4KyuHostingStack-prod \
-  -c accountId=<AWS_ACCOUNT_ID> \
   -c domainName=russian4kyu-training.com \
   -c hostedZoneName=russian4kyu-training.com
 ```
 
 `domainName` を付けずに本番stackをdeployすると、CDK上で独自ドメイン/証明書なしのdesired stateになり、ACM証明書の削除など意図しない変更が発生する可能性があります。
 
-本番CDK deployは将来的にGitHub Actionsへ統合し、mainの確定commitからのみ実行する方針です（Issue #188）。
+通常の本番デプロイは `.github/workflows/deploy-aws.yml` で自動化しています。`main` に入った確定commit SHAを対象に、先にChange Set方式の `cdk diff --all --fail` を実行します。
+
+### CloudFormation差分なし
+
+1. `main` へmerge / push
+2. 確定した `github.sha` をcheckout
+3. `cdk diff --all --method=change-set --fail`
+4. インフラ差分なしを確認
+5. `pnpm generate`
+6. private S3へ自動デプロイ
+
+### CloudFormation差分あり
+
+1. `main` へmerge / push
+2. 確定した `github.sha` をcheckout
+3. `cdk diff --all --method=change-set --fail`
+4. Job Summaryと `cdk-diff.txt` artifactで差分を確認
+5. GitHub `production` EnvironmentでApprove
+6. 同じ `github.sha` をCDK deploy
+7. CDK deploy成功後に `pnpm generate` → S3 deploy
+
+CDK diff自体が失敗した場合は「差分あり」とは扱わずworkflowを失敗させます。アプリ変更だけであれば承認待ちは発生しません。
+
+GitHub ActionsからAWSへの認証はOIDCを使用し、長期Access Keyは配置していません。
 
 ## 9. ページ追加時のSEOチェックリスト
 
@@ -186,21 +213,29 @@ pnpm exec cdk deploy Russian4KyuHostingStack-prod \
 
 ## 10. OGP / SNS共有
 
-SEOとは別に、SNSやチャットへURLを貼ったときの表示はOpen Graph / Twitter Cardで対応します。
+OGP / Twitter Cardは実装済みです。サイトURLをX / LINE / Slack / Discordなどへ貼ったときに、ロシア語4級トレーニングの内容が分かる大きなプレビューを表示できる構成にしています。
 
-OGP対応はIssue #183で管理しています。
-
-予定している内容:
+`nuxt.config.ts` で主に以下を設定しています。
 
 - `og:title`
 - `og:description`
-- `og:url`
-- `og:image`（1200x630）
 - `og:type`
+- `og:url`
+- `og:image`
+- `og:image:type`
+- `og:image:width` / `og:image:height`
 - `og:site_name`
+- `og:locale`
 - Twitter `summary_large_image`
+- Twitter title / description / image
 
-SSG済みHTMLにOGP metaを含め、SNSクローラーがJavaScriptなしで取得できる構成にします。
+共有画像は1200x630 PNGで、production URLの次のパスを使用します。
+
+```text
+https://russian4kyu-training.com/og-image.png
+```
+
+SSG済みHTMLにOGP metaを含めるため、SNSクローラーもJavaScriptを実行せず取得できます。
 
 ## 関連ファイル
 
@@ -216,7 +251,7 @@ SSG済みHTMLにOGP metaを含め、SNSクローラーがJavaScriptなしで取�
 ## 関連Issue / PR
 
 - SEO基本対応: Issue #182 / PR #185
-- OGP対応: Issue #183
-- CI高速化: Issue #187
-- CDK本番deployのGitHub Actions統合: Issue #188
-- CloudFront Free pricing plan対応: PR #191, PR #192
+- OGP対応: Issue #183 / PR #190
+- CI高速化: Issue #187 / PR #194
+- CDK本番deployのGitHub Actions統合: Issue #188 / PR #189
+- CloudFront Free pricing plan対応: PR #191 / PR #192
