@@ -16,6 +16,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Start CI timer
+        run: |
+          mkdir -p scripts
+          date +%s > "${RUNNER_TEMP}/ci-started-at"
+          : > "${RUNNER_TEMP}/ci-timings.tsv"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -28,13 +34,15 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bash scripts/ci-timing.sh measure "Install dependencies" pnpm install --frozen-lockfile
 
       - name: Synthesize CDK
-        run: pnpm exec cdk synth -c accountId=111111111111 >/dev/null
+        run: bash scripts/ci-timing.sh measure "CDK synth" pnpm exec cdk synth -c accountId=111111111111
 
       - name: Generate static site
-        run: NUXT_PUBLIC_LAST_UPDATED_AT="$(git log -1 --format=%cI)" pnpm generate
+        run: |
+          bash scripts/ci-timing.sh measure "Generate static site" \
+            env NUXT_PUBLIC_LAST_UPDATED_AT="$(git log -1 --format=%cI)" pnpm generate
 
       - name: Cache Playwright Chromium
         id: playwright-cache
@@ -44,11 +52,15 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright system dependencies
-        run: pnpm exec playwright install-deps chromium
+        run: bash scripts/ci-timing.sh measure "Playwright system dependencies" pnpm exec playwright install-deps chromium
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install chromium
+        run: bash scripts/ci-timing.sh measure "Playwright Chromium" pnpm exec playwright install chromium
 
       - name: Browser smoke tests
-        run: pnpm test:smoke
+        run: bash scripts/ci-timing.sh measure "Browser smoke tests" pnpm test:smoke
+
+      - name: CI timing summary
+        if: always()
+        run: bash scripts/ci-timing.sh summary
