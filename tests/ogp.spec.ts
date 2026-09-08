@@ -14,6 +14,7 @@ test('home exposes OGP and Twitter Card metadata', async ({ page }) => {
   await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website')
   await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', siteUrl)
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', ogImageUrl)
+  await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute('content', 'image/png')
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200')
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630')
   await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', 'ロシア語4級トレーニング')
@@ -24,8 +25,9 @@ test('home exposes OGP and Twitter Card metadata', async ({ page }) => {
   await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', ogImageUrl)
 })
 
-test('OGP image is a 1200x630 PNG', async ({ request }) => {
-  const response = await request.get(`${appBasePath}/og-image.png`)
+test('OGP image is a decodable 1200x630 PNG', async ({ page, request }) => {
+  const imagePath = `${appBasePath}/og-image.png`
+  const response = await request.get(imagePath)
   expect(response.ok()).toBeTruthy()
   expect(response.headers()['content-type']).toContain('image/png')
 
@@ -33,4 +35,14 @@ test('OGP image is a 1200x630 PNG', async ({ request }) => {
   expect(body.subarray(0, 8)).toEqual(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
   expect(body.readUInt32BE(16)).toBe(1200)
   expect(body.readUInt32BE(20)).toBe(630)
+
+  await page.goto(appBasePath)
+  const dimensions = await page.evaluate(async (src) => {
+    const image = new Image()
+    image.src = src
+    await image.decode()
+    return [image.naturalWidth, image.naturalHeight]
+  }, imagePath)
+
+  expect(dimensions).toEqual([1200, 630])
 })
