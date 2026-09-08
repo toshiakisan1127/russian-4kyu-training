@@ -5,6 +5,7 @@ const assetUrl = (path: string) => `${baseURL.replace(/\/$/, '')}/${path}`
 const siteUrl = 'https://russian4kyu-training.com/'
 const siteTitle = 'ロシア語能力検定4級トレーニング｜文法・語彙・模擬試験'
 const siteDescription = 'ロシア語能力検定4級の合格を目指す学習アプリ。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
+const ogImageUrl = new URL('og-image.png', siteUrl).toString()
 
 const prerenderRoutes = [
   '/',
@@ -15,6 +16,7 @@ const prerenderRoutes = [
   '/feedback',
   '/mixed',
   '/mock',
+  '/og-image.png',
   '/prepositions',
   '/reading',
   '/reference',
@@ -66,6 +68,20 @@ export default defineNuxtConfig({
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-title', content: 'ロシア語4級' },
+        { property: 'og:title', content: siteTitle },
+        { property: 'og:description', content: siteDescription },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: siteUrl },
+        { property: 'og:image', content: ogImageUrl },
+        { property: 'og:image:type', content: 'image/png' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:site_name', content: 'ロシア語4級トレーニング' },
+        { property: 'og:locale', content: 'ja_JP' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: siteTitle },
+        { name: 'twitter:description', content: siteDescription },
+        { name: 'twitter:image', content: ogImageUrl },
       ],
       link: [
         { rel: 'manifest', href: assetUrl('manifest.webmanifest') },
