@@ -155,7 +155,7 @@ It:
 1. checks out the exact triggering `github.sha`
 2. assumes the GitHub OIDC role using the `main` branch subject
 3. runs a Change Set based `cdk diff --all`
-4. writes the diff to the Actions Job Summary and uploads `cdk-diff.txt` as an artifact
+4. writes the diff and exact commit SHA to the Actions Job Summary and uploads `cdk-diff.txt` as an artifact
 5. waits for approval of the `production` Environment
 6. checks out the same `github.sha` again
 7. generates the static site and assumes the OIDC role using the `production` environment subject
