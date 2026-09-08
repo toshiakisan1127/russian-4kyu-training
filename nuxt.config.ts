@@ -16,7 +16,6 @@ const prerenderRoutes = [
   '/feedback',
   '/mixed',
   '/mock',
-  '/og-image.png',
   '/prepositions',
   '/reading',
   '/reference',
