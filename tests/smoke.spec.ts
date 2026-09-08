@@ -24,7 +24,7 @@ const routes = [
 
 for (const route of routes) {
   test(`${route} renders`, async ({ page }) => {
-    const response = await page.goto(`${appBasePath}${route}`, { waitUntil: 'networkidle' })
+    const response = await page.goto(`${appBasePath}${route}`, { waitUntil: 'domcontentloaded' })
 
     expect(response?.ok(), `HTTP response failed for ${route}`).toBeTruthy()
     await expect(page.locator('body')).not.toContainText('500 Internal Server Error')
@@ -51,7 +51,7 @@ const breadcrumbCases = [
 
 for (const breadcrumb of breadcrumbCases) {
   test(`${breadcrumb.route} shows breadcrumbs`, async ({ page }) => {
-    await page.goto(`${appBasePath}${breadcrumb.route}`, { waitUntil: 'networkidle' })
+    await page.goto(`${appBasePath}${breadcrumb.route}`, { waitUntil: 'domcontentloaded' })
 
     const nav = page.getByRole('navigation', { name: 'パンくずリスト' })
     await expect(nav).toBeVisible()
@@ -65,7 +65,7 @@ for (const breadcrumb of breadcrumbCases) {
 }
 
 test('home does not show breadcrumbs', async ({ page }) => {
-  await page.goto(appBasePath, { waitUntil: 'networkidle' })
+  await page.goto(appBasePath, { waitUntil: 'domcontentloaded' })
   await expect(page.getByRole('navigation', { name: 'パンくずリスト' })).toHaveCount(0)
 })
 
@@ -86,7 +86,7 @@ test('about page keeps breadcrumbs after reloading a trailing-slash URL', async 
 
 
 test('reference page shows irregular noun plurals', async ({ page }) => {
-  await page.goto(`${appBasePath}/reference`, { waitUntil: 'networkidle' })
+  await page.goto(`${appBasePath}/reference`, { waitUntil: 'domcontentloaded' })
 
   const section = page.locator('details').filter({ hasText: '不規則・要注意の名詞複数形' })
   await expect(section).toBeVisible()
@@ -101,7 +101,7 @@ test('reference page shows irregular noun plurals', async ({ page }) => {
 
 
 test('about page shows the build timestamp', async ({ page }) => {
-  await page.goto(`${appBasePath}/about`, { waitUntil: 'networkidle' })
+  await page.goto(`${appBasePath}/about`, { waitUntil: 'domcontentloaded' })
 
   const lastUpdated = page.getByTestId('last-updated')
   await expect(lastUpdated).toBeVisible()
@@ -112,7 +112,7 @@ test('about page shows the build timestamp', async ({ page }) => {
 
 test('movement reference cards contain explanations on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
-  await page.goto(`${appBasePath}/reference`, { waitUntil: 'networkidle' })
+  await page.goto(`${appBasePath}/reference`, { waitUntil: 'domcontentloaded' })
 
   const movementSection = page.locator('article').filter({ hasText: '「行く」系の動詞 4つ' }).first()
   const cards = movementSection.locator(':scope > div.grid > article')
