@@ -11,7 +11,7 @@ Architecture details are documented in `docs/AWS_PUBLIC_HOSTING.md` and the proj
 - AWS WAF (`us-east-1`): CloudFront Web ACL with a per-IP rate limit
 - ACM (`us-east-1`, optional): certificate for a custom CloudFront domain
 - Route 53 (optional): alias records to CloudFront
-- GitHub Actions: OIDC -> IAM Role -> private S3
+- GitHub Actions: OIDC -> IAM deploy role -> CDK bootstrap roles / private S3
 
 The S3 bucket is created by CDK with Block Public Access enabled. Public traffic reaches objects only through CloudFront OAC.
 
@@ -66,7 +66,11 @@ pnpm exec cdk bootstrap aws://<AWS_ACCOUNT_ID>/us-east-1
 pnpm exec cdk bootstrap aws://<AWS_ACCOUNT_ID>/ap-northeast-1
 ```
 
-## 4. Review and deploy production
+The GitHub Actions deploy role does not receive CloudFormation, CloudFront, ACM, Route 53, or WAF permissions directly. It is allowed to assume only the CDK bootstrap deploy, lookup, and file-publishing roles for these two regions. CDK then uses the standard bootstrap execution role permissions during deployment.
+
+## 4. Review and deploy manually
+
+Local deploy remains useful for initial setup and non-production environments:
 
 ```bash
 pnpm cdk:synth
@@ -101,16 +105,72 @@ The deploy outputs include:
 - `CloudFrontDomainName`
 - `GitHubDeployRoleArn`
 
-## 5. Configure GitHub Actions variables
+## 5. Configure GitHub Actions
 
 In GitHub repository settings, add these Actions **variables**:
 
 - `AWS_DEPLOY_ROLE_ARN`: production `GitHubDeployRoleArn`
 - `AWS_BUCKET_NAME`: production `BucketName`
 
-`.github/workflows/deploy-aws.yml` then deploys every push to `main` to production.
-
 GitHub Actions uses OIDC; no long-lived AWS Access Key / Secret Access Key is stored.
+
+### Configure the production approval gate
+
+**Do this before merging the automated CDK deployment workflow.** Create a GitHub Actions Environment named exactly `production` and configure a required reviewer:
+
+1. Open **Settings -> Environments**.
+2. Create or open **production**.
+3. Add the repository owner (or another trusted reviewer) under **Required reviewers**.
+4. Optionally restrict deployment branches to `main`.
+
+The `production` Environment is referenced only by the infrastructure deploy job. Therefore application assets continue to S3 automatically whenever CDK reports no CloudFormation changes.
+
+The IAM trust policy accepts two immutable GitHub OIDC subjects:
+
+- the `main` branch subject, used by the CDK diff job and automatic S3 deploy
+- the `production` environment subject, used only by the approved infrastructure deploy job
+
+### One-time migration for automated CDK deploy
+
+The existing production GitHub deploy role originally had S3 permissions only and trusts only the `main` branch subject. Before the first workflow run that includes CDK deployment, update that role once from a trusted local AWS session using the commit that contains both the bootstrap-role policy and the `production` environment OIDC subject:
+
+```bash
+pnpm exec cdk deploy Russian4KyuHostingStack-prod \
+  --require-approval never \
+  -c stage=prod \
+  -c domainName=russian4kyu-training.com \
+  -c hostedZoneName=russian4kyu-training.com
+```
+
+This is the final required local production infrastructure deploy for the migration.
+
+### Production workflow
+
+`.github/workflows/deploy-aws.yml` runs on each push to `main` and can also be started manually with `workflow_dispatch`.
+
+It first checks the exact triggering `github.sha` with Change Set based `cdk diff --all --fail`. The diff is written to the Actions Job Summary and uploaded as `cdk-diff.txt`.
+
+The workflow then branches:
+
+- **No CloudFormation differences:** the infrastructure job is skipped and the generated site is deployed to S3 automatically.
+- **CloudFormation differences detected:** the infrastructure job enters the `production` Environment approval gate. After approval, CDK deploys the reviewed `github.sha`; only after that succeeds does the S3 application deploy continue.
+- **CDK diff itself fails:** the workflow stops. A diff command error is not treated as an infrastructure change requiring approval.
+
+This keeps routine application releases automatic while requiring an explicit human decision only when the production CloudFormation stacks would change.
+
+The production workflow keeps a single `aws-production` concurrency group. A newer `main` deployment cancels an older pending run, including one waiting for infrastructure approval, so an obsolete diff is not deployed after a newer commit exists.
+
+The production CDK commands always supply the custom-domain context:
+
+```text
+stage=prod
+domainName=russian4kyu-training.com
+hostedZoneName=russian4kyu-training.com
+```
+
+This prevents an automated deploy from accidentally synthesizing production without the existing ACM / Route 53 configuration.
+
+> Note: GitHub required reviewers for Environments are available on public repositories on GitHub Free. If this repository is later made private, the account plan must support required reviewers for private repositories or this approval mechanism must be replaced with a manual deployment workflow.
 
 ### Shared OIDC provider
 
