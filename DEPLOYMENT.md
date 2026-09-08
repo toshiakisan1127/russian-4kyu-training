@@ -123,14 +123,12 @@ GitHub Actions uses OIDC; no long-lived AWS Access Key / Secret Access Key is st
 3. Add the repository owner (or another trusted reviewer) under **Required reviewers**.
 4. Optionally restrict deployment branches to `main`.
 
-Without a Required reviewer, GitHub can create/use the `production` Environment without an approval gate, so this repository setting is part of the production deployment safety setup.
-
-The workflow references `environment: production`, so the deploy job waits until the environment review is approved. The preceding CDK diff job does not reference the environment and therefore runs before the approval gate.
+The `production` Environment is referenced only by the infrastructure deploy job. Therefore application assets can continue to S3 automatically when CDK reports no CloudFormation changes.
 
 The IAM trust policy accepts two immutable GitHub OIDC subjects:
 
-- the `main` branch subject, used by the CDK diff job
-- the `production` environment subject, used only by the approved deploy job
+- the `main` branch subject, used by the CDK diff job and automatic S3 deploy
+- the `production` environment subject, used only by the approved infrastructure deploy job
 
 ### One-time migration for automated CDK deploy
 
@@ -144,27 +142,23 @@ pnpm exec cdk deploy Russian4KyuHostingStack-prod \
   -c hostedZoneName=russian4kyu-training.com
 ```
 
-This is the final required local production infrastructure deploy for the migration. After it succeeds, future production infrastructure changes are planned and deployed from GitHub Actions after they are merged to `main`.
+This is the final required local production infrastructure deploy for the migration.
 
 ### Production workflow
 
 `.github/workflows/deploy-aws.yml` runs on each push to `main` and can also be started manually with `workflow_dispatch`.
 
-It:
+It first checks the exact triggering `github.sha` with Change Set based `cdk diff --all --fail`. The diff is written to the Actions Job Summary and uploaded as `cdk-diff.txt`.
 
-1. checks out the exact triggering `github.sha`
-2. assumes the GitHub OIDC role using the `main` branch subject
-3. runs a Change Set based `cdk diff --all`
-4. writes the diff and exact commit SHA to the Actions Job Summary and uploads `cdk-diff.txt` as an artifact
-5. waits for approval of the `production` Environment
-6. checks out the same `github.sha` again
-7. generates the static site and assumes the OIDC role using the `production` environment subject
-8. deploys `Russian4KyuHostingStack-prod`; CDK includes its required dependency stacks
-9. uploads the generated static files to S3
+The workflow then branches:
 
-The production workflow keeps a single `aws-production` concurrency group. A newer `main` deployment cancels an older pending run, including one that is waiting for approval, so an obsolete diff is not deployed after a newer commit exists.
+- **No CloudFormation differences:** the infrastructure job is skipped and the generated site is deployed to S3 automatically.
+- **CloudFormation differences detected:** the infrastructure job enters the `production` Environment approval gate. After approval, CDK deploys the reviewed `github.sha`; only after that succeeds does the S3 application deploy continue.
+- **CDK diff itself fails:** the workflow stops. A diff command error is not treated as an infrastructure change requiring approval.
 
-CDK deploy runs before the S3 sync; if infrastructure deployment fails, application assets are not partially promoted afterward.
+This keeps routine application releases automatic while requiring an explicit human decision only when the production CloudFormation stacks would change.
+
+The production workflow keeps a single `aws-production` concurrency group. A newer `main` deployment cancels an older pending run, including one waiting for infrastructure approval, so an obsolete diff is not deployed after a newer commit exists.
 
 The production CDK commands always supply the custom-domain context:
 
