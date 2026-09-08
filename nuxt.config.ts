@@ -5,7 +5,7 @@ const assetUrl = (path: string) => `${baseURL.replace(/\/$/, '')}/${path}`
 const siteUrl = 'https://russian4kyu-training.com/'
 const siteTitle = 'ロシア語能力検定4級トレーニング｜文法・語彙・模擬試験'
 const siteDescription = 'ロシア語能力検定4級の合格を目指す学習アプリ。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
-const ogImageUrl = new URL('og-image.png', siteUrl).toString()
+const ogImageUrl = new URL('og-image.png?v=20260908', siteUrl).toString()
 
 const prerenderRoutes = [
   '/',
