@@ -1,15 +1,36 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { verbGovernmentByWord } from '~/data/verbGovernment'
+
 type ChoiceDetail = {
   value: string
   explanation: string
   isCorrect?: boolean
 }
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   choices: readonly ChoiceDetail[]
   title?: string
 }>(), {
   title: '他の選択肢も確認',
+})
+
+const stripStress = (text: string) => text
+  .normalize('NFD')
+  .replace(/\u0301/g, '')
+  .normalize('NFC')
+
+const vocabularyWord = computed(() => {
+  if (props.title !== '意味の選択肢を確認') return null
+
+  const correctChoice = props.choices.find((choice) => choice.isCorrect)
+  const match = correctChoice?.explanation.match(/^(.+?)は「/u)
+  return match?.[1] ? stripStress(match[1]) : null
+})
+
+const verbGovernment = computed(() => {
+  const word = vocabularyWord.value
+  return word ? verbGovernmentByWord[word] : undefined
 })
 </script>
 
@@ -33,4 +54,27 @@ withDefaults(defineProps<{
       </article>
     </div>
   </details>
+
+  <section v-if="verbGovernment" class="mb-5 overflow-hidden rounded-2xl border border-indigo-200 bg-indigo-50">
+    <div class="border-b border-indigo-200 bg-indigo-100/70 px-4 py-3">
+      <p class="m-0 text-sm font-black text-indigo-950">語法・格支配</p>
+      <p class="mt-1 mb-0 font-mono text-sm font-bold text-indigo-800">{{ verbGovernment.pattern }}</p>
+    </div>
+
+    <div class="divide-y divide-indigo-100 bg-white">
+      <div v-for="role in verbGovernment.roles" :key="`${role.label}-${role.caseLabel}`" class="grid grid-cols-[5.5rem_1fr] gap-3 px-4 py-3">
+        <span class="h-fit rounded-full bg-indigo-100 px-2 py-1 text-center text-xs font-black text-indigo-800">{{ role.caseLabel }}</span>
+        <div>
+          <p class="m-0 text-sm font-black text-slate-900">{{ role.label }}</p>
+          <p v-if="role.question" class="mt-1 mb-0 font-mono text-xs font-bold text-slate-500">{{ role.question }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-indigo-200 px-4 py-4">
+      <p v-if="verbGovernment.note" class="mt-0 mb-3 rounded-xl bg-white px-3 py-2 text-sm leading-6 text-slate-700">💡 {{ verbGovernment.note }}</p>
+      <p class="m-0 text-lg font-bold leading-7" style="font-family: 'PT Serif', Georgia, serif">{{ verbGovernment.example.sentence }}</p>
+      <p class="mt-1 mb-0 text-sm leading-6 text-slate-700">{{ verbGovernment.example.translation }}</p>
+    </div>
+  </section>
 </template>
