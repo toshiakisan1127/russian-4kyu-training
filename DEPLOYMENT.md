@@ -123,7 +123,7 @@ GitHub Actions uses OIDC; no long-lived AWS Access Key / Secret Access Key is st
 3. Add the repository owner (or another trusted reviewer) under **Required reviewers**.
 4. Optionally restrict deployment branches to `main`.
 
-The `production` Environment is referenced only by the infrastructure deploy job. Therefore application assets can continue to S3 automatically when CDK reports no CloudFormation changes.
+The `production` Environment is referenced only by the infrastructure deploy job. Therefore application assets continue to S3 automatically whenever CDK reports no CloudFormation changes.
 
 The IAM trust policy accepts two immutable GitHub OIDC subjects:
 
