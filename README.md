@@ -156,6 +156,17 @@
 
 - Playwright
 
+### CI Performance
+
+PRのCI実行時間は、直近25回の成功runを対象に自動集計しています。
+
+![CI performance chart](https://raw.githubusercontent.com/toshiakisan1127/russian-4kyu-training/ci-metrics/ci-performance.svg)
+
+- **Total build job**: `build` job全体
+- **Browser smoke tests**: Playwright smoke test
+- **Playwright setup**: Chromium cache確認・system dependencies・Chromium本体の準備
+- CI完了後、`ci-metrics` ブランチ上のSVGを自動更新
+
 ### AWS本番ホスティング
 
 - Amazon S3: 非公開の静的ファイル保存
