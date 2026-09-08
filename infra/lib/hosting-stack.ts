@@ -108,7 +108,7 @@ function handler(event) {
     })
 
     const cfnDistribution = distribution.node.defaultChild as cloudfront.CfnDistribution
-    cfnDistribution.addPropertyOverride('DistributionConfig.PriceClass', 'None')
+    cfnDistribution.addPropertyDeletionOverride('DistributionConfig.PriceClass')
 
     if (props.domainName) {
       if (!props.hostedZoneName) {
