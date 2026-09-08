@@ -7,6 +7,7 @@ import {
   aws_certificatemanager as acm,
   aws_cloudfront as cloudfront,
   aws_cloudfront_origins as origins,
+  aws_cloudwatch as cloudwatch,
   aws_iam as iam,
   aws_route53 as route53,
   aws_route53_targets as route53Targets,
@@ -33,6 +34,7 @@ const GITHUB_PRODUCTION_ENVIRONMENT = 'production'
 const CDK_BOOTSTRAP_QUALIFIER = 'hnb659fds'
 const CDK_DEPLOY_REGIONS = ['ap-northeast-1', 'us-east-1'] as const
 const CDK_BOOTSTRAP_ROLE_TYPES = ['deploy-role', 'file-publishing-role', 'lookup-role'] as const
+const CLOUDFRONT_METRIC_REGION = 'us-east-1'
 
 export class HostingStack extends Stack {
   constructor(scope: Construct, id: string, props: HostingStackProps) {
@@ -114,6 +116,39 @@ function handler(event) {
     const cfnDistribution = distribution.node.defaultChild as cloudfront.CfnDistribution
     cfnDistribution.addPropertyDeletionOverride('DistributionConfig.PriceClass')
 
+    const requestsMetric = new cloudwatch.Metric({
+      namespace: 'AWS/CloudFront',
+      metricName: 'Requests',
+      dimensionsMap: {
+        DistributionId: distribution.distributionId,
+        Region: 'Global',
+      },
+      statistic: 'Sum',
+      period: Duration.hours(1),
+      region: CLOUDFRONT_METRIC_REGION,
+    })
+
+    const dashboard = new cloudwatch.Dashboard(this, 'CloudFrontDashboard', {
+      dashboardName: `russian-4kyu-${props.stage}-cloudfront`,
+    })
+
+    dashboard.addWidgets(
+      new cloudwatch.GraphWidget({
+        title: 'CloudFront Requests (hourly)',
+        left: [requestsMetric],
+        leftYAxis: { min: 0 },
+        start: '-PT24H',
+        width: 12,
+      }),
+      new cloudwatch.GraphWidget({
+        title: 'CloudFront Requests (daily)',
+        left: [requestsMetric.with({ period: Duration.days(1) })],
+        leftYAxis: { min: 0 },
+        start: '-P30D',
+        width: 12,
+      }),
+    )
+
     if (props.domainName) {
       if (!props.hostedZoneName) {
         throw new Error('hostedZoneName is required when domainName is configured')
@@ -181,6 +216,9 @@ function handler(event) {
     })
     new CfnOutput(this, 'CloudFrontDomainName', {
       value: distribution.distributionDomainName,
+    })
+    new CfnOutput(this, 'CloudWatchDashboardName', {
+      value: dashboard.dashboardName,
     })
     new CfnOutput(this, 'GitHubDeployRoleArn', {
       value: deployRole.roleArn,
