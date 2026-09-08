@@ -116,12 +116,14 @@ GitHub Actions uses OIDC; no long-lived AWS Access Key / Secret Access Key is st
 
 ### Configure the production approval gate
 
-Create a GitHub Actions Environment named exactly `production` and configure a required reviewer before merging the automated CDK deployment workflow:
+**Do this before merging the automated CDK deployment workflow.** Create a GitHub Actions Environment named exactly `production` and configure a required reviewer:
 
 1. Open **Settings -> Environments**.
 2. Create or open **production**.
 3. Add the repository owner (or another trusted reviewer) under **Required reviewers**.
 4. Optionally restrict deployment branches to `main`.
+
+Without a Required reviewer, GitHub can create/use the `production` Environment without an approval gate, so this repository setting is part of the production deployment safety setup.
 
 The workflow references `environment: production`, so the deploy job waits until the environment review is approved. The preceding CDK diff job does not reference the environment and therefore runs before the approval gate.
 
