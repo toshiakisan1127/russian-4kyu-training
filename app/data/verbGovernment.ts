@@ -61,7 +61,7 @@ export const verbGovernmentByWord: Record<string, VerbGovernment> = {
       { label: '恐れる人・もの', caseLabel: '生格', question: 'кого? / чего?' },
     ],
     note: '日本語では目的語に見えますが、対格ではなく生格を取る代表的な動詞です。',
-    example: { sentence: 'Ребёнок боя́тся соба́к.', translation: 'その子どもは犬を怖がります。' },
+    example: { sentence: 'Ребёнок бои́тся соба́к.', translation: 'その子どもは犬を怖がります。' },
   },
   просить: {
     pattern: 'просить кого? о чём?',
