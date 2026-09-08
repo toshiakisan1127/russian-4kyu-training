@@ -65,7 +65,9 @@ jobs:
           {
             echo '## CDK production diff'
             echo
-            echo 'Review this diff before approving the production deployment.'
+            echo "Commit: \`${GITHUB_SHA}\`"
+            echo
+            echo 'Review this exact diff before approving the production deployment.'
             echo
             echo '```text'
             cat cdk-diff.txt
