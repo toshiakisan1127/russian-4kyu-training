@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { verbGovernmentByWord } from '~/data/verbGovernment'
+import { getVocabularyExamTips } from '~/data/vocabularyExamTips'
 
 type ChoiceDetail = {
   value: string
@@ -20,12 +21,24 @@ const stripStress = (text: string) => text
   .replace(/\u0301/g, '')
   .normalize('NFC')
 
-const vocabularyWord = computed(() => {
+const correctVocabularyChoice = computed(() => {
   if (props.title !== '意味の選択肢を確認') return null
+  return props.choices.find((choice) => choice.isCorrect) ?? null
+})
 
-  const correctChoice = props.choices.find((choice) => choice.isCorrect)
-  const match = correctChoice?.explanation.match(/^(.+?)は「/u)
+const vocabularyWord = computed(() => {
+  const match = correctVocabularyChoice.value?.explanation.match(/^(.+?)は「/u)
   return match?.[1] ? stripStress(match[1]) : null
+})
+
+const vocabularyPartOfSpeech = computed(() => {
+  const match = correctVocabularyChoice.value?.explanation.match(/という意味の(.+?)です。/u)
+  return match?.[1] ?? null
+})
+
+const examTips = computed(() => {
+  const word = vocabularyWord.value
+  return word ? getVocabularyExamTips(word, vocabularyPartOfSpeech.value) : []
 })
 
 const verbGovernment = computed(() => {
@@ -54,6 +67,19 @@ const verbGovernment = computed(() => {
       </article>
     </div>
   </details>
+
+  <section v-if="examTips.length > 0" class="mb-5 overflow-hidden rounded-2xl border border-amber-200 bg-amber-50">
+    <div class="flex items-start gap-3 border-b border-amber-200 bg-amber-100/70 px-4 py-3">
+      <span class="grid size-8 shrink-0 place-items-center rounded-full bg-amber-500 text-base" aria-hidden="true">🎯</span>
+      <div>
+        <p class="m-0 text-sm font-black text-amber-950">4級ポイント</p>
+        <p class="mt-1 mb-0 text-xs font-bold text-amber-800">この単語と一緒に押さえたい、試験で狙われやすいポイント</p>
+      </div>
+    </div>
+    <ul class="m-0 grid gap-2 px-4 py-4 pl-9 text-sm leading-6 text-slate-800">
+      <li v-for="tip in examTips" :key="tip" class="pl-1">{{ tip }}</li>
+    </ul>
+  </section>
 
   <section v-if="verbGovernment" class="mb-5 overflow-hidden rounded-2xl border border-indigo-200 bg-indigo-50">
     <div class="border-b border-indigo-200 bg-indigo-100/70 px-4 py-3">
