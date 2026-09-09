@@ -6,6 +6,7 @@ const siteUrl = 'https://russian4kyu-training.com/'
 const siteTitle = 'ロシア語能力検定4級トレーニング｜文法・語彙・模擬試験'
 const siteDescription = 'ロシア語能力検定4級の合格を目指す学習アプリ。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
 const ogImageUrl = new URL('og-image.png?v=20260908', siteUrl).toString()
+const pwaIconVersion = '20260909'
 
 const prerenderRoutes = [
   '/',
@@ -83,11 +84,11 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: ogImageUrl },
       ],
       link: [
-        { rel: 'manifest', href: assetUrl('manifest.webmanifest') },
+        { rel: 'manifest', href: assetUrl(`manifest.webmanifest?v=${pwaIconVersion}`) },
         { rel: 'icon', href: assetUrl('favicon.ico'), sizes: 'any' },
         { rel: 'icon', href: assetUrl('icon-48.png'), type: 'image/png', sizes: '48x48' },
         { rel: 'icon', href: assetUrl('icon.svg'), type: 'image/svg+xml', sizes: 'any' },
-        { rel: 'apple-touch-icon', href: assetUrl('icon-180.png'), sizes: '180x180' },
+        { rel: 'apple-touch-icon', href: assetUrl(`icon-180.png?v=${pwaIconVersion}`), sizes: '180x180' },
       ],
       script: [
         {
