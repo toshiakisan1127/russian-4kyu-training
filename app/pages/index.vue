@@ -506,7 +506,7 @@ const statusWidth = (count: number, total: number) => total > 0 ? `${(count / to
           <NuxtLink
             v-for="exam in mockExams"
             :key="exam.id"
-            to="/mock"
+            :to="{ path: '/mock', query: { exam: exam.id } }"
             class="group block rounded-3xl border border-amber-200 bg-amber-50 p-6 transition hover:-translate-y-1 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-100 sm:p-7"
           >
             <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
