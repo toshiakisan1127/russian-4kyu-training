@@ -14,7 +14,7 @@ test('second mock exam card does not restore the first mock exam result', async 
 
   await page.getByRole('link', { name: /模擬試験 第2回/ }).click()
 
-  await expect(page).toHaveURL(/\/mock\?exam=mock-2$/)
+  await expect(page).toHaveURL(/\/mock\/?\?exam=mock-2$/)
   await expect(page.getByRole('heading', { level: 1, name: '模擬試験 第2回' })).toBeVisible()
   await expect(page.getByRole('heading', { level: 1, name: '採点結果' })).toHaveCount(0)
 })
@@ -29,7 +29,7 @@ test('saved result is restored only for the requested mock exam', async ({ page 
     }))
   })
 
-  await page.goto(`${appBasePath}/mock?exam=mock-2`, { waitUntil: 'networkidle' })
+  await page.goto(`${appBasePath}/mock/?exam=mock-2`, { waitUntil: 'networkidle' })
 
   await expect(page.getByRole('heading', { level: 1, name: '採点結果' })).toBeVisible()
   await expect(page.getByText('Result · 模擬試験 第2回')).toBeVisible()
