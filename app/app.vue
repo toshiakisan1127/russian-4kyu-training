@@ -13,7 +13,6 @@ const isHome = computed(() => {
   return route.path === '/'
     || (basePath !== '' && basePath !== '/' && (route.path === basePath || route.path === `${basePath}/`))
 })
-const isAbout = computed(() => route.path === '/about')
 
 const clampSpeechRate = (value: number) => Math.min(1, Math.max(0.1, value))
 
@@ -84,7 +83,6 @@ const reloadPage = () => {
   <Breadcrumbs />
   <NuxtPage />
   <HomeSeoContent v-if="isHome" />
-  <ExamSeoContent v-if="isAbout" />
 
   <section v-if="isHome" class="bg-slate-50 px-4 pb-10 text-slate-950 sm:pb-14" aria-labelledby="bonus-link-heading">
     <div class="mx-auto w-full max-w-5xl border-t border-slate-200 pt-8">
