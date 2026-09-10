@@ -31,9 +31,6 @@ const GITHUB_REPOSITORY = 'russian-4kyu-training'
 const GITHUB_REPOSITORY_ID = '1355052125'
 const GITHUB_BRANCH = 'main'
 const GITHUB_PRODUCTION_ENVIRONMENT = 'production'
-const FOOTBALL_SCHEDULE_OWNER_ID = '48203235'
-const FOOTBALL_SCHEDULE_REPOSITORY = 'football-schedule'
-const FOOTBALL_SCHEDULE_REPOSITORY_ID = '1364383476'
 const CDK_BOOTSTRAP_QUALIFIER = 'hnb659fds'
 const CDK_DEPLOY_REGIONS = ['ap-northeast-1', 'us-east-1'] as const
 const CDK_BOOTSTRAP_ROLE_TYPES = ['deploy-role', 'file-publishing-role', 'lookup-role'] as const
@@ -210,40 +207,6 @@ function handler(event) {
         ),
       }),
     )
-
-    if (isProd) {
-      const footballScheduleImmutableRepository =
-        `repo:${GITHUB_OWNER}@${FOOTBALL_SCHEDULE_OWNER_ID}/${FOOTBALL_SCHEDULE_REPOSITORY}@${FOOTBALL_SCHEDULE_REPOSITORY_ID}`
-
-      const footballScheduleDeployRole = new iam.Role(this, 'FootballScheduleGitHubDeployRole', {
-        roleName: 'github-actions-football-schedule-prod-deploy',
-        assumedBy: new iam.WebIdentityPrincipal(
-          props.githubOidcProvider.openIdConnectProviderArn,
-          {
-            StringEquals: {
-              'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-              'token.actions.githubusercontent.com:sub':
-                `${footballScheduleImmutableRepository}:ref:refs/heads/main`,
-            },
-          },
-        ),
-        description: 'Deploy football-schedule production CDK stacks from GitHub Actions',
-      })
-
-      footballScheduleDeployRole.addToPolicy(
-        new iam.PolicyStatement({
-          actions: ['sts:AssumeRole'],
-          resources: CDK_BOOTSTRAP_ROLE_TYPES.map(
-            (roleType) =>
-              `arn:${this.partition}:iam::${this.account}:role/cdk-${CDK_BOOTSTRAP_QUALIFIER}-${roleType}-${this.account}-ap-northeast-1`,
-          ),
-        }),
-      )
-
-      new CfnOutput(this, 'FootballScheduleGitHubDeployRoleArn', {
-        value: footballScheduleDeployRole.roleArn,
-      })
-    }
 
     new CfnOutput(this, 'BucketName', {
       value: bucket.bucketName,
