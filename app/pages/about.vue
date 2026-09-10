@@ -72,6 +72,8 @@ useHead({
         </article>
       </div>
 
+      <ExamSeoContent />
+
       <section class="mt-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 sm:p-7">
         <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Install as an app</p>
         <h2 class="mb-3 text-xl font-black sm:text-2xl">スマホのホーム画面に追加する</h2>
