@@ -31,7 +31,9 @@ const GITHUB_REPOSITORY = 'russian-4kyu-training'
 const GITHUB_REPOSITORY_ID = '1355052125'
 const GITHUB_BRANCH = 'main'
 const GITHUB_PRODUCTION_ENVIRONMENT = 'production'
-const FOOTBALL_SCHEDULE_REPOSITORY = 'toshiakisan1127/football-schedule'
+const FOOTBALL_SCHEDULE_OWNER_ID = '48203235'
+const FOOTBALL_SCHEDULE_REPOSITORY = 'football-schedule'
+const FOOTBALL_SCHEDULE_REPOSITORY_ID = '1364383476'
 const CDK_BOOTSTRAP_QUALIFIER = 'hnb659fds'
 const CDK_DEPLOY_REGIONS = ['ap-northeast-1', 'us-east-1'] as const
 const CDK_BOOTSTRAP_ROLE_TYPES = ['deploy-role', 'file-publishing-role', 'lookup-role'] as const
@@ -210,6 +212,9 @@ function handler(event) {
     )
 
     if (isProd) {
+      const footballScheduleImmutableRepository =
+        `repo:${GITHUB_OWNER}@${FOOTBALL_SCHEDULE_OWNER_ID}/${FOOTBALL_SCHEDULE_REPOSITORY}@${FOOTBALL_SCHEDULE_REPOSITORY_ID}`
+
       const footballScheduleDeployRole = new iam.Role(this, 'FootballScheduleGitHubDeployRole', {
         roleName: 'github-actions-football-schedule-prod-deploy',
         assumedBy: new iam.WebIdentityPrincipal(
@@ -218,7 +223,7 @@ function handler(event) {
             StringEquals: {
               'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
               'token.actions.githubusercontent.com:sub':
-                `repo:${FOOTBALL_SCHEDULE_REPOSITORY}:ref:refs/heads/main`,
+                `${footballScheduleImmutableRepository}:ref:refs/heads/main`,
             },
           },
         ),
