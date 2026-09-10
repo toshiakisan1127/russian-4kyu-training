@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test'
 
 const appBasePath = '/russian-4kyu-training'
 const siteUrl = 'https://russian4kyu-training.com/'
-const siteTitle = 'ロシア語能力検定4級トレーニング｜文法・語彙・模擬試験'
-const siteDescription = 'ロシア語能力検定4級の合格を目指す学習アプリ。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
+const siteTitle = 'ロシア語能力検定4級対策｜文法・語彙・模擬試験トレーニング'
+const siteDescription = 'ロシア語能力検定4級の合格を目指す無料・登録不要の学習サイト。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
 const ogImageUrl = `${siteUrl}og-image.png?v=20260908`
 
 test('home exposes OGP and Twitter Card metadata', async ({ page }) => {
@@ -17,12 +17,14 @@ test('home exposes OGP and Twitter Card metadata', async ({ page }) => {
   await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute('content', 'image/png')
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200')
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630')
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute('content', 'ロシア語能力検定4級対策の文法・語彙・模擬試験トレーニング')
   await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', 'ロシア語4級トレーニング')
   await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute('content', 'ja_JP')
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
   await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', siteTitle)
   await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content', siteDescription)
   await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', ogImageUrl)
+  await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute('content', 'ロシア語能力検定4級対策の文法・語彙・模擬試験トレーニング')
 })
 
 test('OGP image is a decodable 1200x630 PNG', async ({ page, request }) => {
