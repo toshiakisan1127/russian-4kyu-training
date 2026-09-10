@@ -1,3 +1,5 @@
+import { vocabularyItems } from './vocabulary'
+
 const specificTipsByWord: Record<string, readonly string[]> = {
   в: [
     '場所「〜で」は в + 前置格、方向「〜へ」は в + 対格。格の使い分けが4級の定番。',
@@ -81,23 +83,81 @@ const specificTipsByWord: Record<string, readonly string[]> = {
   нужно: ['人を与格にして нужно + 不定形で「〜する必要がある」：Мне ну́жно идти́.。'],
 }
 
-const fallbackByPartOfSpeech: Record<string, string> = {
-  名詞: '名詞は前置詞や動詞に応じて格変化する。性・単数の主要格・複数形をセットで確認する。',
-  動詞: '動詞は現在の人称変化、過去形、未来表現をセットで確認する。4級では主語に合う形を作れることが重要。',
-  形容詞: '形容詞は修飾する名詞の性・数・格に一致する。語尾変化が4級の基本問題になりやすい。',
-  副詞: '副詞は原則として形が変わらない。文中で何を修飾しているかと意味を確認する。',
-  代名詞: '代名詞は格変化が頻出。前置詞や動詞が要求する格に合わせた形を確認する。',
-  前置詞: '前置詞は意味だけでなく「後ろに何格を取るか」までセットで暗記する。',
-  接続詞: '接続詞は前後の文の関係を判断する手掛かり。意味と定型的な組み合わせを押さえる。',
-  数詞: '数詞は後ろの名詞の形とセットで問われやすい。特に1、2〜4、5以上の違いを確認する。',
-  '助詞・表現': '単独の意味だけでなく、文中で作るニュアンスや定型表現ごと覚える。',
+const vocabularyByWord = new Map(vocabularyItems.map((item) => [item.word, item]))
+
+const genderLabel = {
+  masculine: '男性',
+  feminine: '女性',
+  neuter: '中性',
+} as const
+
+const generatedTipsForWord = (word: string): string[] => {
+  const item = vocabularyByWord.get(word)
+  if (!item) return []
+
+  if (item.partOfSpeech === 'noun') {
+    const tips: string[] = []
+    const pluralTip = item.plural === '通常複数形なし'
+      ? `${item.stressedWord} は${genderLabel[item.gender]}名詞で、通常は複数形を使わない。`
+      : `${item.stressedWord} は${genderLabel[item.gender]}名詞。複数主格は ${item.plural}。`
+    tips.push(pluralTip)
+
+    if (item.declension) {
+      const { genitive, accusative, prepositional } = item.declension
+      const allSame = Object.values(item.declension).every((form) => form === item.declension?.nominative)
+      tips.push(allSame
+        ? `格が変わっても語形は ${item.declension.nominative} のまま。変化しない名詞として覚える。`
+        : `単数の主要格は、生格 ${genitive}・対格 ${accusative}・前置格 ${prepositional}。実際の語形で覚える。`)
+    }
+
+    if (item.animate) {
+      tips.push(`${item.stressedWord} は有生名詞。対格を作るときは「人・動物」であることを意識する。`)
+    }
+
+    return tips
+  }
+
+  if (item.partOfSpeech === 'verb') {
+    const tips: string[] = []
+    const aspectLabel = item.aspect === 'imperfective' ? '不完了体' : '完了体'
+
+    if (item.presentConjugation) {
+      const forms = item.presentConjugation
+      tips.push(item.aspect === 'imperfective'
+        ? `${item.stressedWord} は${aspectLabel}。現在形は ${forms.firstSingular} / ${forms.secondSingular} / ${forms.thirdPlural}。`
+        : `${item.stressedWord} は${aspectLabel}。${forms.firstSingular} / ${forms.secondSingular} / ${forms.thirdPlural} は未来の意味になる。`)
+    } else {
+      tips.push(`${item.stressedWord} は${aspectLabel}。動詞の体まで単語とセットで覚える。`)
+    }
+
+    if (item.aspect === 'imperfective') {
+      tips.push(`未来は быть の未来形 + ${item.word}：例「буду ${item.word}」。不完了体の複合未来として押さえる。`)
+    }
+
+    return tips
+  }
+
+  if (item.partOfSpeech === 'adjective') {
+    const tips: string[] = []
+    if (item.forms) {
+      tips.push(`${item.stressedWord} の基本形は、男性 ${item.forms.masculine}・女性 ${item.forms.feminine}・中性 ${item.forms.neuter}・複数 ${item.forms.plural}。`)
+    }
+
+    if (item.declension) {
+      tips.push(`生格は男/中 ${item.declension.genitive.masculine}・女 ${item.declension.genitive.feminine}、前置格は男/中 ${item.declension.prepositional.masculine}・女 ${item.declension.prepositional.feminine}。`)
+    }
+
+    return tips
+  }
+
+  return []
 }
 
-export const getVocabularyExamTips = (word: string, partOfSpeechLabel?: string | null): readonly string[] => {
-  const tips = [...(specificTipsByWord[word] ?? [])]
-  const fallback = partOfSpeechLabel ? fallbackByPartOfSpeech[partOfSpeechLabel] : undefined
+export const getVocabularyExamTips = (word: string): readonly string[] => {
+  const tips = [
+    ...(specificTipsByWord[word] ?? []),
+    ...generatedTipsForWord(word),
+  ]
 
-  if (fallback && !tips.includes(fallback)) tips.push(fallback)
-
-  return tips.slice(0, 3)
+  return [...new Set(tips)].slice(0, 3)
 }

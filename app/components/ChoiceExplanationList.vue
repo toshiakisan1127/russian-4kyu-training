@@ -31,14 +31,9 @@ const vocabularyWord = computed(() => {
   return match?.[1] ? stripStress(match[1]) : null
 })
 
-const vocabularyPartOfSpeech = computed(() => {
-  const match = correctVocabularyChoice.value?.explanation.match(/という意味の(.+?)です。/u)
-  return match?.[1] ?? null
-})
-
 const examTips = computed(() => {
   const word = vocabularyWord.value
-  return word ? getVocabularyExamTips(word, vocabularyPartOfSpeech.value) : []
+  return word ? getVocabularyExamTips(word) : []
 })
 
 const verbGovernment = computed(() => {
@@ -73,7 +68,7 @@ const verbGovernment = computed(() => {
       <span class="grid size-8 shrink-0 place-items-center rounded-full bg-amber-500 text-base" aria-hidden="true">🎯</span>
       <div>
         <p class="m-0 text-sm font-black text-amber-950">4級ポイント</p>
-        <p class="mt-1 mb-0 text-xs font-bold text-amber-800">この単語と一緒に押さえたい、試験で狙われやすいポイント</p>
+        <p class="mt-1 mb-0 text-xs font-bold text-amber-800">この単語そのものについて、試験で使える形を確認</p>
       </div>
     </div>
     <ul class="m-0 grid gap-2 px-4 py-4 pl-9 text-sm leading-6 text-slate-800">
