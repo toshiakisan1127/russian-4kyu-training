@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { type MockInputField, type MockQuestion, type MockSection } from '~/data/activeExam.value'
+import { type MockInputField, type MockQuestion, type MockSection } from '~/data/mockExam1'
 import { mockExams } from '~/data/mockExams'
 import { stripStress } from '~/utils/russianStress'
 
@@ -32,7 +32,11 @@ type SavedExamProgress = {
 
 type SelfGradeValues = Record<string, number>
 
-const selectedExamIndex = ref(0)
+const route = useRoute()
+const router = useRouter()
+const requestedExamId = Array.isArray(route.query.exam) ? route.query.exam[0] : route.query.exam
+const requestedExamIndex = mockExams.findIndex((exam) => exam.id === requestedExamId)
+const selectedExamIndex = ref(requestedExamIndex >= 0 ? requestedExamIndex : 0)
 const activeExam = computed(() => mockExams[selectedExamIndex.value] ?? mockExams[0]!)
 const progressStorageKey = computed(() => `russian-mock-exam-progress-v1:${activeExam.value.id}`)
 
@@ -484,11 +488,18 @@ const startTimer = () => {
 const selectExam = () => {
   if (phase.value !== 'intro') return
   answers.value = {}
-  clearSavedSelfGrades()
-  clearSavedResult()
+  selfGrades.value = {}
+  selfGradeInputs.value = {}
+  selfGradeErrors.value = {}
+  reviewAnswers.value = {}
+  showRestartConfirm.value = false
   currentSectionIndex.value = 0
   timeLeft.value = activeExam.value.durationMinutes * 60
+  hasSavedProgress.value = false
   loadSavedProgress()
+  loadSelfGrades()
+  if (!hasSavedProgress.value) loadSavedResult()
+  void router.replace({ query: { ...route.query, exam: activeExam.value.id } })
 }
 
 const requestStartExam = () => {
@@ -701,7 +712,7 @@ onBeforeUnmount(() => {
               </option>
             </select>
           </label>
-          <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-4xl">模擬試験 第1回</h1>
+          <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-4xl">{{ activeExam.title }}</h1>
           <p class="m-0 max-w-3xl leading-7 text-slate-600">
             実際の過去問の出題数と解答形式を参考にした、文法Ⅰ〜Ⅷのオリジナル模試です。
             試験中は正解・解説を表示せず、提出後にまとめて確認します。
@@ -719,7 +730,7 @@ onBeforeUnmount(() => {
           </div>
           <div class="rounded-2xl bg-emerald-50 p-4">
             <p class="mb-1 text-xs font-black text-emerald-800">目安時間</p>
-            <p class="m-0 text-2xl font-black">60分</p>
+            <p class="m-0 text-2xl font-black">{{ activeExam.durationMinutes }}分</p>
           </div>
         </div>
 
@@ -775,7 +786,7 @@ onBeforeUnmount(() => {
         <details data-testid="mock-exam-status" class="mb-5 rounded-3xl border border-amber-200 bg-white/95 shadow-lg shadow-amber-100/60 backdrop-blur">
           <summary class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-3xl p-3 font-black outline-none transition hover:bg-amber-50 focus-visible:ring-2 focus-visible:ring-amber-500 sm:p-4 [&::-webkit-details-marker]:hidden">
             <div class="min-w-0">
-              <p class="mb-1 text-xs tracking-[0.14em] text-amber-700 uppercase">模擬試験 第1回</p>
+              <p class="mb-1 text-xs tracking-[0.14em] text-amber-700 uppercase">{{ activeExam.title }}</p>
               <p class="m-0 truncate text-sm text-slate-800 sm:text-base">第{{ currentSection.roman }}問・{{ currentSection.title }}</p>
             </div>
             <div class="flex shrink-0 items-center gap-2">
@@ -963,7 +974,7 @@ onBeforeUnmount(() => {
 
       <div v-else-if="phase === 'result'" class="space-y-5">
         <section class="rounded-3xl border border-emerald-200 bg-white p-5 text-center shadow-xl shadow-emerald-100/60 sm:p-8">
-          <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Result · Mock Exam 1</p>
+          <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Result · {{ activeExam.title }}</p>
           <h1 class="mb-3 text-2xl font-black sm:text-3xl">採点結果</h1>
           <p class="m-0 text-5xl font-black text-emerald-700">{{ totalCorrect }} / {{ activeExam.totalAnswerFields }}</p>
           <p class="mt-3 mb-0 text-lg font-black text-sky-700">翻訳・自己採点 {{ selfGradeSummary }}</p>
