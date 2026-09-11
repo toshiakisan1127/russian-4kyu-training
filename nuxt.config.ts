@@ -59,11 +59,6 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'ja' },
       title: siteTitle,
       meta: [
-        {
-          name: 'description',
-          content: siteDescription,
-        },
-        { name: 'robots', content: 'index, follow, max-image-preview:large' },
         { name: 'theme-color', content: '#4f46e5' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
@@ -77,8 +72,6 @@ export default defineNuxtConfig({
         { property: 'og:site_name', content: 'ロシア語4級トレーニング' },
         { property: 'og:locale', content: 'ja_JP' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: siteTitle },
-        { name: 'twitter:description', content: siteDescription },
         { name: 'twitter:image', content: ogImageUrl },
         { name: 'twitter:image:alt', content: 'ロシア語能力検定4級対策の文法・語彙・模擬試験トレーニング' },
       ],
