@@ -134,6 +134,17 @@ export const usePageSeo = () => {
     return route.path === '/' ? `${siteUrl}/` : `${siteUrl}${route.path}`
   })
 
+  useSeoMeta({
+    title: () => pageSeo.value.title,
+    description: () => pageSeo.value.description,
+    robots: () => pageSeo.value.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large',
+    ogTitle: () => pageSeo.value.title,
+    ogDescription: () => pageSeo.value.description,
+    ogUrl: () => canonicalUrl.value,
+    twitterTitle: () => pageSeo.value.title,
+    twitterDescription: () => pageSeo.value.description,
+  })
+
   useHead(() => {
     const structuredData = pageSeo.value.learningResourceType
       ? {
@@ -154,16 +165,6 @@ export const usePageSeo = () => {
       : null
 
     return {
-      title: pageSeo.value.title,
-      meta: [
-        { name: 'description', content: pageSeo.value.description },
-        { name: 'robots', content: pageSeo.value.noindex ? 'noindex, follow' : 'index, follow' },
-        { property: 'og:title', content: pageSeo.value.title },
-        { property: 'og:description', content: pageSeo.value.description },
-        { property: 'og:url', content: canonicalUrl.value },
-        { name: 'twitter:title', content: pageSeo.value.title },
-        { name: 'twitter:description', content: pageSeo.value.description },
-      ],
       link: [
         { rel: 'canonical', href: canonicalUrl.value },
       ],
