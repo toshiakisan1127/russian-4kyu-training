@@ -6,20 +6,23 @@ const productionUrl = 'https://russian4kyu-training.com'
 test('home explains the 4th grade exam training scope with useful internal links', async ({ page }) => {
   await page.goto(appBasePath, { waitUntil: 'domcontentloaded' })
 
-  await expect(page.getByRole('heading', { name: 'ロシア語能力検定4級の対策を、問題演習でくり返す' })).toBeVisible()
-  await expect(page.getByText('無料・登録不要の個人制作学習サイト')).toBeVisible()
-  await expect(page.getByRole('link', { name: '語彙 →' })).toHaveAttribute('href', /\/vocabulary/)
-  await expect(page.getByRole('link', { name: '動詞 →' })).toHaveAttribute('href', /\/verbs/)
-  await expect(page.getByRole('link', { name: '模擬試験 →' })).toHaveAttribute('href', /\/mock/)
+  const guide = page.locator('section[aria-labelledby="seo-guide-heading"]')
+  await expect(guide.getByRole('heading', { name: 'ロシア語能力検定4級の対策を、問題演習でくり返す' })).toBeVisible()
+  await expect(guide.getByText('無料・登録不要の個人制作学習サイト')).toBeVisible()
+  await expect(guide.locator('a[href$="/vocabulary"]')).toHaveAttribute('href', /\/vocabulary/)
+  await expect(guide.locator('a[href$="/verbs"]')).toHaveAttribute('href', /\/verbs/)
+  await expect(guide.locator('a[href$="/mock"]')).toHaveAttribute('href', /\/mock/)
 })
 
 test('about page is a useful 4th grade exam landing page with study routes', async ({ page }) => {
   await page.goto(`${appBasePath}/about`, { waitUntil: 'domcontentloaded' })
 
   await expect(page.getByRole('heading', { level: 1, name: 'ロシア語能力検定4級とは？試験内容と対策' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'ロシア語能力検定4級の対策は、弱点を分けて練習する' })).toBeVisible()
-  await expect(page.getByRole('link', { name: '動詞トレーニング →' })).toHaveAttribute('href', /\/verbs/)
-  await expect(page.getByRole('link', { name: '4級模擬試験 →' })).toHaveAttribute('href', /\/mock/)
+
+  const guide = page.locator('section[aria-labelledby="exam-study-heading"]')
+  await expect(guide.getByRole('heading', { name: 'ロシア語能力検定4級の対策は、弱点を分けて練習する' })).toBeVisible()
+  await expect(guide.locator('a[href$="/verbs"]')).toHaveText('動詞トレーニング →')
+  await expect(guide.locator('a[href$="/mock"]')).toHaveText('4級模擬試験 →')
 })
 
 test('training pages expose canonical, page-specific social metadata and LearningResource JSON-LD', async ({ page }) => {
@@ -30,15 +33,22 @@ test('training pages expose canonical, page-specific social metadata and Learnin
   const expectedCanonical = `${productionUrl}/verbs`
 
   await expect(page).toHaveTitle(expectedTitle)
-  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', expectedDescription)
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', expectedCanonical)
-  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', expectedTitle)
-  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', expectedDescription)
-  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', expectedCanonical)
-  await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', expectedTitle)
+  await expect(page.locator(`meta[name="description"][content="${expectedDescription}"]`)).toHaveCount(1)
+  await expect(page.locator(`link[rel="canonical"][href="${expectedCanonical}"]`)).toHaveCount(1)
+  await expect(page.locator(`meta[property="og:title"][content="${expectedTitle}"]`)).toHaveCount(1)
+  await expect(page.locator(`meta[property="og:description"][content="${expectedDescription}"]`)).toHaveCount(1)
+  await expect(page.locator(`meta[property="og:url"][content="${expectedCanonical}"]`)).toHaveCount(1)
+  await expect(page.locator(`meta[name="twitter:title"][content="${expectedTitle}"]`)).toHaveCount(1)
 
   const scripts = await page.locator('script[type="application/ld+json"]').allTextContents()
-  const jsonLd = scripts.map((text) => JSON.parse(text))
+  const jsonLd = scripts.flatMap((text) => {
+    try {
+      return [JSON.parse(text)]
+    }
+    catch {
+      return []
+    }
+  })
   const learningResource = jsonLd.find((item) => item['@type'] === 'LearningResource')
 
   expect(learningResource).toMatchObject({
