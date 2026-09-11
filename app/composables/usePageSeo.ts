@@ -124,14 +124,20 @@ const pageSeoByPath: Record<string, PageSeo> = {
 
 const defaultSeo = pageSeoByPath['/']!
 
+const normalizePath = (path: string) => {
+  if (path === '/') return '/'
+  return `/${path.replace(/^\/+|\/+$/g, '')}`
+}
+
 export const usePageSeo = () => {
   const route = useRoute()
   const runtimeConfig = useRuntimeConfig()
 
-  const pageSeo = computed(() => pageSeoByPath[route.path] ?? defaultSeo)
+  const normalizedPath = computed(() => normalizePath(route.path))
+  const pageSeo = computed(() => pageSeoByPath[normalizedPath.value] ?? defaultSeo)
   const canonicalUrl = computed(() => {
     const siteUrl = String(runtimeConfig.public.siteUrl).replace(/\/$/, '')
-    return route.path === '/' ? `${siteUrl}/` : `${siteUrl}${route.path}`
+    return normalizedPath.value === '/' ? `${siteUrl}/` : `${siteUrl}${normalizedPath.value}`
   })
 
   useSeoMeta({
