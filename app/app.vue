@@ -82,6 +82,7 @@ const reloadPage = () => {
 <template>
   <Breadcrumbs />
   <NuxtPage />
+  <HomeSeoContent v-if="isHome" />
 
   <section v-if="isHome" class="bg-slate-50 px-4 pb-10 text-slate-950 sm:pb-14" aria-labelledby="bonus-link-heading">
     <div class="mx-auto w-full max-w-5xl border-t border-slate-200 pt-8">

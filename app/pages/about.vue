@@ -17,7 +17,7 @@ const formattedLastUpdatedAt = computed(() => {
 })
 
 useHead({
-  title: 'このサイトについて | ロシア語4級トレーニング',
+  title: 'ロシア語能力検定4級とは？試験内容と学習方法｜ロシア語4級トレーニング',
 })
 </script>
 
@@ -27,9 +27,9 @@ useHead({
 
       <header class="mb-8">
         <p class="mb-2 text-xs font-black tracking-[0.16em] text-indigo-600 uppercase">About this site</p>
-        <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-5xl">このサイトについて</h1>
+        <h1 class="mb-3 text-3xl font-black tracking-tight sm:text-5xl">ロシア語能力検定4級とは？試験内容と対策</h1>
         <p class="m-0 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-          ロシア語能力検定4級の出題範囲を意識した、復習・反復練習用の個人制作サイトです。
+          ロシア語能力検定4級の試験内容と、文法・語彙・翻訳・模擬試験を使った対策方法をまとめた個人制作サイトです。
         </p>
       </header>
 
@@ -71,6 +71,8 @@ useHead({
           </ul>
         </article>
       </div>
+
+      <ExamSeoContent />
 
       <section class="mt-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 sm:p-7">
         <p class="mb-1 text-xs font-black tracking-[0.14em] text-emerald-700 uppercase">Install as an app</p>

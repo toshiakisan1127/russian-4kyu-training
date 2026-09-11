@@ -3,8 +3,8 @@ import tailwindcss from '@tailwindcss/vite'
 const baseURL = process.env.NUXT_APP_BASE_URL ?? '/russian-4kyu-training/'
 const assetUrl = (path: string) => `${baseURL.replace(/\/$/, '')}/${path}`
 const siteUrl = 'https://russian4kyu-training.com/'
-const siteTitle = 'ロシア語能力検定4級トレーニング｜文法・語彙・模擬試験'
-const siteDescription = 'ロシア語能力検定4級の合格を目指す学習アプリ。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
+const siteTitle = 'ロシア語能力検定4級対策｜文法・語彙・模擬試験トレーニング'
+const siteDescription = 'ロシア語能力検定4級の合格を目指す無料・登録不要の学習サイト。語彙・格変化・動詞活用・前置詞・露文和訳・和文露訳・模擬試験を分野別に練習できます。'
 const ogImageUrl = new URL('og-image.png?v=20260908', siteUrl).toString()
 const pwaIconVersion = '20260909'
 
@@ -59,29 +59,21 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'ja' },
       title: siteTitle,
       meta: [
-        {
-          name: 'description',
-          content: siteDescription,
-        },
-        { name: 'robots', content: 'index, follow' },
         { name: 'theme-color', content: '#4f46e5' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-title', content: 'ロシア語4級' },
-        { property: 'og:title', content: siteTitle },
-        { property: 'og:description', content: siteDescription },
         { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: siteUrl },
         { property: 'og:image', content: ogImageUrl },
         { property: 'og:image:type', content: 'image/png' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
+        { property: 'og:image:alt', content: 'ロシア語能力検定4級対策の文法・語彙・模擬試験トレーニング' },
         { property: 'og:site_name', content: 'ロシア語4級トレーニング' },
         { property: 'og:locale', content: 'ja_JP' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: siteTitle },
-        { name: 'twitter:description', content: siteDescription },
         { name: 'twitter:image', content: ogImageUrl },
+        { name: 'twitter:image:alt', content: 'ロシア語能力検定4級対策の文法・語彙・模擬試験トレーニング' },
       ],
       link: [
         { rel: 'manifest', href: assetUrl(`manifest.webmanifest?v=${pwaIconVersion}`) },
@@ -100,6 +92,7 @@ export default defineNuxtConfig({
                 '@type': 'WebSite',
                 '@id': `${siteUrl}#website`,
                 name: 'ロシア語4級トレーニング',
+                alternateName: ['ロシア語能力検定4級対策', 'ロシア語4級トレーニング'],
                 url: siteUrl,
                 description: siteDescription,
                 inLanguage: 'ja',
