@@ -35,6 +35,8 @@ const CDK_BOOTSTRAP_QUALIFIER = 'hnb659fds'
 const CDK_DEPLOY_REGIONS = ['ap-northeast-1', 'us-east-1'] as const
 const CDK_BOOTSTRAP_ROLE_TYPES = ['deploy-role', 'file-publishing-role', 'lookup-role'] as const
 const CLOUDFRONT_METRIC_REGION = 'us-east-1'
+const GOOGLE_SITE_VERIFICATION =
+  'google-site-verification=vgqoWmQQrpR6N6x27XdkMy5OwMNfK3LDztq0gGjq2Z4'
 
 export class HostingStack extends Stack {
   constructor(scope: Construct, id: string, props: HostingStackProps) {
@@ -171,6 +173,14 @@ function handler(event) {
         recordName,
         target: route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(distribution)),
       })
+
+      if (isProd) {
+        new route53.TxtRecord(this, 'GoogleSiteVerificationRecord', {
+          zone,
+          recordName,
+          values: [GOOGLE_SITE_VERIFICATION],
+        })
+      }
     }
 
     const immutableRepository =
